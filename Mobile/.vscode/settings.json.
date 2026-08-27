@@ -1,0 +1,6 @@
+{
+  "C_Cpp.exclude": {
+    "**/ios/**": true,
+    "**/macos/**": true
+  }
+}
