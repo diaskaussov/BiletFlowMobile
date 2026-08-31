@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="stylesheet" href="_ds/industry-c673368b-e179-42b0-a254-352dcc446ada/styles.css">
+<script src="_ds/industry-c673368b-e179-42b0-a254-352dcc446ada/_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--color-bg)}
+.sheet{max-width:1180px;margin:0 auto;padding:64px 56px 96px}
+.sec{padding:44px 0 0;border-top:1px solid var(--color-divider);margin-top:44px}
+.sec-n{font-family:var(--font-heading);font-size:11px;letter-spacing:.2em;color:var(--color-accent-700)}
+.sec-t{font-family:var(--font-heading);font-size:30px;line-height:1.04;margin:6px 0 4px}
+.sec-s{font-size:13px;color:var(--color-neutral-700);max-width:640px;margin:0}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:34px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+.bp{position:relative;border:1px solid var(--color-divider);padding:20px 22px}
+.lbl{font-family:var(--font-heading);font-size:11px;letter-spacing:.14em;color:var(--color-neutral-600);margin-bottom:10px}
+.spec{width:100%;border-collapse:collapse;font-size:13px}
+.spec th{text-align:left;font-family:var(--font-heading);font-weight:600;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-neutral-600);padding:0 12px 7px 0;border-bottom:1px solid var(--color-divider)}
+.spec td{padding:9px 12px 9px 0;border-bottom:1px solid var(--color-neutral-200);vertical-align:top}
+.spec td:last-child,.spec th:last-child{padding-right:0}
+.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.mono{font-family:ui-monospace,Menlo,monospace;font-size:11.5px}
+.why{font-size:12px;color:var(--color-neutral-600);line-height:1.5;margin:10px 0 0}
+.sw{width:30px;height:30px;border:1px solid var(--color-divider);flex:none}
+</style>
+</helmet>
+
+<div class="sheet">
+
+  <div style="display:flex;gap:48px;align-items:flex-end;flex-wrap:wrap">
+    <div style="flex:1;min-width:340px">
+      <div class="sec-n">BILETFLOW · EVENT ADMIN APP</div>
+      <h1 style="margin:8px 0 12px;font-size:54px;line-height:.96">View specification</h1>
+      <p style="margin:0;font-size:14px;max-width:520px;color:var(--color-neutral-700)">Every measurable property of the twenty-two screens: canvas and safe areas, the type ramp, spacing, control sizes, icon rules, and the color field assigned to each verification result. All values resolve from the Industry token sheet.</p>
+    </div>
+    <div class="bp blueprint" style="min-width:280px">
+      <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+      <div style="display:grid;grid-template-columns:auto auto;gap:7px 26px;font-size:12.5px">
+        <span style="color:var(--color-neutral-600)">Canvas</span><span class="num">402 × 874 pt @1×</span>
+        <span style="color:var(--color-neutral-600)">Heading</span><span>Barlow Condensed 600</span>
+        <span style="color:var(--color-neutral-600)">Body</span><span>Barlow 400 / 500</span>
+        <span style="color:var(--color-neutral-600)">Accent</span><span class="mono">#5980a6</span>
+        <span style="color:var(--color-neutral-600)">Radius</span><span class="num">0 — square throughout</span>
+        <span style="color:var(--color-neutral-600)">Min tap</span><span class="num">44 × 44 pt</span>
+      </div>
+    </div>
+  </div>
+
+  <section class="sec">
+    <div class="sec-n">01</div>
+    <h2 class="sec-t">Canvas &amp; safe areas</h2>
+    <p class="sec-s">One vertical stack per screen. The status bar and home indicator are never drawn over, so content starts below 62 pt and ends above 34 pt.</p>
+    <div class="g2" style="margin-top:26px;align-items:start">
+      <div>
+        <table class="spec">
+          <thead><tr><th>Band</th><th>Height</th><th>Rule</th></tr></thead>
+          <tbody>
+            <tr><td>Status bar</td><td class="num">62 pt</td><td>System. Content padding-top 70 on standard screens, 82 on sign-in, 56 on mobile-web (URL bar follows).</td></tr>
+            <tr><td>Screen header</td><td class="num">44–52 pt</td><td>Back control + title. Divider hairline below when content scrolls under it.</td></tr>
+            <tr><td>Content</td><td class="num">flex</td><td>Single column, side padding per §03. Scrolls; nothing is horizontally scrollable.</td></tr>
+            <tr><td>Action stack</td><td class="num">56 + 10 + 48</td><td>Pinned to the bottom of the content flow via <span class="mono">margin-top:auto</span>.</td></tr>
+            <tr><td>Home indicator</td><td class="num">34 pt</td><td>Bottom padding 42 = 34 + 8 clearance.</td></tr>
+          </tbody>
+        </table>
+        <p class="why">Result screens fill the whole canvas edge to edge — the field color is the message, so no card or margin frames it.</p>
+      </div>
+      <div class="bp blueprint">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <div class="lbl">RESULT SCREEN — VERTICAL RHYTHM</div>
+        <div style="display:flex;flex-direction:column;gap:4px;font-size:11px">
+          <div style="display:flex;align-items:center;gap:10px"><div style="width:120px;height:24px;background:var(--color-neutral-300)"></div><span class="num">62 — status bar</span></div>
+          <div style="display:flex;align-items:center;gap:10px"><div style="width:120px;height:18px;border:1px solid var(--color-neutral-400)"></div><span class="num">18 — gate / time strip, 11 pt · .16em</span></div>
+          <div style="display:flex;align-items:center;gap:10px"><div style="width:120px;height:16px"></div><span class="num">44 — gap</span></div>
+          <div style="display:flex;align-items:center;gap:10px"><div style="width:120px;height:54px;background:var(--color-accent)"></div><span class="num">54 — verdict mark + 46/52 pt word</span></div>
+          <div style="display:flex;align-items:center;gap:10px"><div style="width:120px;height:14px"></div><span class="num">30–36 — gap, hairline rule</span></div>
+          <div style="display:flex;align-items:center;gap:10px"><div style="width:120px;height:40px;border:1px solid var(--color-neutral-400)"></div><span class="num">ticket identity block</span></div>
+          <div style="display:flex;align-items:center;gap:10px"><div style="width:120px;height:34px;border:1px solid var(--color-neutral-400)"></div><span class="num">detail grid, 13 pt, 10 / 20 gap</span></div>
+          <div style="display:flex;align-items:center;gap:10px"><div style="width:120px;height:20px"></div><span class="num">auto — free space</span></div>
+          <div style="display:flex;align-items:center;gap:10px"><div style="width:120px;height:28px;background:var(--color-neutral-900)"></div><span class="num">56 — primary action</span></div>
+          <div style="display:flex;align-items:center;gap:10px"><div style="width:120px;height:22px;border:1px solid var(--color-neutral-500)"></div><span class="num">48 — secondary action</span></div>
+          <div style="display:flex;align-items:center;gap:10px"><div style="width:120px;height:16px;background:var(--color-neutral-300)"></div><span class="num">42 — home clearance</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-n">02</div>
+    <h2 class="sec-t">Type ramp</h2>
+    <p class="sec-s">Two families only. Barlow Condensed 600 carries every number, label and verdict; Barlow 400 carries sentences. Nothing on a mobile screen falls below 10 pt, and no sentence below 12 pt.</p>
+    <table class="spec" style="margin-top:26px">
+      <thead><tr><th style="width:210px">Role</th><th>Sample</th><th style="width:118px">Size / line</th><th style="width:158px">Family · tracking</th><th style="width:120px">Used on</th></tr></thead>
+      <tbody>
+        <tr><td>Verdict, one word</td><td><span style="font-family:var(--font-heading);font-size:52px;line-height:.92">VALID</span></td><td class="num">52 / .92</td><td>Condensed 600 · .01em</td><td>B4</td></tr>
+        <tr><td>Verdict, two lines</td><td><span style="font-family:var(--font-heading);font-size:46px;line-height:.94">ALREADY USED</span></td><td class="num">46 / .94</td><td>Condensed 600 · 0</td><td>B5 B7 B9</td></tr>
+        <tr><td>Verdict, long</td><td><span style="font-family:var(--font-heading);font-size:40px;line-height:.94">PROMOTIONAL CODE</span></td><td class="num">40–44 / .94</td><td>Condensed 600 · 0</td><td>B8 B10</td></tr>
+        <tr><td>Hero metric</td><td><span style="font-family:var(--font-heading);font-size:60px;line-height:.9">612</span></td><td class="num">60 / .90</td><td>Condensed 600 · tabular</td><td>A4 D1</td></tr>
+        <tr><td>Screen title</td><td><span style="font-family:var(--font-heading);font-size:26px">Settings</span></td><td class="num">26 / 1.04</td><td>Condensed 600 · 0</td><td>A2 A3 A6 C1</td></tr>
+        <tr><td>Person name</td><td><span style="font-family:var(--font-heading);font-size:30px">Dias Sagynbek</span></td><td class="num">30–32 / 1.05</td><td>Condensed 600 · 0</td><td>B4 C3</td></tr>
+        <tr><td>Header / event title</td><td><span style="font-family:var(--font-heading);font-size:17px">Alma Fest 2026</span></td><td class="num">17 / 1.1</td><td>Condensed 600 · 0</td><td>all headers</td></tr>
+        <tr><td>List item title</td><td><span style="font-family:var(--font-heading);font-size:18px">General Admission</span></td><td class="num">18 / 1.2</td><td>Condensed 600 · 0</td><td>C1 C3 D2</td></tr>
+        <tr><td>Stat cell numeral</td><td><span style="font-family:var(--font-heading);font-size:26px">431</span></td><td class="num">24–26 / 1</td><td>Condensed 600 · tabular</td><td>A3 A4</td></tr>
+        <tr><td>Section label</td><td><span style="font-family:var(--font-heading);font-size:11px;letter-spacing:.14em;color:var(--color-neutral-600)">BY TICKET TYPE</span></td><td class="num">11</td><td>Condensed 600 · .14em caps</td><td>everywhere</td></tr>
+        <tr><td>Status strip</td><td><span style="font-family:var(--font-heading);font-size:11px;letter-spacing:.16em">GATE 3 · 19:43:02</span></td><td class="num">11</td><td>Condensed 600 · .16em caps</td><td>B4–B10</td></tr>
+        <tr><td>Button label</td><td><span style="font-family:var(--font-heading);font-size:17px;letter-spacing:.06em">SCAN NEXT TICKET</span></td><td class="num">17 / 16 / 14</td><td>Condensed 600 · .06em caps</td><td>by weight, §04</td></tr>
+        <tr><td>Body</td><td><span style="font-size:14px">The ticket becomes valid again and can be scanned once more.</span></td><td class="num">14 / 1.55</td><td>Barlow 400 · 0</td><td>primary prose</td></tr>
+        <tr><td>Secondary body</td><td><span style="font-size:13px;color:var(--color-neutral-700)">VIP Balcony · Sec B / Row 12 / Seat 7</span></td><td class="num">13 / 1.55</td><td>Barlow 400 · 0</td><td>detail rows, tables</td></tr>
+        <tr><td>Meta</td><td><span style="font-size:12px;color:var(--color-neutral-600)">Almaty Arena · Today, 19:00</span></td><td class="num">12 / 1.5</td><td>Barlow 400 · 0</td><td>under titles</td></tr>
+        <tr><td>Fine print</td><td><span style="font-size:11px;color:var(--color-neutral-600)">Search covers this event only.</span></td><td class="num">11 / 1.45</td><td>Barlow 400 · 0</td><td>footnotes only</td></tr>
+        <tr><td>Tag</td><td><span class="tag tag-accent">IN 19:43</span></td><td class="num">11</td><td>Barlow 400 · .02em</td><td><span class="mono">.tag</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="sec">
+    <div class="sec-n">03</div>
+    <h2 class="sec-t">Spacing &amp; padding</h2>
+    <p class="sec-s">Side padding is set per screen family and never varies within a screen. Vertical gaps come from a coarse set so the rhythm stays readable at arm's length.</p>
+    <div class="g2" style="margin-top:26px;align-items:start">
+      <table class="spec">
+        <thead><tr><th>Where</th><th style="width:96px">Side pad</th><th>Note</th></tr></thead>
+        <tbody>
+          <tr><td>Light app screens</td><td class="num">24 pt</td><td>A4 A5 B3 C3 C4 — header shares the padding.</td></tr>
+          <tr><td>List screens</td><td class="num">22–26 pt</td><td>A2 A3 C1 C2 — rows bleed their divider to the padding edge.</td></tr>
+          <tr><td>Dark scanner + results</td><td class="num">22–24 pt</td><td>B1 B2 B4–B10.</td></tr>
+          <tr><td>Sign-in</td><td class="num">30 pt</td><td>Single form, wider margin on purpose.</td></tr>
+          <tr><td>Mobile web</td><td class="num">20 pt</td><td>D1 D2 — matches the responsive web breakpoint.</td></tr>
+          <tr><td>Sheet / dialog inset</td><td class="num">18 pt</td><td>C4, sheet's own padding 22 / 20.</td></tr>
+        </tbody>
+      </table>
+      <div>
+        <table class="spec">
+          <thead><tr><th>Vertical step</th><th style="width:80px">Value</th><th>Applied to</th></tr></thead>
+          <tbody>
+            <tr><td>Tight</td><td class="num">4–8 pt</td><td>Title to its meta line; label to value.</td></tr>
+            <tr><td>Related</td><td class="num">10–14 pt</td><td>Detail-grid rows (10 / 20 grid gap); action stack gap 10.</td></tr>
+            <tr><td>Block</td><td class="num">18–26 pt</td><td>Between blocks inside one section.</td></tr>
+            <tr><td>Section</td><td class="num">26–34 pt</td><td>Before a section label.</td></tr>
+            <tr><td>Statement</td><td class="num">40–60 pt</td><td>Above a verdict or a hero metric only.</td></tr>
+          </tbody>
+        </table>
+        <p class="why">Token equivalents: 3.4 / 6.8 / 10.2 / 13.6 / 20.4 / 27.2 (<span class="mono">--space-1…8</span>). Screen padding is expressed in whole points because the device grid is in points, not in the web density scale.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-n">04</div>
+    <h2 class="sec-t">Controls &amp; hit areas</h2>
+    <p class="sec-s">Gate staff work one-handed, at speed, often in gloves. Everything tappable clears 44 pt, and the action that ends a scan is always the largest object on screen.</p>
+    <table class="spec" style="margin-top:26px">
+      <thead><tr><th style="width:200px">Control</th><th style="width:110px">Height</th><th style="width:170px">Fill / border</th><th style="width:120px">Label</th><th>Rule</th></tr></thead>
+      <tbody>
+        <tr><td>Primary, result screen</td><td class="num">56 pt</td><td>Paper fill, no border</td><td>17 pt · .06em</td><td>Reversed out of the field so it reads as the way forward.</td></tr>
+        <tr><td>Primary, light screen</td><td class="num">48–50 pt</td><td><span class="mono">.btn-primary</span> accent fill</td><td>15–16 pt</td><td>One per screen.</td></tr>
+        <tr><td>Secondary</td><td class="num">46–48 pt</td><td>1 pt divider border, transparent</td><td>14 pt</td><td>Sits directly under the primary, 10 pt gap.</td></tr>
+        <tr><td>Ghost / text</td><td class="num">44 pt</td><td>None</td><td>13 pt</td><td>Accent-700 text; only for reversible detours.</td></tr>
+        <tr><td>Back control</td><td class="num">30 × 30 box</td><td>1 pt divider border</td><td>18 pt icon</td><td>Hit area padded to 44 × 44; the box is the drawn part only.</td></tr>
+        <tr><td>Torch toggle</td><td class="num">44 × 44</td><td>Off: 1 pt white 35%. On: solid paper.</td><td>22 pt icon</td><td>Inverts when active — no separate indicator.</td></tr>
+        <tr><td>List row</td><td class="num">52–64 pt</td><td>Bottom hairline</td><td>18 / 12 pt</td><td>Trailing tag or chevron; whole row is the target.</td></tr>
+        <tr><td>Text field</td><td class="num">46 pt</td><td><span class="mono">.input</span>, surface fill</td><td>15 pt</td><td>Caret is accent; 18 pt search icon leads with an 8 pt gap.</td></tr>
+        <tr><td>Tab bar item</td><td class="num">52 + 40 pt inset</td><td>Top hairline, 1 pt dividers between</td><td>12 pt · .1em</td><td>Three items, equal width; active is accent.</td></tr>
+        <tr><td>Bottom sheet</td><td class="num">auto</td><td>Ground fill, blueprint frame, <span class="mono">--shadow-lg</span></td><td>—</td><td>Backdrop is neutral-900 at 55%; page behind blurs 1.5 pt.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="sec">
+    <div class="sec-n">05</div>
+    <h2 class="sec-t">Icons</h2>
+    <p class="sec-s">Lucide, inline SVG, stroke 1.5, <span class="mono">currentColor</span>, square caps off. Icons never carry meaning alone — every one of them sits beside a word.</p>
+    <div class="g3" style="margin-top:26px">
+      <div class="bp blueprint">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <div class="lbl">SIZES IN USE</div>
+        <table class="spec">
+          <tbody>
+            <tr><td>Chevron, search</td><td class="num">18</td></tr>
+            <tr><td>Inline default</td><td class="num">20</td></tr>
+            <tr><td>Torch</td><td class="num">22</td></tr>
+            <tr><td>Campaign, duplicate</td><td class="num">26</td></tr>
+            <tr><td>Refusal mark</td><td class="num">32</td></tr>
+            <tr><td>Accept mark</td><td class="num">34</td></tr>
+            <tr><td>Empty-state mark</td><td class="num">40</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="bp blueprint">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <div class="lbl">SET</div>
+        <div style="font-size:13px;line-height:1.9;color:var(--color-neutral-800)">
+          <div>chevron-left — back</div>
+          <div>flashlight — torch</div>
+          <div>check — admitted</div>
+          <div>x — refused</div>
+          <div>circle-help — unknown code</div>
+          <div>percent — campaign QR</div>
+          <div>copy — repeat scan</div>
+          <div>camera-off — permission</div>
+          <div>search — find by name</div>
+        </div>
+      </div>
+      <div class="bp blueprint">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <div class="lbl">VERDICT MARK</div>
+        <div style="display:flex;gap:14px;align-items:center">
+          <div style="width:54px;height:54px;border:2px solid var(--color-text);display:grid;place-items:center">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
+          </div>
+          <div style="font-size:12px;color:var(--color-neutral-700)">54 × 54 box, 2 pt border, icon centred. Same box for every result state — only the glyph and the field change.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-n">06</div>
+    <h2 class="sec-t">Color by state</h2>
+    <p class="sec-s">One accent, one ink. A result is read by its field, its word and its glyph together, so the screens survive sunlight, grayscale printing and color-blind staff.</p>
+    <table class="spec" style="margin-top:26px">
+      <thead><tr><th style="width:44px"></th><th style="width:190px">State</th><th style="width:180px">Field</th><th style="width:140px">Type</th><th>Extra treatment</th></tr></thead>
+      <tbody>
+        <tr><td><div class="sw" style="background:var(--color-accent)"></div></td><td>Valid — checked in</td><td><span class="mono">--color-accent</span> #5980a6</td><td>Paper #fff</td><td>None. The only solid accent field in the app.</td></tr>
+        <tr><td><div class="sw" style="background:var(--color-accent-900)"></div></td><td>Repeat scan, no-op</td><td><span class="mono">--color-accent-900</span> #1d2d3d</td><td>Paper #fff</td><td>Dashed 2 pt mark — advisory, not a refusal.</td></tr>
+        <tr><td><div class="sw" style="background:var(--color-neutral-900)"></div></td><td>Refused (used, refunded, unknown, wrong event)</td><td><span class="mono">--color-neutral-900</span> #2b2b2d</td><td>Paper #fff</td><td>45° hatch, 7 pt stripe on 16 pt pitch, white 11%, top 210 pt.</td></tr>
+        <tr><td><div class="sw" style="background:var(--color-neutral-900);background-image:repeating-linear-gradient(90deg,rgba(255,255,255,.5) 0 1px,transparent 1px 5px)"></div></td><td>Campaign QR</td><td><span class="mono">--color-neutral-900</span></td><td>Paper #fff</td><td>Vertical 1 pt rule field, 12 pt pitch — deliberately unlike a ticket refusal.</td></tr>
+        <tr><td><div class="sw" style="background:#15181a"></div></td><td>Camera live</td><td>#15181a</td><td>Paper, 60% for hints</td><td>115° hairline texture stands in for the preview.</td></tr>
+        <tr><td><div class="sw" style="background:#0b0d0e"></div></td><td>Camera, low light</td><td>#0b0d0e</td><td>Paper</td><td>Radial torch pool at 16%.</td></tr>
+        <tr><td><div class="sw" style="background:var(--color-bg)"></div></td><td>Standard screen</td><td><span class="mono">--color-bg</span> #f2f2f3</td><td>#1d1f20</td><td>Muted text neutral-600/700; accent-700 for accent-colored prose.</td></tr>
+        <tr><td><div class="sw" style="background:var(--color-accent-100)"></div></td><td>Today's event card</td><td><span class="mono">--color-accent-100</span></td><td>#1d1f20</td><td>The one tinted card; everything else is a line drawing.</td></tr>
+      </tbody>
+    </table>
+    <p class="why">Fills used for data: progress and bar charts step accent-300 → 400 → 500 by recency. No red, no green anywhere — refusal is carried by ink, hatch, the word and the ✕.</p>
+  </section>
+
+  <section class="sec">
+    <div class="sec-n">07</div>
+    <h2 class="sec-t">Repeating blocks</h2>
+    <div class="g2" style="margin-top:26px;align-items:start">
+      <table class="spec">
+        <thead><tr><th style="width:170px">Block</th><th>Specification</th></tr></thead>
+        <tbody>
+          <tr><td>Screen header</td><td>Back box 30 pt + 12 pt gap + title 17 pt over 10 pt · .1em caps subtitle. Padding 24 / 14 bottom, 1 pt divider below.</td></tr>
+          <tr><td>Detail grid</td><td>Two columns, <span class="mono">auto auto</span>, gap 10 / 20. Label 13 pt at 70–75% opacity left, value 13 pt right-aligned.</td></tr>
+          <tr><td>Blueprint frame</td><td><span class="mono">.blueprint</span> + four corner marks, 11 pt arms, 1 pt hairline, offset −6. Never omitted, never rounded.</td></tr>
+          <tr><td>Stat quad</td><td>2 × 2 grid, 1 pt divider gaps, cell padding 14 / 12; numeral 26 pt over a 10 pt · .1em caps label.</td></tr>
+          <tr><td>Progress bar</td><td>10–12 pt tall, 1 pt divider border, accent fill, square ends, no label inside.</td></tr>
+          <tr><td>Bar chart</td><td>96 pt tall, 5 pt gap, equal flex columns, baseline hairline, 10 pt end labels.</td></tr>
+          <tr><td>Reticle</td><td>1:1, max 300 pt wide; four 46 pt corner brackets at 2 pt paper; 1 pt accent-300 sight line at 50%, inset 26.</td></tr>
+          <tr><td>Ticket QR</td><td>56 pt module block with three 18 pt finder squares — placeholder geometry, replaced by the generated code.</td></tr>
+        </tbody>
+      </table>
+      <div>
+        <div class="bp blueprint">
+          <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+          <div class="lbl">DETAIL GRID AT SIZE</div>
+          <div style="display:grid;grid-template-columns:auto auto;gap:10px 20px;font-size:13px">
+            <span style="color:var(--color-neutral-600)">Ticket type</span><span style="text-align:right">VIP Balcony</span>
+            <span style="color:var(--color-neutral-600)">Seat</span><span style="text-align:right">Sec B · Row 12 · Seat 7</span>
+            <span style="color:var(--color-neutral-600)">Ticket ID</span><span style="text-align:right;font-variant-numeric:tabular-nums">TCK-8F42-19KD</span>
+          </div>
+        </div>
+        <p class="why">Ticket IDs, times and counts are always tabular so a row of scans does not jitter while numbers change.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-n">08</div>
+    <h2 class="sec-t">Copy &amp; language</h2>
+    <table class="spec" style="margin-top:22px">
+      <thead><tr><th style="width:200px">Element</th><th>Rule</th></tr></thead>
+      <tbody>
+        <tr><td>Verdict word</td><td>Caps, one or two words, never a sentence: VALID · ALREADY USED · REFUNDED TICKET · WRONG EVENT · CODE NOT RECOGNIZED · PROMOTIONAL CODE.</td></tr>
+        <tr><td>Explanation</td><td>One sentence, 13–14 pt sentence case, states the fact and the consequence. No apologies, no exclamation marks.</td></tr>
+        <tr><td>Next step</td><td>Every refusal offers at least one action: scan again, find by name, or open the record.</td></tr>
+        <tr><td>Buttons</td><td>Caps, verb first, 1–3 words. The scan-ending action always says what happens next, not "OK".</td></tr>
+        <tr><td>Numbers</td><td>Thin space as thousands separator (1 043). Times 24-hour, seconds only on result screens.</td></tr>
+        <tr><td>Locale</td><td>Layouts hold Kazakh and Russian at up to +35% string length; verdict words are the constrained case and were sized for it.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}"></script>
+</body>
+</html>
