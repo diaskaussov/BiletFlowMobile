@@ -2,5 +2,6 @@
   "C_Cpp.exclude": {
     "**/ios/**": true,
     "**/macos/**": true
-  }
+  },
+  "terminal.integrated.suggest.enabled": true
 }
