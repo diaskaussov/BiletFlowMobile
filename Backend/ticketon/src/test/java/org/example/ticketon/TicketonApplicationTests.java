@@ -1,0 +1,13 @@
+package org.example.ticketon;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class TicketonApplicationTests {
+
+    @Test
+    void contextLoads() {
+    }
+
+}
