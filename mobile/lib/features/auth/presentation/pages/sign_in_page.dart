@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../core/config/server_address.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
@@ -50,6 +51,65 @@ class _SignInPageState extends State<SignInPage> {
         ],
       ),
     );
+  }
+
+  /// Адрес бэкенда: на реальном телефоне это IP компьютера в той же Wi-Fi.
+  Future<void> _editServer() async {
+    final server = context.read<ServerAddress>();
+    final controller = TextEditingController(text: server.current);
+    String? error;
+    final saved = await showDialog<bool>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: Text('Server address', style: AppText.headerTitle.copyWith(color: AppColors.ink)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              LabeledTextField(
+                controller: controller,
+                autofocus: true,
+                keyboardType: TextInputType.url,
+                hintText: 'http://192.168.1.10:8080',
+              ),
+              const SizedBox(height: 8),
+              Text(
+                error ?? 'On a real phone use the computer\'s Wi-Fi IP, not localhost.',
+                style: AppText.finePrint.copyWith(
+                  color: error == null ? AppColors.neutral600 : AppColors.ink,
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () async {
+                await server.reset();
+                if (context.mounted) Navigator.of(context).pop(true);
+              },
+              child: Text('RESET', style: AppText.buttonGhost.copyWith(color: AppColors.neutral700)),
+            ),
+            TextButton(
+              onPressed: () async {
+                final e = await server.save(controller.text);
+                if (!context.mounted) return;
+                if (e == null) {
+                  Navigator.of(context).pop(true);
+                } else {
+                  setDialogState(() => error = e);
+                }
+              },
+              child: Text('SAVE', style: AppText.buttonGhost.copyWith(color: AppColors.accent700)),
+            ),
+          ],
+        ),
+      ),
+    );
+    controller.dispose();
+    if (saved == true && mounted) {
+      context.read<SignInViewModel>().clearError();
+    }
   }
 
   @override
@@ -132,6 +192,27 @@ class _SignInPageState extends State<SignInPage> {
                       'Check-in requires a connection. Offline verification is '
                       'out of scope for this release.',
                       style: AppText.finePrint.copyWith(color: AppColors.neutral600),
+                    ),
+                    const SizedBox(height: 6),
+                    InkWell(
+                      onTap: _editServer,
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(minHeight: 44),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                'Server: ${context.watch<ServerAddress>().current}',
+                                style: AppText.finePrint.copyWith(color: AppColors.neutral700),
+                              ),
+                            ),
+                            Text(
+                              'CHANGE',
+                              style: AppText.fieldLabel.copyWith(color: AppColors.accent700),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ],
                 ),

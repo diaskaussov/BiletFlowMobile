@@ -44,7 +44,7 @@ class FakeCheckinRepository implements CheckinRepository {
   }
 
   @override
-  Future<Result<void>> undo(String ticketId) async {
+  Future<Result<void>> undo(String ticketId, {required String reason}) async {
     undone.add(ticketId);
     return const Ok(null);
   }

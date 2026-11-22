@@ -1,13 +1,10 @@
-import '../../../core/error/failure.dart';
-import '../../../core/error/result.dart';
-import '../domain/entities/attendee.dart';
-import '../domain/repositories/attendees_repository.dart';
+import 'package:mobile/core/error/failure.dart';
+import 'package:mobile/core/error/result.dart';
+import 'package:mobile/features/attendees/domain/entities/attendee.dart';
+import 'package:mobile/features/attendees/domain/repositories/attendees_repository.dart';
 
-/// МОК. В API нет поиска участников для EVENT_ADMIN
-/// (`GET /api/orders/event/{id}` доступен только ORGANIZER).
-/// Данные из макетов C1–C3, одинаковые для любого события, живут до
-/// перезапуска приложения. Заменить на remote-реализацию, когда бэкенд
-/// добавит эндпоинты поиска и ручной отметки.
+/// Тестовый репозиторий участников в памяти с данными из макетов C1–C3.
+/// В приложении используется AttendeesRepositoryImpl (реальный API).
 class AttendeesMockRepository implements AttendeesRepository {
   AttendeesMockRepository({DateTime Function()? clock}) : _clock = clock ?? DateTime.now;
 

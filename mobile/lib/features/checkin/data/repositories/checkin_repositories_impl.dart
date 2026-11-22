@@ -24,12 +24,14 @@ class CheckinRepositoryImpl implements CheckinRepository {
           eventId: eventId,
           scannedAt: at,
           ticket: response.ticket,
+          campaign: response.campaign,
           serverMessage: response.message,
         );
       });
 
   @override
-  Future<Result<void>> undo(String ticketId) => guard(() => _remote.undo(ticketId));
+  Future<Result<void>> undo(String ticketId, {required String reason}) =>
+      guard(() => _remote.undo(ticketId, reason));
 }
 
 class ScanLogRepositoryImpl implements ScanLogRepository {

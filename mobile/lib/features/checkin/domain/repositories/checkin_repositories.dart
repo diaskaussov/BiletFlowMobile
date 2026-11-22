@@ -13,7 +13,8 @@ abstract interface class CheckinRepository {
   });
 
   /// Отменяет вход — билет снова действителен (§4.8, C4).
-  Future<Result<void>> undo(String ticketId);
+  /// Причина уходит на сервер и попадает в журнал организатора.
+  Future<Result<void>> undo(String ticketId, {required String reason});
 }
 
 abstract interface class ScanLogRepository {

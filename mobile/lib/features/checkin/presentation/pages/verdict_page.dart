@@ -280,8 +280,11 @@ class _VerdictPageState extends State<VerdictPage> {
               'It can never admit anyone, no matter how many times it is scanned.'),
           gap,
           grid([
-            ('Campaign', r.campaign?.promoCode ?? '—'),
-            ('Event', vm.event?.title ?? '—'),
+            ('Campaign', r.campaign?.campaignName ?? r.campaign?.promoCode ?? '—'),
+            if (r.campaign?.campaignName != null && r.campaign?.promoCode != null)
+              ('Code', r.campaign!.promoCode!),
+            if (r.campaign?.discount case final d?) ('Discount', d),
+            ('Event', r.ticket?.eventTitle ?? vm.event?.title ?? '—'),
           ]),
           gap,
           prose('Ask the holder for the ticket they received by email or in their BiletFlow account, '

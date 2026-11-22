@@ -34,6 +34,12 @@ class SignInViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void clearError() {
+    if (_error == null) return;
+    _error = null;
+    notifyListeners();
+  }
+
   void togglePasswordVisibility() {
     _isPasswordHidden = !_isPasswordHidden;
     notifyListeners();

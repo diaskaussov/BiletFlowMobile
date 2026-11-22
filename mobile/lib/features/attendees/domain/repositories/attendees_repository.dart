@@ -1,11 +1,7 @@
 import '../../../../core/error/result.dart';
 import '../entities/attendee.dart';
 
-/// §4.8 «Search for attendees manually».
-///
-/// В текущем API нет эндпоинта поиска участников для EVENT_ADMIN —
-/// реализация в data-слое пока мок. Когда бэкенд добавит эндпоинт,
-/// меняется только регистрация в DI.
+/// §4.8 «Search for attendees manually». Участник = заказ с его билетами.
 abstract interface class AttendeesRepository {
   Future<Result<List<Attendee>>> search({required int eventId, required String query});
 

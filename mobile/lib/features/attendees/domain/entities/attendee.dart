@@ -5,12 +5,17 @@ class AttendeeTicket {
     required this.id,
     required this.type,
     required this.status,
+    this.code,
     this.seat,
     this.checkedInAt,
     this.checkedInBy,
   });
 
+  /// ID билета на сервере — по нему отмечают и отменяют вход.
   final String id;
+
+  /// Содержимое QR (UUID).
+  final String? code;
   final String type;
   final AttendeeTicketStatus status;
   final String? seat;
@@ -18,6 +23,13 @@ class AttendeeTicket {
   final String? checkedInBy;
 
   bool get canCheckIn => status == AttendeeTicketStatus.valid;
+
+  /// Короткая подпись для списка: «C67B8E0D» вместо полного UUID.
+  String get label {
+    final c = code;
+    if (c == null || c.isEmpty) return '#$id';
+    return (c.length > 8 ? c.substring(0, 8) : c).toUpperCase();
+  }
 
   AttendeeTicket copyWith({
     AttendeeTicketStatus? status,
@@ -27,6 +39,7 @@ class AttendeeTicket {
   }) =>
       AttendeeTicket(
         id: id,
+        code: code,
         type: type,
         seat: seat,
         status: status ?? this.status,

@@ -2,7 +2,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../features/attendees/data/attendees_mock_repository.dart';
+import '../../features/attendees/data/attendees_remote_data_source.dart';
+import '../../features/attendees/data/attendees_repository_impl.dart';
 import '../../features/attendees/domain/repositories/attendees_repository.dart';
 import '../../features/attendees/domain/usecases/attendee_usecases.dart';
 import '../../features/auth/data/datasources/auth_data_sources.dart';
@@ -27,6 +28,7 @@ import '../../features/settings/domain/repositories/settings_repository.dart';
 import '../../features/settings/domain/usecases/settings_usecases.dart';
 import '../../features/settings/presentation/settings_controller.dart';
 import '../config/app_config.dart';
+import '../config/server_address.dart';
 import '../error/failure.dart';
 import '../network/api_client.dart';
 import '../network/network_info.dart';
@@ -44,7 +46,8 @@ Future<void> configureDependencies() async {
         ))
     ..registerLazySingleton<NetworkInfo>(ConnectivityNetworkInfo.new)
     ..registerLazySingleton(() => const FlutterSecureStorage())
-    ..registerLazySingleton(SharedPreferencesAsync.new);
+    ..registerLazySingleton(SharedPreferencesAsync.new)
+    ..registerLazySingleton(() => ServerAddress(sl(), sl()));
 
   // — data sources —
   sl
@@ -52,6 +55,7 @@ Future<void> configureDependencies() async {
     ..registerLazySingleton(() => AuthLocalDataSource(sl()))
     ..registerLazySingleton(() => EventsRemoteDataSource(sl()))
     ..registerLazySingleton(() => CheckinRemoteDataSource(sl()))
+    ..registerLazySingleton(() => AttendeesRemoteDataSource(sl()))
     ..registerLazySingleton(ScanLogMemoryDataSource.new);
 
   // — repositories —
@@ -62,8 +66,7 @@ Future<void> configureDependencies() async {
     ..registerLazySingleton<CheckinRepository>(() => CheckinRepositoryImpl(sl()))
     ..registerLazySingleton<ScanLogRepository>(() => ScanLogRepositoryImpl(sl()))
     ..registerLazySingleton<SettingsRepository>(() => SettingsRepositoryImpl(sl()))
-    // МОК до появления эндпоинта поиска участников (см. репозиторий).
-    ..registerLazySingleton<AttendeesRepository>(AttendeesMockRepository.new);
+    ..registerLazySingleton<AttendeesRepository>(() => AttendeesRepositoryImpl(sl()));
 
   // — use cases —
   sl
@@ -101,6 +104,8 @@ Future<void> configureDependencies() async {
             return r.failureOrNull is! NetworkFailure;
           },
         ));
+
+  await sl<ServerAddress>().load();
 
   // Сервер отверг токен — выходим, роутер вернёт на A1.
   sl<ApiClient>().onUnauthorized = () => sl<SessionController>().signOut();

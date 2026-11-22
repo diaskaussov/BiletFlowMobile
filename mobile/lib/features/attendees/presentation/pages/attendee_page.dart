@@ -34,7 +34,7 @@ class AttendeePage extends StatelessWidget {
     final done = await showReversalSheet(
       context,
       attendeeName: a.fullName,
-      ticketLabel: t.id,
+      ticketLabel: t.code ?? t.id,
       checkedInAt: t.checkedInAt,
       gate: context.read<SettingsController>().settings.gate,
       recordedBy: t.checkedInBy ?? vm.staffName,
@@ -185,7 +185,7 @@ class _TicketRow extends StatelessWidget {
     };
     return ListRow(
       title: t.type,
-      subtitle: [t.id, ?t.seat, status].join(' · '),
+      subtitle: [t.label, ?t.seat, status].join(' · '),
       trailing: trailing,
     );
   }

@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
 import 'api_exception.dart';
+import 'api_logger.dart';
 
 /// Обёртка над Dio: базовый адрес, Bearer-токен, единый формат ошибок
 /// бэкенда `{ "error": "...", "timestamp": "..." }`.
@@ -26,10 +27,16 @@ class ApiClient {
         },
       ),
     );
+    _dio.interceptors.add(const ApiLogger());
   }
 
   final Dio _dio;
   String? _token;
+
+  String get baseUrl => _dio.options.baseUrl;
+
+  /// Адрес сервера меняется без перезапуска (экран входа → «Server»).
+  set baseUrl(String value) => _dio.options.baseUrl = value;
 
   /// Время последнего ответа сервера — «Last sync» на A5.
   final ValueNotifier<DateTime?> lastResponseAt = ValueNotifier(null);

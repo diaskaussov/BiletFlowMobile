@@ -53,18 +53,28 @@ class AttendeeViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// null — успех.
+  /// null — успех. При отказе сервера карточка перечитывается: часть
+  /// билетов могла пройти до отказа.
   Future<Failure?> checkIn(List<String> ticketIds) async {
     final a = _attendee;
     final eventId = _eventId;
     if (a == null || eventId == null || _isBusy) return null;
     _isBusy = true;
     notifyListeners();
+    final before = a.notArrivedCount;
     final r = await _checkIn(eventId: eventId, attendee: a, ticketIds: ticketIds, staffName: staffName);
     _isBusy = false;
-    final failure = _apply(r);
-    notifyListeners();
-    return failure;
+    switch (r) {
+      case Ok(:final value):
+        _attendee = value;
+        _active.adjustCheckedIn(before - value.notArrivedCount);
+        notifyListeners();
+        return null;
+      case Err(:final failure):
+        notifyListeners();
+        await load();
+        return failure;
+    }
   }
 
   Future<Failure?> undo(String ticketId, String reason) async {
@@ -77,16 +87,14 @@ class AttendeeViewModel extends ChangeNotifier {
       reason: reason,
       staffName: staffName,
     );
-    final failure = _apply(r);
-    notifyListeners();
-    return failure;
+    switch (r) {
+      case Ok(:final value):
+        _attendee = value;
+        _active.adjustCheckedIn(-1);
+        notifyListeners();
+        return null;
+      case Err(:final failure):
+        return failure;
+    }
   }
-
-  Failure? _apply(Result<Attendee> r) => switch (r) {
-        Ok(:final value) => () {
-            _attendee = value;
-            return null;
-          }(),
-        Err(:final failure) => failure,
-      };
 }

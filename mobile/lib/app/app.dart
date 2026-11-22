@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import '../core/config/server_address.dart';
 import '../core/di/injection.dart';
 import '../core/theme/app_theme.dart';
 import '../features/auth/presentation/controllers/session_controller.dart';
@@ -54,6 +55,7 @@ class _BiletFlowAppState extends State<BiletFlowApp> {
         ChangeNotifierProvider.value(value: _activeEvent),
         ChangeNotifierProvider.value(value: sl<SettingsController>()),
         ChangeNotifierProvider.value(value: sl<ConnectionController>()),
+        ChangeNotifierProvider.value(value: sl<ServerAddress>()),
       ],
       child: MaterialApp.router(
         title: 'BiletFlow Scanner',

@@ -51,10 +51,19 @@ class ScannedTicket {
 
 /// Данные Campaign QR — ссылка на страницу события с промо-токеном.
 class CampaignInfo {
-  const CampaignInfo({required this.link, this.promoCode});
+  const CampaignInfo({
+    required this.link,
+    this.promoCode,
+    this.campaignName,
+    this.discount,
+  });
 
   final String link;
   final String? promoCode;
+  final String? campaignName;
+
+  /// «20%» / «5000 ₸»
+  final String? discount;
 }
 
 class ScanResult {

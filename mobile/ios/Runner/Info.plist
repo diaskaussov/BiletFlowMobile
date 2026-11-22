@@ -68,6 +68,8 @@
 	</array>
 	<key>NSCameraUsageDescription</key>
 	<string>BiletFlow uses the camera to read ticket QR codes at the entrance.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>BiletFlow connects to the ticketing server on your local network.</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsLocalNetworking</key>

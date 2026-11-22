@@ -33,9 +33,14 @@ extension JsonReader on Map<String, dynamic> {
     return null;
   }
 
-  DateTime? date(List<String> keys) {
+  /// [naiveIsUtc]: сервер пишет моменты (`checkedInAt`, `createdAt`) в UTC
+  /// без пояса. Даты событий — местное время площадки, их не сдвигаем.
+  DateTime? date(List<String> keys, {bool naiveIsUtc = false}) {
     final raw = str(keys);
-    return raw == null ? null : DateTime.tryParse(raw)?.toLocal();
+    if (raw == null) return null;
+    final hasZone = RegExp(r'(Z|[+-]\d{2}:?\d{2})$').hasMatch(raw);
+    final parsed = DateTime.tryParse(naiveIsUtc && !hasZone ? '${raw}Z' : raw);
+    return parsed?.toLocal();
   }
 
   Map<String, dynamic>? obj(String key) {

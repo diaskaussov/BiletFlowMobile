@@ -5,6 +5,8 @@ import 'dart:io' show Platform;
 abstract final class AppConfig {
   static const _envBaseUrl = String.fromEnvironment('API_BASE_URL');
 
+  static bool get hasEnvBaseUrl => _envBaseUrl.isNotEmpty;
+
   /// Без dart-define: Android-эмулятор видит компьютер как 10.0.2.2,
   /// iOS-симулятор — как localhost.
   static String get apiBaseUrl {

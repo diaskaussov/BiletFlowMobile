@@ -59,11 +59,44 @@ void main() {
         'event': {'id': 3, 'title': 'Qazaq Jazz Nights'},
       });
       expect(m.ticket.ticketId, '42');
-      expect(m.ticket.checkedInAt, DateTime(2026, 11, 22, 19, 11));
+      expect(m.ticket.checkedInAt, DateTime.utc(2026, 11, 22, 19, 11).toLocal());
       expect(m.ticket.checkedInBy, 'T. Abenov');
       expect(m.ticket.seat, 'Sec B · Row 12 · Seat 7');
       expect(m.ticket.eventId, 3);
       expect(m.ticket.eventTitle, 'Qazaq Jazz Nights');
+    });
+
+    test('real backend: verdict enum and UTC timestamps', () {
+      final m = ScanResponseModel.fromJson({
+        'attendeeName': 'Test Scan', 'checkedInAt': '2026-11-22T11:11:58.115296',
+        'checkedInBy': 'Demo EventAdmin', 'eventId': 1, 'eventTitle': 'BiletFlow Demo Concert',
+        'message': 'Ticket already used', 'orderId': 1, 'status': 'CHECKED_IN',
+        'ticketCode': 'c67b8e0d', 'ticketId': 1, 'ticketType': 'General Admission',
+        'valid': false, 'verdict': 'ALREADY_USED',
+      });
+      expect(m.toVerdict(), Verdict.alreadyUsed);
+      expect(m.ticket.ticketId, '1');
+      expect(m.ticket.orderNumber, 'Order #1');
+      expect(m.ticket.checkedInAt, DateTime.utc(2026, 11, 22, 11, 11, 58, 115, 296).toLocal());
+    });
+
+    test('real backend verdicts', () {
+      for (final (raw, v) in [
+        ('OK', Verdict.valid), ('WRONG_EVENT', Verdict.wrongEvent), ('NOT_FOUND', Verdict.unknownCode),
+        ('REFUNDED', Verdict.refunded), ('CANCELLED', Verdict.cancelled), ('PROMO_CODE', Verdict.campaignCode),
+      ]) {
+        expect(verdictOf({'valid': raw == 'OK', 'verdict': raw, 'message': 'x'}), v, reason: raw);
+      }
+    });
+
+    test('promo info from the server', () {
+      final m = ScanResponseModel.fromJson({
+        'valid': false, 'verdict': 'PROMO_CODE', 'message': 'This is a promo code, not a ticket',
+        'promo': {'code': 'BF-LAUNCH20', 'campaignName': 'Launch Discount', 'discountType': 'PERCENTAGE', 'discountValue': 20.00},
+      });
+      expect(m.campaign?.promoCode, 'BF-LAUNCH20');
+      expect(m.campaign?.campaignName, 'Launch Discount');
+      expect(m.campaign?.discount, '20%');
     });
   });
 }

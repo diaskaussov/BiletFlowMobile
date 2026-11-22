@@ -27,7 +27,7 @@ class _SearchPageState extends State<SearchPage> {
   late final TextEditingController _query =
       TextEditingController(text: context.read<SearchViewModel>().query);
   final _focus = FocusNode();
-  String _hint = 'Name, email or ticket ID';
+  String _hint = 'Name, email or ticket code';
 
   @override
   void dispose() {
@@ -37,7 +37,7 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   void _searchByTicketId() {
-    setState(() => _hint = 'TCK-…');
+    setState(() => _hint = 'Ticket code from under the QR');
     _query.clear();
     context.read<SearchViewModel>().setQuery('');
     _focus.requestFocus();
@@ -97,8 +97,7 @@ class _SearchPageState extends State<SearchPage> {
                 vm.showNoMatches
                     ? 'Attendees who bought under another name will not appear. '
                         'Ask for the order confirmation email.'
-                    : 'Search covers this event only. Match on name, email or ticket ID.\n'
-                        'Demo data: attendee search is not in the API yet.',
+                    : 'Search covers this event only. Match on name, email or ticket code.',
                 style: AppText.finePrint.copyWith(color: AppColors.neutral600),
               ),
             ),

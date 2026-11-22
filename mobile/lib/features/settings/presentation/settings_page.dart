@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../../app/main_tab_bar.dart';
 import '../../../core/config/app_config.dart';
+import '../../../core/config/server_address.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -113,7 +114,7 @@ class SettingsPage extends StatelessWidget {
             ),
             const SizedBox(height: 14),
             Text(
-              'BiletFlow Scanner ${AppConfig.appVersion} · ${AppConfig.apiBaseUrl}',
+              'BiletFlow Scanner ${AppConfig.appVersion} · ${context.watch<ServerAddress>().current}',
               style: AppText.finePrint.copyWith(color: AppColors.neutral600),
             ),
           ],

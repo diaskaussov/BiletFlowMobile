@@ -1,9 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile/core/error/failure.dart';
 import 'package:mobile/core/error/result.dart';
-import 'package:mobile/features/attendees/data/attendees_mock_repository.dart';
 import 'package:mobile/features/attendees/domain/entities/attendee.dart';
 import 'package:mobile/features/attendees/domain/usecases/attendee_usecases.dart';
+
+import 'attendees_mock_repository.dart';
 
 void main() {
   late AttendeesMockRepository repo;

@@ -48,9 +48,9 @@ class CheckInAttendee {
       if (ticket == null) return const Err(ValidationFailure('Ticket is not in this order.'));
       final problem = switch (ticket.status) {
         AttendeeTicketStatus.valid => null,
-        AttendeeTicketStatus.checkedIn => 'Ticket ${ticket.id} is already checked in.',
-        AttendeeTicketStatus.refunded => 'Ticket ${ticket.id} was refunded and cannot admit anyone.',
-        AttendeeTicketStatus.cancelled => 'Ticket ${ticket.id} was cancelled and cannot admit anyone.',
+        AttendeeTicketStatus.checkedIn => 'Ticket ${ticket.label} is already checked in.',
+        AttendeeTicketStatus.refunded => 'Ticket ${ticket.label} was refunded and cannot admit anyone.',
+        AttendeeTicketStatus.cancelled => 'Ticket ${ticket.label} was cancelled and cannot admit anyone.',
       };
       if (problem != null) return Err(ValidationFailure(problem));
     }

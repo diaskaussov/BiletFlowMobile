@@ -26,7 +26,7 @@ class UndoCheckIn {
     if (reason.trim().isEmpty) {
       return const Err(ValidationFailure('Give a reason for the reversal.'));
     }
-    final result = await _checkin.undo(ticketId);
+    final result = await _checkin.undo(ticketId, reason: reason.trim());
     if (result is Ok) _log.markReversed(ticketId, _clock());
     return result;
   }
