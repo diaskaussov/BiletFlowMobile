@@ -1,7 +1,7 @@
 import '../entities/user_session.dart';
 import '../repositories/auth_repository.dart';
 
-/// Автовход при запуске: только если сохранена сессия администратора.
+/// Автовход при запуске для любой известной роли.
 class RestoreSession {
   const RestoreSession(this._repo);
 
@@ -10,7 +10,7 @@ class RestoreSession {
   Future<UserSession?> call() async {
     final session = await _repo.restoreSession();
     if (session == null) return null;
-    if (session.role != UserRole.eventAdmin) {
+    if (session.role == UserRole.unknown) {
       await _repo.signOut();
       return null;
     }

@@ -19,6 +19,12 @@ class AuthRemoteDataSource {
     if (json is! Map) throw const FormatException('Login response is not an object');
     return UserSessionModel.fromJson(json.cast<String, dynamic>());
   }
+
+  Future<UserSession> register(Map<String, dynamic> body) async {
+    final json = await _api.post('/api/auth/register', body: body);
+    if (json is! Map) throw const FormatException('Register response is not an object');
+    return UserSessionModel.fromJson(json.cast<String, dynamic>());
+  }
 }
 
 /// Сессия хранится в Keychain / Keystore — токен не лежит открытым текстом.

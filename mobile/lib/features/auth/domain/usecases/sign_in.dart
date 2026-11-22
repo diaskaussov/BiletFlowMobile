@@ -3,14 +3,14 @@ import '../../../../core/error/result.dart';
 import '../entities/user_session.dart';
 import '../repositories/auth_repository.dart';
 
-/// A1: вход администратора события.
-/// Правила: корректный email, непустой пароль, роль только EVENT_ADMIN.
+final _emailPattern = RegExp(r'^[\w.+-]+@[\w-]+(\.[\w-]+)+$');
+
+/// Вход для всех ролей. После входа роутер открывает раздел по роли:
+/// участник, организатор, сотрудник на входе, админ платформы.
 class SignIn {
   const SignIn(this._repo);
 
   final AuthRepository _repo;
-
-  static final _emailPattern = RegExp(r'^[\w.+-]+@[\w-]+(\.[\w-]+)+$');
 
   Future<Result<UserSession>> call({
     required String email,
@@ -29,11 +29,8 @@ class SignIn {
       case Err(:final failure):
         return Err(_explain(failure));
       case Ok(:final value):
-        if (value.role != UserRole.eventAdmin) {
-          return const Err(ForbiddenFailure(
-            'This account is not an event admin. The scanner is only for '
-            'staff an organizer assigned to an event.',
-          ));
+        if (value.role == UserRole.unknown) {
+          return const Err(ForbiddenFailure('This account type is not supported by the app.'));
         }
         await _repo.saveSession(value);
         return Ok(value);
@@ -42,8 +39,55 @@ class SignIn {
 
   static Failure _explain(Failure f) => switch (f) {
         UnauthorizedFailure() => const UnauthorizedFailure('Incorrect email or password.'),
+        ServerFailure(statusCode: 400 || 404, :final message)
+            when message.toLowerCase().contains('suspend') =>
+          ForbiddenFailure(message),
         ServerFailure(statusCode: 400 || 404) =>
           const UnauthorizedFailure('Incorrect email or password.'),
         _ => f,
       };
+}
+
+/// Регистрация (§4.1). Самостоятельно можно стать только участником
+/// или организатором — сотрудников назначает организатор, админов платформа.
+class Register {
+  const Register(this._repo);
+
+  final AuthRepository _repo;
+
+  static const minPasswordLength = 6;
+  static const allowedRoles = [UserRole.attendee, UserRole.organizer];
+
+  Future<Result<UserSession>> call({
+    required String email,
+    required String password,
+    required String firstName,
+    required String lastName,
+    required UserRole role,
+    String? phone,
+  }) async {
+    final normalized = email.trim().toLowerCase();
+    if (firstName.trim().isEmpty || lastName.trim().isEmpty) {
+      return const Err(ValidationFailure('Enter your first and last name.'));
+    }
+    if (!_emailPattern.hasMatch(normalized)) {
+      return const Err(ValidationFailure('Enter a valid email address.'));
+    }
+    if (password.length < minPasswordLength) {
+      return const Err(ValidationFailure('Password must be at least 6 characters.'));
+    }
+    if (!allowedRoles.contains(role)) {
+      return const Err(ValidationFailure('Choose attendee or organizer.'));
+    }
+    final result = await _repo.register(
+      email: normalized,
+      password: password,
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
+      role: role,
+      phone: phone?.trim(),
+    );
+    if (result case Ok(:final value)) await _repo.saveSession(value);
+    return result;
+  }
 }

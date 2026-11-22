@@ -9,6 +9,7 @@ import '../features/attendees/presentation/pages/search_page.dart';
 import '../features/attendees/presentation/view_models/attendee_view_model.dart';
 import '../features/attendees/presentation/view_models/search_view_model.dart';
 import '../features/auth/presentation/controllers/session_controller.dart';
+import '../features/auth/presentation/pages/register_page.dart';
 import '../features/auth/presentation/pages/sign_in_page.dart';
 import '../features/auth/presentation/view_models/sign_in_view_model.dart';
 import '../features/checkin/domain/entities/scan_result.dart';
@@ -23,6 +24,7 @@ import '../features/events/presentation/pages/events_page.dart';
 import '../features/events/presentation/view_models/event_summary_view_model.dart';
 import '../features/events/presentation/view_models/events_view_model.dart';
 import '../features/settings/presentation/settings_page.dart';
+import 'attendee_routes.dart';
 import 'routes.dart';
 
 GoRouter createRouter({
@@ -39,9 +41,10 @@ GoRouter createRouter({
         case SessionStatus.unknown:
           return loc == Routes.splash ? null : Routes.splash;
         case SessionStatus.signedOut:
-          return loc == Routes.signIn ? null : Routes.signIn;
+          return loc == Routes.signIn || loc == Routes.register ? null : Routes.signIn;
         case SessionStatus.signedIn:
-          if (loc == Routes.signIn || loc == Routes.splash) return Routes.events;
+          final role = session.session!.role;
+          if (!Routes.allowed(role, loc)) return Routes.home(role);
           final needsEvent = loc.startsWith(Routes.scanner) || loc.startsWith(Routes.search);
           if (needsEvent && activeEvent.event == null) return Routes.events;
           return null;
@@ -59,6 +62,14 @@ GoRouter createRouter({
           child: const SignInPage(),
         ),
       ),
+      GoRoute(
+        path: Routes.register,
+        builder: (_, _) => ChangeNotifierProvider(
+          create: (_) => RegisterViewModel(register: sl(), session: sl()),
+          child: const RegisterPage(),
+        ),
+      ),
+      attendeeRoutes(),
       GoRoute(
         path: Routes.events,
         builder: (_, _) => ChangeNotifierProvider(

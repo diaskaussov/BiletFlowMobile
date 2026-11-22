@@ -47,4 +47,35 @@ abstract final class Fmt {
     if (d.inHours < 24) return '${d.inHours} h ago';
     return '${d.inDays} d ago';
   }
+
+  /// «4 500 ₸», «Free» — суммы в KZT (§7 SRS).
+  static String money(num value, {bool freeWord = true}) {
+    if (value == 0 && freeWord) return 'Free';
+    final whole = value.round();
+    return '${count(whole)} ₸';
+  }
+
+  /// «4.1M ₸» для крупных итогов на плитках.
+  static String moneyShort(num value) {
+    final v = value.abs();
+    if (v >= 1000000) return '${(value / 1000000).toStringAsFixed(1)}M ₸';
+    return money(value, freeWord: false);
+  }
+
+  /// «Sat 12 Sep 2026 · 19:00 — 23:00»
+  static String range(DateTime start, DateTime? end) {
+    final day = DateFormat('EEE d MMM y · HH:mm').format(start);
+    if (end == null) return day;
+    final sameDay = end.year == start.year && end.month == start.month && end.day == start.day;
+    return sameDay ? '$day — ${time(end)}' : '$day — ${DateFormat('d MMM HH:mm').format(end)}';
+  }
+
+  /// «19 Dec 2026»
+  static String date(DateTime t) => DateFormat('d MMM y').format(t);
+
+  /// Длительность таймера удержания «09:41».
+  static String countdown(Duration d) {
+    final s = d.isNegative ? 0 : d.inSeconds;
+    return '${(s ~/ 60).toString().padLeft(2, '0')}:${(s % 60).toString().padLeft(2, '0')}';
+  }
 }

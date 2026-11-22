@@ -54,6 +54,28 @@ class ApiClient {
     return _send(() => _dio.post<dynamic>(path, data: body));
   }
 
+  Future<dynamic> put(String path, {Object? body}) {
+    return _send(() => _dio.put<dynamic>(path, data: body));
+  }
+
+  Future<dynamic> patch(String path, {Object? body}) {
+    return _send(() => _dio.patch<dynamic>(path, data: body));
+  }
+
+  Future<dynamic> delete(String path) {
+    return _send(() => _dio.delete<dynamic>(path));
+  }
+
+  /// Бинарный ответ: QR (PNG) и билет (PDF).
+  Future<Uint8List> getBytes(String path) async {
+    final data = await _send(
+      () => _dio.get<dynamic>(path, options: Options(responseType: ResponseType.bytes)),
+    );
+    if (data is Uint8List) return data;
+    if (data is List<int>) return Uint8List.fromList(data);
+    throw const FormatException('Expected binary data');
+  }
+
   Future<dynamic> _send(Future<Response<dynamic>> Function() request) async {
     try {
       final response = await request();

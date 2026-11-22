@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../app/routes.dart';
 import '../../../../core/config/server_address.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -39,8 +41,9 @@ class _SignInPageState extends State<SignInPage> {
       builder: (context) => AlertDialog(
         title: Text('Forgot password', style: AppText.headerTitle.copyWith(color: AppColors.ink)),
         content: Text(
-          'Scanner accounts are created by the organizer. Ask them to reset '
-          'the password for the email you were assigned with.',
+          'Password reset is not available in this build yet. Event staff can '
+          'ask their organizer; attendees and organizers can contact '
+          'support@biletflow.kz.',
           style: AppText.body.copyWith(color: AppColors.neutral700),
         ),
         actions: [
@@ -139,10 +142,10 @@ class _SignInPageState extends State<SignInPage> {
                       ),
                     ),
                     const SizedBox(height: 44),
-                    Text('Scanner\nsign-in', style: AppText.signInTitle.copyWith(color: AppColors.ink)),
+                    Text('Sign in to\nBiletFlow', style: AppText.signInTitle.copyWith(color: AppColors.ink)),
                     const SizedBox(height: 10),
                     Text(
-                      'For event administrators authorized by an organizer.',
+                      'Attendees, organizers, event staff and platform admins.',
                       style: AppText.bodySecondary.copyWith(color: AppColors.neutral700),
                     ),
                     const SizedBox(height: 38),
@@ -186,6 +189,10 @@ class _SignInPageState extends State<SignInPage> {
                     ),
                     const SizedBox(height: 6),
                     GhostButton(label: 'Forgot password', onPressed: _forgotPassword),
+                    SecondaryButton(
+                      label: 'Create an account',
+                      onPressed: () => context.push(Routes.register),
+                    ),
                     const Spacer(),
                     const SizedBox(height: 24),
                     Text(

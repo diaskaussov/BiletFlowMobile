@@ -20,6 +20,21 @@ class FakeAuthRepository implements AuthRepository {
     return next;
   }
 
+  Result<UserSession> registerNext = const Err(ServerFailure('not set'));
+
+  @override
+  Future<Result<UserSession>> register({
+    required String email,
+    required String password,
+    required String firstName,
+    required String lastName,
+    required UserRole role,
+    String? phone,
+  }) async {
+    lastEmail = email;
+    return registerNext;
+  }
+
   @override
   Future<void> saveSession(UserSession session) async => saved = session;
 
@@ -49,13 +64,43 @@ void main() {
     expect(repo.saved, isNotNull);
   });
 
-  test('organizer is refused and nothing is saved (§4.8)', () async {
+  test('every known role can sign in', () async {
+    for (final role in [UserRole.organizer, UserRole.attendee, UserRole.platformAdmin]) {
+      repo.next = Ok(UserSession(token: 't', userId: 2, email: 'x@biletflow.kz', role: role));
+      final r = await signIn(email: 'x@biletflow.kz', password: '123');
+      expect(r.valueOrNull?.role, role);
+    }
+  });
+
+  test('unknown role is refused and nothing is saved', () async {
     repo.next = const Ok(
-      UserSession(token: 't', userId: 2, email: 'organizer@biletflow.kz', role: UserRole.organizer),
+      UserSession(token: 't', userId: 2, email: 'x@biletflow.kz', role: UserRole.unknown),
     );
-    final r = await signIn(email: 'organizer@biletflow.kz', password: '123');
+    final r = await signIn(email: 'x@biletflow.kz', password: '123');
     expect(r.failureOrNull, isA<ForbiddenFailure>());
     expect(repo.saved, isNull);
+  });
+
+  group('Register', () {
+    test('validates input before the request', () async {
+      final register = Register(repo);
+      expect((await register(email: 'a@b.kz', password: '123', firstName: 'A', lastName: 'B', role: UserRole.attendee))
+          .failureOrNull?.message, contains('6'));
+      expect((await register(email: 'bad', password: '123456', firstName: 'A', lastName: 'B', role: UserRole.attendee))
+          .failureOrNull, isA<ValidationFailure>());
+      expect((await register(email: 'a@b.kz', password: '123456', firstName: ' ', lastName: 'B', role: UserRole.attendee))
+          .failureOrNull, isA<ValidationFailure>());
+      expect((await register(email: 'a@b.kz', password: '123456', firstName: 'A', lastName: 'B', role: UserRole.platformAdmin))
+          .failureOrNull, isA<ValidationFailure>());
+    });
+
+    test('registers an organizer and saves the session', () async {
+      repo.registerNext = const Ok(UserSession(token: 't', userId: 9, email: 'o@b.kz', role: UserRole.organizer));
+      final r = await Register(repo)(email: 'O@b.kz', password: '123456', firstName: 'O', lastName: 'Z', role: UserRole.organizer);
+      expect(r.valueOrNull?.role, UserRole.organizer);
+      expect(repo.saved?.userId, 9);
+      expect(repo.lastEmail, 'o@b.kz');
+    });
   });
 
   test('bad email is rejected before the request', () async {
@@ -80,8 +125,10 @@ void main() {
     expect(r.failureOrNull, isA<NetworkFailure>());
   });
 
-  test('restore drops a stored session of a non-admin role', () async {
+  test('restore keeps any known role and drops unknown', () async {
     repo.saved = const UserSession(token: 't', userId: 3, email: 'x@y.kz', role: UserRole.attendee);
+    expect((await RestoreSession(repo)())?.role, UserRole.attendee);
+    repo.saved = const UserSession(token: 't', userId: 3, email: 'x@y.kz', role: UserRole.unknown);
     expect(await RestoreSession(repo)(), isNull);
     expect(repo.signedOut, isTrue);
   });

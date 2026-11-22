@@ -24,6 +24,24 @@ class AuthRepositoryImpl implements AuthRepository {
       guard(() => _remote.login(email, password));
 
   @override
+  Future<Result<UserSession>> register({
+    required String email,
+    required String password,
+    required String firstName,
+    required String lastName,
+    required UserRole role,
+    String? phone,
+  }) =>
+      guard(() => _remote.register({
+            'email': email,
+            'password': password,
+            'firstName': firstName,
+            'lastName': lastName,
+            'role': role.wire,
+            if (phone != null && phone.isNotEmpty) 'phone': phone,
+          }));
+
+  @override
   Future<void> saveSession(UserSession session) async {
     _api.setToken(session.token);
     await _local.save(session);
