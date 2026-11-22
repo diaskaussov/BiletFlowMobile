@@ -1,14 +1,20 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
+
 import 'api_exception.dart';
 
+/// Обёртка над Dio: базовый адрес, Bearer-токен, единый формат ошибок
+/// бэкенда `{ "error": "...", "timestamp": "..." }`.
 class ApiClient {
-  ApiClient({required String baseUrl})
-      : _dio = Dio(BaseOptions(
-          baseUrl: baseUrl,
-          connectTimeout: const Duration(seconds: 8),
-          receiveTimeout: const Duration(seconds: 8),
-          headers: {'Content-Type': 'application/json'},
-        )) {
+  ApiClient({required String baseUrl, required Duration timeout, Dio? dio})
+      : _dio = dio ??
+            Dio(BaseOptions(
+              baseUrl: baseUrl,
+              connectTimeout: timeout,
+              receiveTimeout: timeout,
+              sendTimeout: timeout,
+              headers: {'Content-Type': 'application/json'},
+            )) {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) {
@@ -25,38 +31,48 @@ class ApiClient {
   final Dio _dio;
   String? _token;
 
+  /// Время последнего ответа сервера — «Last sync» на A5.
+  final ValueNotifier<DateTime?> lastResponseAt = ValueNotifier(null);
+
+  /// Вызывается, когда сервер отверг действующий токен (401).
+  VoidCallback? onUnauthorized;
+
   void setToken(String? token) => _token = token;
 
-  Future<Map<String, dynamic>> get(
-    String path, {
-    Map<String, dynamic>? query,
-  }) async {
-    return _send(() => _dio.get<Map<String, dynamic>>(path, queryParameters: query));
+  Future<dynamic> get(String path, {Map<String, dynamic>? query}) {
+    return _send(() => _dio.get<dynamic>(path, queryParameters: query));
   }
 
-  Future<Map<String, dynamic>> post(
-    String path, {
-    Map<String, dynamic>? body,
-  }) async {
-    return _send(() => _dio.post<Map<String, dynamic>>(path, data: body));
+  Future<dynamic> post(String path, {Object? body}) {
+    return _send(() => _dio.post<dynamic>(path, data: body));
   }
 
-  Future<Map<String, dynamic>> _send(
-    Future<Response<Map<String, dynamic>>> Function() request,
-  ) async {
+  Future<dynamic> _send(Future<Response<dynamic>> Function() request) async {
     try {
       final response = await request();
-      return response.data ?? const {};
+      lastResponseAt.value = DateTime.now();
+      return response.data;
     } on DioException catch (e) {
-      final isNetwork = e.type == DioExceptionType.connectionTimeout ||
-          e.type == DioExceptionType.receiveTimeout ||
-          e.type == DioExceptionType.connectionError;
+      final status = e.response?.statusCode;
+      if (status != null) lastResponseAt.value = DateTime.now();
+      if (status == 401 && _token != null) onUnauthorized?.call();
       throw ApiException(
-        e.message ?? 'Сетевая ошибка',
-        statusCode: e.response?.statusCode,
-        isNetwork: isNetwork,
+        _messageFrom(e),
+        statusCode: status,
+        isNetwork: status == null && e.type != DioExceptionType.cancel,
       );
     }
   }
-}
 
+  static String _messageFrom(DioException e) {
+    final data = e.response?.data;
+    if (data is Map) {
+      for (final key in const ['error', 'message']) {
+        final value = data[key];
+        if (value is String && value.isNotEmpty) return value;
+      }
+    }
+    if (data is String && data.isNotEmpty && data.length < 200) return data;
+    return e.message ?? 'Network error';
+  }
+}
