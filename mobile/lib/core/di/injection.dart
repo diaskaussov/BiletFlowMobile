@@ -29,6 +29,7 @@ import '../../features/settings/domain/usecases/settings_usecases.dart';
 import '../../features/settings/presentation/settings_controller.dart';
 import '../config/app_config.dart';
 import 'attendee_injection.dart';
+import 'organizer_injection.dart';
 import '../config/server_address.dart';
 import '../error/failure.dart';
 import '../network/api_client.dart';
@@ -107,6 +108,7 @@ Future<void> configureDependencies() async {
         ));
 
   configureAttendeeDependencies(sl);
+  configureOrganizerDependencies(sl);
 
   await sl<ServerAddress>().load();
 

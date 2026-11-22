@@ -25,6 +25,7 @@ import '../features/events/presentation/view_models/event_summary_view_model.dar
 import '../features/events/presentation/view_models/events_view_model.dart';
 import '../features/settings/presentation/settings_page.dart';
 import 'attendee_routes.dart';
+import 'organizer_routes.dart';
 import 'routes.dart';
 
 GoRouter createRouter({
@@ -70,6 +71,7 @@ GoRouter createRouter({
         ),
       ),
       attendeeRoutes(),
+      organizerRoutes(),
       GoRoute(
         path: Routes.events,
         builder: (_, _) => ChangeNotifierProvider(
