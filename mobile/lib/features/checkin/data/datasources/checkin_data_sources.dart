@@ -26,20 +26,6 @@ class CheckinRemoteDataSource {
     }
   }
 
-  /// Ручная отметка по ID билета (C3). Ответ — тот же ScanResponse.
-  Future<ScanResponseModel> checkInTicket(String ticketId) async {
-    try {
-      final data = await _api.post('/api/checkin/tickets/${Uri.encodeComponent(ticketId)}');
-      if (data is! Map) throw const FormatException('Check-in response is not an object');
-      return ScanResponseModel.fromJson(data.cast<String, dynamic>());
-    } on ApiException catch (e) {
-      if (const {400, 404, 409, 410, 422}.contains(e.statusCode)) {
-        return ScanResponseModel.rejected(e.message);
-      }
-      rethrow;
-    }
-  }
-
   Future<void> undo(String ticketId, String reason) async {
     await _api.post(
       '/api/checkin/undo/${Uri.encodeComponent(ticketId)}',
