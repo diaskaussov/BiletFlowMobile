@@ -1,22 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../app/main_tab_bar.dart';
 import '../../../../app/routes.dart';
+import '../../../../core/presentation/failure_text.dart';
+import '../../../../core/presentation/l10n.dart';
 import '../../../../core/theme/app_palette.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
-import '../../../../core/utils/formatters.dart';
 import '../../../../core/widgets/buttons.dart';
+import '../../../../core/widgets/commerce_widgets.dart';
 import '../../../../core/widgets/data_blocks.dart';
+import '../../../../core/widgets/floating_nav_bar.dart';
 import '../../../../core/widgets/labeled_text_field.dart';
-import '../../../../core/widgets/screen_header.dart';
 import '../../../../core/widgets/state_views.dart';
 import '../../domain/entities/attendee.dart';
 import '../view_models/search_view_model.dart';
-import '../../../../core/presentation/failure_text.dart';
 
-/// C1 · Find by name / C2 · No matches
+/// Статус билета гостя для бейджа — общий для A7 и C3.
+({String label, Tone tone}) ticketStatusBadge(AppLocalizations l, AttendeeTicketStatus s) => switch (s) {
+      AttendeeTicketStatus.valid => (label: l.statusValid, tone: Tone.success),
+      AttendeeTicketStatus.checkedIn => (label: l.statusUsed, tone: Tone.info),
+      AttendeeTicketStatus.refunded => (label: l.statusRefunded, tone: Tone.warning),
+      AttendeeTicketStatus.cancelled => (label: l.statusCancelled, tone: Tone.danger),
+    };
+
+/// A7 · Гости — поиск по имени, email, коду билета или номеру заказа.
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
 
@@ -25,191 +36,148 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  late final TextEditingController _query =
-      TextEditingController(text: context.read<SearchViewModel>().query);
-  final _focus = FocusNode();
-  String _hint = 'Name, email or ticket code';
+  late final TextEditingController _query = TextEditingController(text: context.read<SearchViewModel>().query);
 
   @override
   void dispose() {
     _query.dispose();
-    _focus.dispose();
     super.dispose();
-  }
-
-  void _searchByTicketId() {
-    setState(() => _hint = 'Ticket code from under the QR');
-    _query.clear();
-    context.read<SearchViewModel>().setQuery('');
-    _focus.requestFocus();
   }
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
     final vm = context.watch<SearchViewModel>();
+
+    Widget results;
+    if (vm.isQueryTooShort) {
+      results = Center(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.side),
+          child: MessageView(icon: LucideIcons.userSearch, title: l.navGuests, message: l.guestSearchStart),
+        ),
+      );
+    } else if (vm.isLoading && vm.allCount == 0) {
+      results = const LoadingView();
+    } else if (vm.failure != null) {
+      results = Center(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.side),
+          child: MessageView(
+            icon: LucideIcons.circleAlert,
+            tone: Tone.danger,
+            title: l.loadFailedTitle,
+            message: vm.failure!.text(context),
+            actionLabel: l.tryAgain,
+            onAction: vm.refresh,
+          ),
+        ),
+      );
+    } else if (vm.showNoMatches) {
+      results = Center(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.side),
+          child: MessageView(icon: LucideIcons.searchX, title: l.guestNoMatches(vm.query.trim()), message: l.guestNoMatchesHint),
+        ),
+      );
+    } else {
+      final list = vm.visible;
+      results = ListView.separated(
+        padding: const EdgeInsets.fromLTRB(AppSpacing.side, 4, AppSpacing.side, 24),
+        itemCount: list.length,
+        separatorBuilder: (_, _) => const SizedBox(height: 10),
+        itemBuilder: (context, i) => _GuestCard(attendee: list[i]),
+      );
+    }
 
     return Scaffold(
       body: SafeArea(
+        bottom: false,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ScreenHeader(
-              title: 'Find attendee',
-              subtitle: vm.eventTitle,
-              onBack: () => context.pop(),
-              side: AppSpacing.sideList,
-            ),
+            LargeHeader(title: l.navGuests, context_: vm.eventTitle, onContextTap: () => context.go(Routes.events)),
             Padding(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.sideList, 16, AppSpacing.sideList, 0),
+              padding: const EdgeInsets.fromLTRB(AppSpacing.side, 4, AppSpacing.side, 8),
               child: LabeledTextField(
                 controller: _query,
-                focusNode: _focus,
                 autofocus: vm.query.isEmpty,
-                leadingIcon: Icons.search,
-                hintText: _hint,
+                leadingIcon: LucideIcons.search,
+                hintText: l.guestSearchHint,
                 textInputAction: TextInputAction.search,
                 onChanged: vm.setQuery,
                 onSubmitted: (_) => vm.refresh(),
               ),
             ),
             if (!vm.isQueryTooShort && vm.allCount > 0)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(AppSpacing.sideList, 14, AppSpacing.sideList, 0),
-                child: Row(
-                  children: [
-                    _FilterChip(
-                      label: 'All · ${vm.allCount}',
-                      active: vm.filter == SearchFilter.all,
-                      onTap: () => vm.setFilter(SearchFilter.all),
-                    ),
-                    const SizedBox(width: 18),
-                    _FilterChip(
-                      label: 'Not arrived · ${vm.notArrivedCount}',
-                      active: vm.filter == SearchFilter.notArrived,
-                      onTap: () => vm.setFilter(SearchFilter.notArrived),
-                    ),
-                  ],
-                ),
+              UnderlineTabs(
+                labels: [l.filterAll(vm.allCount), l.filterNotArrived(vm.notArrivedCount)],
+                current: vm.filter.index,
+                onSelect: (i) => vm.setFilter(SearchFilter.values[i]),
               ),
-            Expanded(child: _results(context, vm)),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.sideList, 8, AppSpacing.sideList, AppSpacing.bottomClearance),
-              child: Text(
-                vm.showNoMatches
-                    ? 'Attendees who bought under another name will not appear. '
-                        'Ask for the order confirmation email.'
-                    : 'Search covers this event only. Match on name, email or ticket code.',
-                style: AppText.finePrint.copyWith(color: context.colors.textMuted),
-              ),
-            ),
+            Expanded(child: results),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _results(BuildContext context, SearchViewModel vm) {
-    if (vm.isLoading && vm.allCount == 0) return const LoadingView();
-    if (vm.failure case final f?) {
-      return Padding(
-        padding: const EdgeInsets.all(AppSpacing.sideList),
-        child: MessageView(
-          icon: Icons.error_outline,
-          title: 'Search failed',
-          message: f.text(context),
-          actionLabel: 'Try again',
-          onAction: vm.refresh,
-        ),
-      );
-    }
-    if (vm.showNoMatches) {
-      return SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(AppSpacing.sideList, 48, AppSpacing.sideList, 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(Icons.search_off, size: 40, color: context.colors.textMuted),
-            const SizedBox(height: 18),
-            Text(
-              'No attendee matches “${vm.query.trim()}”',
-              style: AppText.screenTitle.copyWith(color: context.colors.text),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Check the spelling, or search by the ticket ID printed under the QR code.',
-              style: AppText.body.copyWith(color: context.colors.textMuted),
-            ),
-            const SizedBox(height: 26),
-            SecondaryButton(label: 'Search by ticket ID', onPressed: _searchByTicketId),
-            const SizedBox(height: 4),
-            GhostButton(label: 'Back to scanner', onPressed: () => context.pop()),
-          ],
-        ),
-      );
-    }
-    final list = vm.visible;
-    return ListView.builder(
-      padding: const EdgeInsets.fromLTRB(AppSpacing.sideList, 6, AppSpacing.sideList, 12),
-      itemCount: list.length,
-      itemBuilder: (context, i) => _AttendeeRow(attendee: list[i]),
+      bottomNavigationBar: const ScannerTabBar(current: ScannerTab.guests),
     );
   }
 }
 
-class _FilterChip extends StatelessWidget {
-  const _FilterChip({required this.label, required this.active, required this.onTap});
-
-  final String label;
-  final bool active;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        constraints: const BoxConstraints(minHeight: AppSizes.minTap),
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(color: active ? context.colors.primary : Colors.transparent, width: 2),
-          ),
-        ),
-        child: Text(
-          label.toUpperCase(),
-          style: AppText.sectionLabel.copyWith(color: active ? context.colors.primary : context.colors.textMuted),
-        ),
-      ),
-    );
-  }
-}
-
-class _AttendeeRow extends StatelessWidget {
-  const _AttendeeRow({required this.attendee});
+class _GuestCard extends StatelessWidget {
+  const _GuestCard({required this.attendee});
 
   final Attendee attendee;
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
+    final c = context.colors;
+    final vm = context.watch<SearchViewModel>();
     final a = attendee;
-    final first = a.tickets.firstOrNull;
-    final subtitle = a.tickets.length == 1
-        ? [first?.type, first?.seat].whereType<String>().join(' · ')
-        : '${first?.type ?? 'Tickets'} · ${a.tickets.length} tickets';
-    final lastIn = a.lastCheckInAt;
-    final Widget trailing;
-    if (a.notArrivedCount > 0) {
-      trailing = const TagLabel('Check in', filled: true);
-    } else if (lastIn != null) {
-      trailing = TagLabel('In ${Fmt.time(lastIn)}');
-    } else {
-      trailing = const TagLabel('Void');
-    }
-    return ListRow(
-      title: a.fullName,
-      subtitle: subtitle,
-      trailing: trailing,
+    final first = a.tickets.first;
+    final status = a.notArrivedCount > 0
+        ? AttendeeTicketStatus.valid
+        : (a.hasArrived ? AttendeeTicketStatus.checkedIn : first.status);
+    final badge = ticketStatusBadge(l, status);
+    final detail = a.tickets.length == 1
+        ? [first.type, ?first.seat].join(' · ')
+        : '${first.type} · ${l.ticketsCount(a.tickets.length)}';
+    return AppCard(
       onTap: () => context.push(Routes.attendee(a.id)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(a.fullName, style: AppText.listTitle.copyWith(color: c.text, fontWeight: FontWeight.w700)),
+                    if (a.email != null) Text(a.email!, style: AppText.meta.copyWith(color: c.textMuted)),
+                    const SizedBox(height: 2),
+                    Text(detail, style: AppText.meta.copyWith(color: c.textMuted)),
+                  ],
+                ),
+              ),
+              TagLabel(badge.label, tone: badge.tone),
+            ],
+          ),
+          if (a.notArrivedCount > 0) ...[
+            const SizedBox(height: 12),
+            PrimaryButton(
+              label: l.markEntry,
+              icon: LucideIcons.logIn,
+              isLoading: vm.checkingId == a.id,
+              onPressed: () async {
+                final f = await vm.checkIn(a);
+                if (context.mounted) showMessage(context, f == null ? l.checkedInToast : f.text(context));
+              },
+            ),
+          ],
+        ],
+      ),
     );
   }
 }

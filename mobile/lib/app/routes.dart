@@ -14,6 +14,7 @@ abstract final class Routes {
   static const search = '/search';
   static String attendee(String id) => '/search/attendee/${Uri.encodeComponent(id)}';
   static const settings = '/settings';
+  static const stats = '/stats';
 
   // — участник (ATTENDEE), экраны W1–W9 —
   static const catalog = '/a';
@@ -73,7 +74,7 @@ abstract final class Routes {
     if (location == offline) return true;
     bool under(String p) => location == p || location.startsWith('$p/');
     return switch (role) {
-      UserRole.eventAdmin => [events, scanner, search, settings].any(under),
+      UserRole.eventAdmin => [events, scanner, search, settings, stats].any(under),
       UserRole.attendee => under(catalog),
       UserRole.organizer => under(organizer),
       UserRole.platformAdmin => under(adminQueues),

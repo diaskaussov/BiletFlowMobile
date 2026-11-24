@@ -19,7 +19,7 @@ import '../features/checkin/presentation/view_models/scanner_view_model.dart';
 import '../features/checkin/presentation/view_models/verdict_view_model.dart';
 import '../features/connection/presentation/offline_page.dart';
 import '../features/events/presentation/controllers/active_event_controller.dart';
-import '../features/events/presentation/pages/event_summary_page.dart';
+import '../features/events/presentation/pages/stats_page.dart';
 import '../features/events/presentation/pages/events_page.dart';
 import '../features/events/presentation/view_models/event_summary_view_model.dart';
 import '../features/events/presentation/view_models/events_view_model.dart';
@@ -47,7 +47,7 @@ GoRouter createRouter({
         case SessionStatus.signedIn:
           final role = session.session!.role;
           if (!Routes.allowed(role, loc)) return Routes.home(role);
-          final needsEvent = loc.startsWith(Routes.scanner) || loc.startsWith(Routes.search);
+          final needsEvent = loc.startsWith(Routes.scanner) || loc.startsWith(Routes.search) || loc.startsWith(Routes.stats);
           if (needsEvent && activeEvent.event == null) return Routes.events;
           return null;
       }
@@ -85,20 +85,18 @@ GoRouter createRouter({
           )..load(),
           child: const EventsPage(),
         ),
-        routes: [
-          GoRoute(
-            path: ':id',
-            builder: (_, state) => ChangeNotifierProvider(
-              create: (_) => EventSummaryViewModel(
-                eventId: int.tryParse(state.pathParameters['id'] ?? '') ?? -1,
-                getStats: sl(),
-                getLog: sl(),
-                active: sl(),
-              )..load(),
-              child: const EventSummaryPage(),
-            ),
-          ),
-        ],
+      ),
+      GoRoute(
+        path: Routes.stats,
+        builder: (_, _) => ChangeNotifierProvider(
+          create: (_) => EventSummaryViewModel(
+            eventId: activeEvent.event?.id ?? -1,
+            getStats: sl(),
+            getLog: sl(),
+            active: sl(),
+          )..load(),
+          child: const StatsPage(),
+        ),
       ),
       GoRoute(
         path: Routes.scanner,
@@ -132,6 +130,8 @@ GoRouter createRouter({
           create: (_) => SearchViewModel(
             search: sl(),
             active: sl(),
+            checkIn: sl(),
+            staffName: session.session?.shortName ?? '',
             initialQuery: state.uri.queryParameters['q'] ?? '',
           ),
           child: const SearchPage(),

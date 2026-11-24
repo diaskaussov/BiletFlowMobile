@@ -159,5 +159,310 @@
   "theme": "Тема",
   "themeSystem": "Как в системе",
   "themeLight": "Светлая",
-  "themeDark": "Тёмная"
+  "themeDark": "Тёмная",
+  "actionRetry": "Повторить",
+  "actionNext": "Следующий",
+  "actionCancel": "Отмена",
+  "actionSave": "Сохранить",
+  "actionClose": "Закрыть",
+  "actionSend": "Отправить",
+  "actionChange": "Изменить",
+  "actionReset": "Сбросить",
+  "actionUndo": "Отменить",
+  "actionKeep": "Оставить",
+  "actionOk": "Понятно",
+  "signOut": "Выйти",
+  "tryAgain": "Попробовать снова",
+  "noConnectionTitle": "Нет подключения",
+  "loadFailedTitle": "Не удалось загрузить",
+  "navScanner": "Сканер",
+  "navGuests": "Гости",
+  "navStats": "Статистика",
+  "navEvents": "События",
+  "navTickets": "Билеты",
+  "navSupport": "Поддержка",
+  "navProfile": "Профиль",
+  "navAlerts": "Уведомления",
+  "navQueues": "Очереди",
+  "navUsers": "Пользователи",
+  "navOrders": "Заказы",
+  "settings": "Настройки",
+  "you": "вы",
+  "copied": "Скопировано",
+  "signInTitle": "Вход в BiletFlow",
+  "signInSubtitle": "Покупатели, организаторы, контролёры и администраторы",
+  "email": "Email",
+  "password": "Пароль",
+  "signInButton": "Войти",
+  "forgotPassword": "Забыли пароль?",
+  "forgotPasswordTitle": "Восстановление пароля",
+  "forgotPasswordBody": "В этой версии восстановление пароля недоступно. Контролёрам поможет организатор, остальным — support@biletflow.kz.",
+  "createAccount": "Создать аккаунт",
+  "showPassword": "Показать пароль",
+  "hidePassword": "Скрыть пароль",
+  "serverLabel": "Сервер: {address}",
+  "@serverLabel": {
+    "placeholders": {
+      "address": {
+        "type": "String"
+      }
+    }
+  },
+  "serverTitle": "Адрес сервера",
+  "serverHint": "На телефоне укажите IP компьютера в Wi‑Fi, а не localhost.",
+  "serverInvalid": "Введите адрес вида http://192.168.1.10:8080",
+  "onlineOnlyNote": "Проверка билетов работает только при подключении к интернету.",
+  "registerTitle": "Регистрация",
+  "registerIWant": "Я хочу",
+  "roleAttend": "Посещать",
+  "roleAttendHint": "Находить события, покупать билеты, показывать QR на входе",
+  "roleOrganize": "Организовывать",
+  "roleOrganizeHint": "Создавать события, продавать билеты, назначать контролёров",
+  "firstName": "Имя",
+  "lastName": "Фамилия",
+  "phoneOptional": "Телефон (необязательно)",
+  "passwordMin": "Пароль · не менее 6 символов",
+  "registerButton": "Создать аккаунт",
+  "registerOrganizerButton": "Создать аккаунт организатора",
+  "registerNote": "Мы отправим ссылку для подтверждения на email. Аккаунты контролёров создают организаторы.",
+  "myEvents": "Мои события",
+  "noAssignedEvents": "Вас пока не назначили ни на одно событие",
+  "noAssignedEventsHint": "Организатор должен добавить вас как контролёра. Сообщите ему email, с которым вы вошли.",
+  "checkAgain": "Проверить снова",
+  "pastEvents": "Прошедшие",
+  "upcomingEvents": "Предстоящие",
+  "signedInAs": "Вы вошли как {email}",
+  "@signedInAs": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "enteredOf": "Вошло {checkedIn} из {registered}",
+  "@enteredOf": {
+    "placeholders": {
+      "checkedIn": {
+        "type": "int"
+      },
+      "registered": {
+        "type": "int"
+      }
+    }
+  },
+  "pointAtQr": "Наведите на QR-код билета",
+  "torch": "Фонарик",
+  "enterCode": "Ввести код",
+  "checking": "Проверяем билет…",
+  "lowLightTorchOn": "Темно — фонарик включён",
+  "scanPaused": "Нет подключения: сканирование недоступно",
+  "enterCodeTitle": "Код билета",
+  "enterCodeHint": "Код под QR-кодом или из письма",
+  "checkCode": "Проверить",
+  "cameraOffTitle": "Доступ к камере выключен",
+  "cameraOffBody": "Камера нужна, чтобы читать QR-коды билетов. Включите её в Настройках → BiletFlow → Камера.",
+  "openSettings": "Открыть настройки",
+  "findGuestInstead": "Найти гостя вручную",
+  "cameraUnavailable": "Камера недоступна",
+  "chooseEventFirst": "Сначала выберите событие",
+  "chooseEvent": "Выберите событие",
+  "vValid": "Проходите",
+  "vAlreadyUsed": "Билет уже использован",
+  "vRepeat": "Этот билет только что прошёл",
+  "vRefunded": "Билет возвращён",
+  "vCancelled": "Билет отменён",
+  "vUnknown": "Билет не найден",
+  "vWrongEvent": "Билет на другое событие",
+  "vPromo": "Это промокод, а не билет",
+  "closesIn": "Закроется через {seconds} с",
+  "@closesIn": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "undoEntry": "Отменить вход",
+  "entryMarkedAt": "Вход отмечен в {time}",
+  "@entryMarkedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "scannedBy": "Отсканировал: {name}",
+  "@scannedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "orderCancelledByOrganizer": "Заказ отменён организатором",
+  "refundedOn": "Деньги возвращены {date}",
+  "@refundedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "refundedNoEntry": "Деньги возвращены — по билету нельзя пройти",
+  "checkCodeOrFind": "Проверьте код или найдите гостя вручную",
+  "findGuest": "Найти гостя",
+  "ticketIsFor": "Этот билет на:",
+  "anotherEvent": "Другое событие",
+  "switchToEvent": "Перейти к этому событию",
+  "campaignLabel": "Кампания {name}",
+  "@campaignLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "promoNotTicket": "Промокод даёт скидку на сайте, но не пропускает на вход",
+  "repeatBody": "Отсканирован {seconds} с назад — это тот же вход, повторно ничего не записано",
+  "@repeatBody": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "copyTicketId": "Скопировать ID билета",
+  "reversedTitle": "Вход отменён",
+  "reversedBody": "Билет снова действителен",
+  "admission": "1 вход",
+  "reverseTitle": "Отменить вход для {name}?",
+  "@reverseTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "reverseBody": "Билет снова станет действительным. Отмена записывается с вашим именем и не удаляется.",
+  "checkedInLabel": "Вход",
+  "recordedBy": "Отметил",
+  "ticketLabel": "Билет",
+  "reasonRequired": "Причина (обязательно)",
+  "reasonHint": "Например: отсканировали не того человека",
+  "guestSearchHint": "Имя, email, код билета или номер заказа",
+  "statusValid": "Действителен",
+  "statusUsed": "Использован",
+  "statusRefunded": "Возвращён",
+  "statusCancelled": "Отменён",
+  "markEntry": "Отметить вход",
+  "guestSearchStart": "Начните вводить имя — минимум 2 символа",
+  "guestNoMatches": "Никого не найдено по «{query}»",
+  "@guestNoMatches": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "guestNoMatchesHint": "Проверьте написание или ищите по коду билета",
+  "filterAll": "Все {count}",
+  "@filterAll": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "filterNotArrived": "Не пришли {count}",
+  "@filterNotArrived": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "checkedInToast": "Вход отмечен",
+  "ticketsCount": "{count, plural, one{{count} билет} few{{count} билета} many{{count} билетов} other{{count} билета}}",
+  "@ticketsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "guest": "Гость",
+  "ticketsInOrder": "Билеты в заказе",
+  "checkInAll": "Отметить все билеты ({count})",
+  "@checkInAll": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "history": "История",
+  "manualNote": "Ручная отметка записывается на ваше имя и видна организатору.",
+  "notArrivedCount": "Не пришли: {count}",
+  "@notArrivedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "allUsedOrVoid": "Все билеты использованы или недействительны",
+  "recordUnavailable": "Запись недоступна",
+  "entered": "Вошло",
+  "stillToCome": "Осталось гостей: {count}",
+  "@stillToCome": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "registered": "Зарегистрировано",
+  "notArrived": "Не пришли",
+  "cancelledStat": "Отменено",
+  "refundedStat": "Возвращено",
+  "reversals": "Отмен входа",
+  "byTicketType": "По типам билетов",
+  "recentEntries": "Последние входы",
+  "noEntriesYet": "Входов пока нет",
+  "statsUnavailable": "Статистика недоступна",
+  "offlineBody": "Проверьте интернет и попробуйте снова",
+  "connectionRestored": "Связь восстановлена",
+  "stillOffline": "Связи с сервером всё ещё нет",
+  "lastSync": "Последняя синхронизация: {time}",
+  "@lastSync": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "offlineNote": "Билеты проверяются на сервере, поэтому без связи сканирование приостановлено. На телефоне ничего не сохраняется.",
+  "scanningSection": "Сканирование",
+  "torchDefault": "Фонарик включён по умолчанию",
+  "soundOnResult": "Звук при результате",
+  "vibrateOnReject": "Вибрация при отказе",
+  "gateSection": "Вход",
+  "assignedGate": "Мой вход",
+  "roleEventAdmin": "Контролёр",
+  "roleAttendee": "Покупатель",
+  "roleOrganizer": "Организатор",
+  "rolePlatformAdmin": "Администратор",
+  "eventsCount": "Событий: {count}",
+  "@eventsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "server": "Сервер",
+  "demoBuild": "Демо-версия: все платежи ненастоящие, деньги не списываются.",
+  "account": "Аккаунт",
+  "notifications": "Уведомления",
+  "organizerProfile": "Профиль организатора и выплаты"
 }

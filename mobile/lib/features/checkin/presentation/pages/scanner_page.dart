@@ -1,26 +1,35 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:permission_handler/permission_handler.dart' show openAppSettings;
 import 'package:provider/provider.dart';
 
+import '../../../../app/main_tab_bar.dart';
 import '../../../../app/routes.dart';
 import '../../../../core/error/failure.dart';
 import '../../../../core/error/result.dart';
+import '../../../../core/presentation/failure_text.dart';
+import '../../../../core/presentation/l10n.dart';
 import '../../../../core/theme/app_palette.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../../core/widgets/buttons.dart';
-import '../../../../core/widgets/field_painters.dart';
-import '../../../../core/widgets/screen_header.dart';
+import '../../../../core/widgets/commerce_widgets.dart';
+import '../../../../core/widgets/data_blocks.dart';
+import '../../../../core/widgets/floating_nav_bar.dart';
+import '../../../../core/widgets/labeled_text_field.dart';
 import '../../../../core/widgets/state_views.dart';
 import '../../../connection/presentation/connection_controller.dart';
 import '../../../settings/presentation/settings_controller.dart';
+import '../../domain/entities/scan_result.dart';
 import '../view_models/scanner_view_model.dart';
-import '../../../../core/presentation/failure_text.dart';
 
-/// B1 · Scanner idle / B2 · Low light, torch on / B3 · Camera permission denied
+/// A3 · Сканер. Один скан за раз: результат открывается на весь экран,
+/// камера на паузе, пока контролёр не нажмёт «Следующий».
 class ScannerPage extends StatefulWidget {
   const ScannerPage({super.key});
 
@@ -33,8 +42,8 @@ class _ScannerPageState extends State<ScannerPage> with WidgetsBindingObserver {
   bool _permissionDenied = false;
   bool _showingResult = false;
 
-  /// После возврата с экрана результата тот же код, оставшийся в кадре,
-  /// не перечитываем сразу — иначе экран отказа зациклится.
+  /// После возврата с результата тот же код в кадре не перечитываем сразу —
+  /// иначе экран отказа зациклится.
   String? _cooldownCode;
   DateTime _cooldownUntil = DateTime(0);
   static const _cooldown = Duration(milliseconds: 1500);
@@ -44,11 +53,7 @@ class _ScannerPageState extends State<ScannerPage> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     final torch = context.read<SettingsController>().settings.torchOnByDefault;
-    _camera = MobileScannerController(
-      formats: const [BarcodeFormat.qrCode],
-      torchEnabled: torch,
-      autoTorch: !torch,
-    );
+    _camera = MobileScannerController(formats: const [BarcodeFormat.qrCode], torchEnabled: torch, autoTorch: !torch);
   }
 
   @override
@@ -72,25 +77,27 @@ class _ScannerPageState extends State<ScannerPage> with WidgetsBindingObserver {
     final raw = capture.barcodes.map((b) => b.rawValue).whereType<String>().firstOrNull;
     if (raw == null) return;
     if (raw == _cooldownCode && DateTime.now().isBefore(_cooldownUntil)) return;
+    await _check(raw);
+  }
 
+  Future<void> _check(String raw) async {
     final vm = context.read<ScannerViewModel>();
     final result = await vm.handle(raw);
     if (result == null || !mounted) return;
-
     switch (result) {
-      case Ok(:final value):
+      case Ok<ScanResult>(:final value):
         _showingResult = true;
         await _camera.pause();
         if (!mounted) return;
         await context.push(Routes.result, extra: value);
         await _resume(raw);
-      case Err(failure: NetworkFailure()):
+      case Err<ScanResult>(failure: NetworkFailure()):
         _showingResult = true;
         await _camera.pause();
         if (!mounted) return;
         await context.push(Routes.offline);
         await _resume(raw);
-      case Err(:final failure):
+      case Err<ScanResult>(:final failure):
         _cooldownCode = raw;
         _cooldownUntil = DateTime.now().add(_cooldown);
         showMessage(context, failure.text(context));
@@ -101,26 +108,119 @@ class _ScannerPageState extends State<ScannerPage> with WidgetsBindingObserver {
     _cooldownCode = lastCode;
     _cooldownUntil = DateTime.now().add(_cooldown);
     _showingResult = false;
-    if (mounted) await _camera.start();
+    if (mounted && !_permissionDenied) await _camera.start();
   }
 
-  void _findByName() => context.push(Routes.search);
+  Future<void> _enterCode() async {
+    final code = await showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => const _ManualCodeSheet(),
+    );
+    if (code != null && code.trim().isNotEmpty && mounted) await _check(code.trim());
+  }
 
   @override
   Widget build(BuildContext context) {
-    if (_permissionDenied) return _PermissionDenied(onFindByName: _findByName);
-
+    final l = context.l10n;
+    final c = context.colors;
     final vm = context.watch<ScannerViewModel>();
     final online = context.watch<ConnectionController>().isOnline;
-    final gate = context.watch<SettingsController>().settings.gate;
-    final stats = vm.stats;
     final event = vm.event;
+    final stats = vm.stats;
 
     return Scaffold(
-      backgroundColor: AppPalette.camera,
-      body: Stack(
+      body: SafeArea(
+        bottom: false,
+        child: Column(
+          children: [
+            if (!online)
+              Material(
+                color: c.danger,
+                child: InkWell(
+                  onTap: () => context.push(Routes.offline),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.side, vertical: 12),
+                    child: Row(children: [
+                      const Icon(LucideIcons.wifiOff, size: 20, color: Colors.white),
+                      const SizedBox(width: 10),
+                      Expanded(child: Text(l.scanPaused, style: AppText.bodyStrong.copyWith(color: Colors.white))),
+                    ]),
+                  ),
+                ),
+              ),
+            LargeHeader(
+              title: l.navScanner,
+              context_: event?.title ?? l.chooseEvent,
+              onContextTap: () => context.go(Routes.events),
+              action: CircleIconButton(
+                icon: LucideIcons.settings,
+                tooltip: l.settings,
+                onPressed: () => context.push(Routes.settings),
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(AppSpacing.side, 4, AppSpacing.side, 16),
+                child: Column(
+                  children: [
+                    AppCard(
+                      padding: const EdgeInsets.all(12),
+                      child: Row(
+                        children: [
+                          EventImage(label: event?.title, height: 48, width: 48, radius: 12),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  [if (event?.startsAt != null) Fmt.dateTime(event!.startsAt!), ?event?.venueName].join(' · '),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: AppText.caption.copyWith(color: c.textMuted),
+                                ),
+                                const SizedBox(height: 3),
+                                Row(children: [
+                                  Expanded(
+                                    child: Text(
+                                      stats == null ? '—' : l.enteredOf(stats.checkedIn, stats.registered),
+                                      style: AppText.cardTitle.copyWith(color: c.text),
+                                    ),
+                                  ),
+                                  if (stats != null)
+                                    Text(Fmt.percent(stats.checkedIn, stats.registered),
+                                        style: AppText.bodyStrong.copyWith(color: c.primary, fontWeight: FontWeight.w700)),
+                                ]),
+                                const SizedBox(height: 6),
+                                ProgressStrip(value: stats?.ratio ?? 0),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Expanded(child: _permissionDenied ? _PermissionDenied(onFind: () => context.go(Routes.search)) : _cameraCard(context, vm)),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+      bottomNavigationBar: const ScannerTabBar(current: ScannerTab.scanner),
+    );
+  }
+
+  Widget _cameraCard(BuildContext context, ScannerViewModel vm) {
+    final l = context.l10n;
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(AppRadius.panel),
+      child: Stack(
         fit: StackFit.expand,
         children: [
+          const ColoredBox(color: AppPalette.camera),
           MobileScanner(
             controller: _camera,
             onDetect: _onDetect,
@@ -131,314 +231,208 @@ class _ScannerPageState extends State<ScannerPage> with WidgetsBindingObserver {
                   if (mounted) setState(() => _permissionDenied = true);
                 });
               }
-              return _CameraError(message: error.errorDetails?.message ?? 'Camera is unavailable.');
+              return Center(
+                child: Text(l.cameraUnavailable, style: AppText.bodySecondary.copyWith(color: Colors.white70)),
+              );
             },
           ),
-          // затемнение вокруг рамки, чтобы подсказки читались на любом фоне
+          // Затемнение по краям — подсказки читаются на любом фоне.
           const DecoratedBox(
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Color(0xCC15181A), Color(0x0015181A), Color(0x0015181A), Color(0xE615181A)],
-                stops: [0, 0.22, 0.6, 0.85],
-              ),
+              gradient: RadialGradient(radius: 0.9, colors: [Color(0x0014141F), Color(0xB314141F)]),
             ),
           ),
-          SafeArea(
-            child: ValueListenableBuilder<MobileScannerState>(
-              valueListenable: _camera,
-              builder: (context, camera, _) {
-                final torchOn = camera.torchState == TorchState.on;
-                return Column(
-                  children: [
-                    _TopBar(
-                      title: event?.title ?? 'Scanner',
-                      subtitle: stats == null
-                          ? gate
-                          : '$gate · ${Fmt.count(stats.checkedIn)} / ${Fmt.count(stats.registered)} in',
-                      torch: camera.torchState,
-                      onTorch: _camera.toggleTorch,
-                      onBack: () => context.pop(),
-                    ),
-                    if (!online)
-                      _Banner(
-                        text: 'NO CONNECTION — SCANNING PAUSED',
-                        onTap: () => context.push(Routes.offline),
-                      )
-                    else if (torchOn)
-                      const _Banner(text: 'LOW LIGHT — TORCH ON'),
-                    const Spacer(),
-                    const _Reticle(),
-                    const SizedBox(height: 28),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sideDark),
-                      child: Column(
-                        children: [
-                          Text(
-                            vm.isChecking
-                                ? 'Checking ticket…'
-                                : (torchOn ? 'Reading code…' : 'Hold the ticket QR in the frame'),
-                            textAlign: TextAlign.center,
-                            style: AppText.headerTitle.copyWith(color: AppPalette.onStrong),
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            torchOn
-                                ? 'Move a little closer if it does not catch.'
-                                : 'Paper or phone screen. Works in grayscale.',
-                            textAlign: TextAlign.center,
-                            style: AppText.meta.copyWith(color: AppPalette.onStrong.withValues(alpha: 0.6)),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const Spacer(),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(
-                        AppSpacing.sideDark, 0, AppSpacing.sideDark, AppSpacing.bottomClearance,
-                      ),
-                      child: torchOn
-                          ? SecondaryButton(label: 'Find by name instead', onDark: true, onPressed: _findByName)
-                          : Row(
-                              children: [
-                                Expanded(
-                                  child: SecondaryButton(
-                                    label: 'Find by name',
-                                    icon: Icons.search,
-                                    onDark: true,
-                                    onPressed: _findByName,
-                                  ),
-                                ),
-                                const SizedBox(width: AppSpacing.actionGap),
-                                Expanded(
-                                  child: SecondaryButton(
-                                    label: 'Summary',
-                                    onDark: true,
-                                    onPressed: event == null
-                                        ? null
-                                        : () => context.push(Routes.eventSummary(event.id)),
-                                  ),
-                                ),
-                              ],
-                            ),
-                    ),
-                  ],
-                );
-              },
-            ),
+          ValueListenableBuilder<MobileScannerState>(
+            valueListenable: _camera,
+            builder: (context, camera, _) {
+              final torchOn = camera.torchState == TorchState.on;
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Spacer(),
+                  SizedBox.square(
+                    dimension: 220,
+                    child: CustomPaint(painter: _FramePainter(scanLine: context.colors.primary)),
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    vm.isChecking ? l.checking : (torchOn ? l.lowLightTorchOn : l.pointAtQr),
+                    textAlign: TextAlign.center,
+                    style: AppText.body.copyWith(color: const Color(0xFFF4F4F8), fontWeight: FontWeight.w500),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (camera.torchState != TorchState.unavailable) ...[
+                        _GlassButton(
+                          icon: LucideIcons.flashlight,
+                          label: l.torch,
+                          active: torchOn,
+                          onTap: _camera.toggleTorch,
+                        ),
+                        const SizedBox(width: 12),
+                      ],
+                      _GlassButton(icon: LucideIcons.keyboard, label: l.enterCode, onTap: _enterCode),
+                    ],
+                  ),
+                  const Spacer(),
+                  if (vm.isChecking) const LinearProgressIndicator(minHeight: 3),
+                ],
+              );
+            },
           ),
-          if (vm.isChecking)
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: LinearProgressIndicator(minHeight: 3, color: context.colors.primarySoft),
-            ),
         ],
       ),
     );
   }
 }
 
-class _TopBar extends StatelessWidget {
-  const _TopBar({
-    required this.title,
-    required this.subtitle,
-    required this.torch,
-    required this.onTorch,
-    required this.onBack,
-  });
+/// Полупрозрачная кнопка поверх камеры («Фонарик», «Ввести код»).
+class _GlassButton extends StatelessWidget {
+  const _GlassButton({required this.icon, required this.label, required this.onTap, this.active = false});
 
-  final String title;
-  final String subtitle;
-  final TorchState torch;
-  final VoidCallback onTorch;
-  final VoidCallback onBack;
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+  final bool active;
 
   @override
   Widget build(BuildContext context) {
-    final on = torch == TorchState.on;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(AppSpacing.sideDark - 7, 8, AppSpacing.sideDark, 10),
-      child: Row(
-        children: [
-          BackBox(onPressed: onBack, onDark: true),
-          const SizedBox(width: 5),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    final fg = active ? const Color(0xFF14141F) : Colors.white;
+    return Semantics(
+      button: true,
+      toggled: active,
+      child: Material(
+        color: active ? Colors.white : Colors.white.withValues(alpha: 0.15),
+        shape: const StadiumBorder(),
+        child: InkWell(
+          customBorder: const StadiumBorder(),
+          onTap: onTap,
+          child: Container(
+            height: 48,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppText.headerTitle.copyWith(color: AppPalette.onStrong),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  subtitle.toUpperCase(),
-                  style: AppText.fieldLabel.copyWith(color: AppPalette.onStrong.withValues(alpha: 0.6)),
-                ),
+                Icon(icon, size: 18, color: fg),
+                const SizedBox(width: 8),
+                Text(label, style: AppText.buttonSmall.copyWith(color: fg)),
               ],
             ),
           ),
-          if (torch != TorchState.unavailable)
-            Semantics(
-              button: true,
-              toggled: on,
-              label: 'Torch',
-              child: GestureDetector(
-                onTap: onTorch,
-                child: Container(
-                  width: AppSizes.minTap,
-                  height: AppSizes.minTap,
-                  decoration: BoxDecoration(
-                    color: on ? AppPalette.onStrong : null,
-                    border: on ? null : Border.all(color: AppPalette.onStrong.withValues(alpha: 0.35)),
-                  ),
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Icon(
-                        on ? Icons.flashlight_on_outlined : Icons.flashlight_off_outlined,
-                        size: 22,
-                        color: on ? context.colors.text : AppPalette.onStrong,
-                      ),
-                      if (torch == TorchState.auto)
-                        Positioned(
-                          bottom: 2,
-                          child: Text(
-                            'AUTO',
-                            style: AppText.fieldLabel.copyWith(fontSize: 7, color: AppPalette.onStrong),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Рамка-прицел: белые скруглённые уголки и светящаяся линия.
+class _FramePainter extends CustomPainter {
+  const _FramePainter({required this.scanLine});
+
+  final Color scanLine;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    const arm = 40.0, w = 5.0;
+    final p = Paint()
+      ..color = Colors.white
+      ..strokeWidth = w
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke;
+    final s = size.width, h = size.height, o = w / 2;
+    for (final (dx, dy) in [(1.0, 1.0), (-1.0, 1.0), (1.0, -1.0), (-1.0, -1.0)]) {
+      final x = dx > 0 ? o : s - o, y = dy > 0 ? o : h - o;
+      canvas.drawPath(
+        Path()
+          ..moveTo(x, y + dy * arm)
+          ..lineTo(x, y + dy * 10)
+          ..arcToPoint(Offset(x + dx * 10, y), radius: const Radius.circular(10), clockwise: dx * dy > 0)
+          ..lineTo(x + dx * arm, y),
+        p,
+      );
+    }
+    final line = Rect.fromCenter(center: Offset(s / 2, h / 2), width: math.min(180, s - 40), height: 3);
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(line, const Radius.circular(2)),
+      Paint()
+        ..color = scanLine
+        ..maskFilter = const MaskFilter.blur(BlurStyle.solid, 6),
+    );
+  }
+
+  @override
+  bool shouldRepaint(_FramePainter old) => old.scanLine != scanLine;
+}
+
+class _PermissionDenied extends StatelessWidget {
+  const _PermissionDenied({required this.onFind});
+
+  final VoidCallback onFind;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    return AppCard(
+      radius: AppRadius.panel,
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          MessageView(icon: LucideIcons.cameraOff, tone: Tone.warning, title: l.cameraOffTitle, message: l.cameraOffBody),
+          const SizedBox(height: 20),
+          PrimaryButton(label: l.openSettings, onPressed: openAppSettings),
+          const SizedBox(height: 10),
+          SecondaryButton(label: l.findGuestInstead, icon: LucideIcons.userSearch, onPressed: onFind),
         ],
       ),
     );
   }
 }
 
-class _Banner extends StatelessWidget {
-  const _Banner({required this.text, this.onTap});
-
-  final String text;
-  final VoidCallback? onTap;
+/// «Ввести код» — проверка по коду из письма или под QR.
+class _ManualCodeSheet extends StatefulWidget {
+  const _ManualCodeSheet();
 
   @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: double.infinity,
-        margin: const EdgeInsets.symmetric(horizontal: AppSpacing.sideDark),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
-        color: AppPalette.onStrong,
-        child: Text(text, style: AppText.statusStrip.copyWith(color: context.colors.text)),
-      ),
-    );
-  }
+  State<_ManualCodeSheet> createState() => _ManualCodeSheetState();
 }
 
-class _Reticle extends StatelessWidget {
-  const _Reticle();
+class _ManualCodeSheetState extends State<_ManualCodeSheet> {
+  final _code = TextEditingController();
+
+  @override
+  void dispose() {
+    _code.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final side = (constraints.maxWidth - 2 * 40).clamp(160.0, 300.0);
-        return SizedBox.square(
-          dimension: side,
-          child: CustomPaint(
-            painter: ReticlePainter(cornerColor: AppPalette.onStrong, lineColor: context.colors.primarySoft),
+    final l = context.l10n;
+    final c = context.colors;
+    return Padding(
+      padding: EdgeInsets.fromLTRB(AppSpacing.side, 0, AppSpacing.side, 16 + MediaQuery.viewInsetsOf(context).bottom),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(l.enterCodeTitle, style: AppText.headerTitle.copyWith(color: c.text)),
+          const SizedBox(height: 4),
+          Text(l.enterCodeHint, style: AppText.bodySecondary.copyWith(color: c.textMuted)),
+          const SizedBox(height: 16),
+          LabeledTextField(
+            controller: _code,
+            autofocus: true,
+            leadingIcon: LucideIcons.ticket,
+            hintText: 'c67b8e0d-…',
+            textInputAction: TextInputAction.done,
+            onSubmitted: (v) => Navigator.of(context).pop(v),
           ),
-        );
-      },
-    );
-  }
-}
-
-class _CameraError extends StatelessWidget {
-  const _CameraError({required this.message});
-
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    return ColoredBox(
-      color: AppPalette.camera,
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(40),
-          child: Text(
-            message,
-            textAlign: TextAlign.center,
-            style: AppText.bodySecondary.copyWith(color: AppPalette.onStrong.withValues(alpha: 0.6)),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// B3 — доступ к камере выключен; путь обратно и запасной вариант.
-class _PermissionDenied extends StatelessWidget {
-  const _PermissionDenied({required this.onFindByName});
-
-  final VoidCallback onFindByName;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ScreenHeader(title: 'Scanner', onBack: () => context.pop()),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(AppSpacing.sideLight, 56, AppSpacing.sideLight, 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(Icons.no_photography_outlined, size: 40, color: context.colors.textMuted),
-                    const SizedBox(height: 18),
-                    Text('Camera access is off', style: AppText.screenTitle.copyWith(color: context.colors.text)),
-                    const SizedBox(height: 8),
-                    Text(
-                      'BiletFlow needs the camera to read ticket QR codes. Turn it on in '
-                      'Settings → BiletFlow → Camera, then come back to this screen.',
-                      style: AppText.body.copyWith(color: context.colors.textMuted),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.sideLight, 0, AppSpacing.sideLight, AppSpacing.bottomClearance),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  PrimaryButton(label: 'Open settings', onPressed: openAppSettings),
-                  const SizedBox(height: AppSpacing.actionGap),
-                  SecondaryButton(label: 'Check in by name instead', onPressed: onFindByName),
-                  const SizedBox(height: 14),
-                  Text(
-                    'Manual search still records a real check-in against the same ticket, '
-                    'so an attendee is never admitted twice.',
-                    style: AppText.finePrint.copyWith(color: context.colors.textMuted),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+          const SizedBox(height: 16),
+          PrimaryButton(label: l.checkCode, onPressed: () => Navigator.of(context).pop(_code.text)),
+        ],
       ),
     );
   }

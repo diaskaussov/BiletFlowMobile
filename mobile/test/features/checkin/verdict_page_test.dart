@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mobile/l10n/app_localizations.dart';
 import 'package:mobile/core/theme/app_theme.dart';
 import 'package:mobile/features/auth/domain/usecases/session_usecases.dart';
 import 'package:mobile/features/auth/presentation/controllers/session_controller.dart';
@@ -68,7 +70,18 @@ void main() {
             ),
           ),
         ],
-        child: MaterialApp(theme: AppTheme.light, home: VerdictPage(result: result)),
+        child: MaterialApp(
+          theme: AppTheme.light,
+          locale: const Locale('en'),
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          home: VerdictPage(result: result),
+        ),
       ),
     );
     await tester.pump();
@@ -84,50 +97,45 @@ void main() {
         previousScanAt: previous,
       );
 
-  final cases = <Verdict, (ScanResult, String, String)>{
-    Verdict.valid: (result(Verdict.valid, t: ticket), 'VALID', 'Scan next ticket'),
-    Verdict.alreadyUsed: (
-      result(Verdict.alreadyUsed, t: ticket),
-      'ALREADY\nUSED',
-      'Open attendee record',
-    ),
+  final cases = <Verdict, (ScanResult, String, String?)>{
+    Verdict.valid: (result(Verdict.valid, t: ticket), 'Come in', 'Undo check-in'),
+    Verdict.alreadyUsed: (result(Verdict.alreadyUsed, t: ticket), 'Ticket already used', null),
     Verdict.repeatScan: (
       result(Verdict.repeatScan, t: ticket, previous: scannedAt.subtract(const Duration(seconds: 3))),
-      'SAME TICKET\nJUST NOW',
-      'Continue scanning',
+      'This ticket just went through',
+      null,
     ),
-    Verdict.refunded: (result(Verdict.refunded, t: ticket), 'REFUNDED\nTICKET', 'Copy ticket ID'),
-    Verdict.cancelled: (result(Verdict.cancelled, t: ticket), 'CANCELLED\nTICKET', 'Copy ticket ID'),
-    Verdict.unknownCode: (result(Verdict.unknownCode), 'CODE NOT\nRECOGNIZED', 'Find by name'),
+    Verdict.refunded: (result(Verdict.refunded, t: ticket), 'Ticket refunded', null),
+    Verdict.cancelled: (result(Verdict.cancelled, t: ticket), 'Ticket cancelled', null),
+    Verdict.unknownCode: (result(Verdict.unknownCode), 'Ticket not found', 'Find guest'),
     Verdict.wrongEvent: (
       result(Verdict.wrongEvent, t: const ScannedTicket(eventTitle: 'Qazaq Jazz Nights vol. 4')),
-      'WRONG\nEVENT',
-      'Find by name',
+      'Ticket for another event',
+      null,
     ),
     Verdict.campaignCode: (
       result(Verdict.campaignCode, c: const CampaignInfo(link: 'https://biletflow.kz', promoCode: 'STUDENT-20')),
-      'PROMOTIONAL\nCODE',
-      'Find by name',
+      'This is a promo code, not a ticket',
+      null,
     ),
   };
 
-  for (final MapEntry(key: verdict, value: (r, word, action)) in cases.entries) {
-    testWidgets('$verdict renders word, status and action without overflow', (tester) async {
+  for (final MapEntry(key: verdict, value: (r, title, secondary)) in cases.entries) {
+    testWidgets('$verdict renders title and actions without overflow', (tester) async {
       await pump(tester, r);
-      expect(find.text(word), findsOneWidget);
-      expect(find.text(action), findsOneWidget);
-      expect(
-        find.text(verdict.admits ? '613 / 1 043 IN' : 'NOT ADMITTED'),
-        findsOneWidget,
-      );
-      expect(find.text('GATE 3 · 19:43:02'), findsOneWidget);
+      expect(find.text(title), findsOneWidget);
+      expect(find.text('Next'), findsOneWidget);
+      if (secondary != null) expect(find.text(secondary), findsOneWidget);
+      expect(find.text('19:43:02'), findsOneWidget);
       expect(tester.takeException(), isNull);
+      // Таймер «Проходите» закрывает экран; даём ему отработать.
+      await tester.pump(const Duration(seconds: 4));
     });
   }
 
   testWidgets('B4 undo is offered only when the server returned a ticket id', (tester) async {
     await pump(tester, result(Verdict.valid, t: const ScannedTicket(attendeeName: 'X')));
-    final button = tester.widget<OutlinedButton>(find.widgetWithText(OutlinedButton, 'Undo this check-in'));
+    final button = tester.widget<OutlinedButton>(find.widgetWithText(OutlinedButton, 'Undo check-in'));
     expect(button.onPressed, isNull);
   });
 }

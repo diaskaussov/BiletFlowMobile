@@ -28,7 +28,8 @@ abstract final class AssignedEventModel {
 }
 
 abstract final class EventStatsModel {
-  /// `{ "totalRegistered": 150, "checkedIn": 87, "notCheckedIn": 63 }`
+  /// `{ totalRegistered, checkedIn, notCheckedIn, cancelled, refunded, reversed,
+  ///    byTicketType: [{name, registered, checkedIn}], recentCheckIns: [...] }`
   static EventStats fromJson(Map<String, dynamic> json) {
     final registered = json.integer(['totalRegistered', 'registered', 'total']) ?? 0;
     final checkedIn = json.integer(['checkedIn']) ?? 0;
@@ -36,6 +37,26 @@ abstract final class EventStatsModel {
       registered: registered,
       checkedIn: checkedIn,
       notCheckedIn: json.integer(['notCheckedIn']) ?? (registered - checkedIn),
+      cancelled: json.integer(['cancelled']) ?? 0,
+      refunded: json.integer(['refunded']) ?? 0,
+      reversed: json.integer(['reversed']) ?? 0,
+      byTicketType: [
+        for (final t in jsonList(json['byTicketType']))
+          TypeCheckIns(
+            name: t.str(['name']) ?? '—',
+            registered: t.integer(['registered']) ?? 0,
+            checkedIn: t.integer(['checkedIn']) ?? 0,
+          ),
+      ],
+      recent: [
+        for (final r in jsonList(json['recentCheckIns']))
+          RecentCheckIn(
+            attendeeName: r.str(['attendeeName', 'name']) ?? '—',
+            ticketType: r.str(['ticketType', 'ticketTypeName']),
+            checkedInBy: r.str(['checkedInBy', 'scannedBy']),
+            at: r.date(['checkedInAt', 'timestamp'], naiveIsUtc: true),
+          ),
+      ],
     );
   }
 }

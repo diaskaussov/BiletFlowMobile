@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../../../core/error/failure.dart';
+import '../../../../core/presentation/failure_text.dart';
+import '../../../../core/presentation/l10n.dart';
 import '../../../../core/theme/app_palette.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
@@ -8,13 +11,9 @@ import '../../../../core/utils/formatters.dart';
 import '../../../../core/widgets/buttons.dart';
 import '../../../../core/widgets/data_blocks.dart';
 import '../../../../core/widgets/labeled_text_field.dart';
-import '../../../../core/widgets/screen_header.dart';
-import '../../../../core/presentation/failure_text.dart';
 
-/// C4 · Reverse a check-in. Единственное разрушительное действие
-/// администратора — за подтверждением, которое называет кого и когда.
-///
-/// Возвращает true, если отмена выполнена.
+/// C4 · Отмена входа — единственное разрушительное действие контролёра,
+/// за подтверждением с причиной. Возвращает true, если отмена выполнена.
 Future<bool> showReversalSheet(
   BuildContext context, {
   required String attendeeName,
@@ -27,9 +26,6 @@ Future<bool> showReversalSheet(
   final done = await showModalBottomSheet<bool>(
     context: context,
     isScrollControlled: true,
-    useSafeArea: true,
-    backgroundColor: Colors.transparent,
-    barrierColor: context.colors.scrim,
     builder: (_) => _ReversalSheet(
       attendeeName: attendeeName,
       ticketLabel: ticketLabel,
@@ -93,79 +89,51 @@ class _ReversalSheetState extends State<_ReversalSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
+    final c = context.colors;
     final at = widget.checkedInAt;
     return Padding(
-      padding: EdgeInsets.fromLTRB(
-        AppSpacing.sheetInset,
-        AppSpacing.sheetInset,
-        AppSpacing.sheetInset,
-        AppSpacing.sheetInset + MediaQuery.viewInsetsOf(context).bottom,
-      ),
-      child: Align(
-        alignment: Alignment.bottomCenter,
-        child: Material(
-          color: context.colors.bg,
-          elevation: 12,
-          child: BlueprintFrame(
-            padding: const EdgeInsets.fromLTRB(20, 22, 20, 20),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SectionLabel('Confirm reversal', color: context.colors.primary),
-                  const SizedBox(height: 10),
-                  Text(
-                    'Undo the check-in for ${widget.attendeeName}?',
-                    style: AppText.listTitle.copyWith(color: context.colors.text, fontSize: 22),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'The ticket becomes valid again and can be scanned once more. '
-                    'The reversal is logged with your name and cannot be deleted.',
-                    style: AppText.bodySecondary.copyWith(color: context.colors.textMuted),
-                  ),
-                  const SizedBox(height: 18),
-                  DetailGrid(rows: [
-                    if (at != null) ('Checked in', '${Fmt.timeWithSeconds(at)} · ${widget.gate}'),
-                    ('Recorded by', widget.recordedBy),
-                    ('Ticket', widget.ticketLabel),
-                  ]),
-                  const SizedBox(height: 18),
-                  LabeledTextField(
-                    label: 'Reason (required)',
-                    controller: _reason,
-                    hintText: 'Scanned the wrong person',
-                    textInputAction: TextInputAction.done,
-                    onChanged: (_) => setState(() => _error = null),
-                  ),
-                  if (_error != null) ...[
-                    const SizedBox(height: 10),
-                    Text(_error!, style: AppText.bodySecondary.copyWith(color: context.colors.text)),
-                  ],
-                  const SizedBox(height: 18),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: SecondaryButton(
-                          label: 'Keep',
-                          onPressed: _busy ? null : () => Navigator.of(context).pop(false),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: PrimaryButton(
-                          label: 'Undo check-in',
-                          isLoading: _busy,
-                          onPressed: _reason.text.trim().isEmpty ? null : _confirm,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+      padding: EdgeInsets.fromLTRB(AppSpacing.side, 0, AppSpacing.side, 16 + MediaQuery.viewInsetsOf(context).bottom),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(l.reverseTitle(widget.attendeeName), style: AppText.headerTitle.copyWith(color: c.text)),
+            const SizedBox(height: 6),
+            Text(l.reverseBody, style: AppText.bodySecondary.copyWith(color: c.textMuted)),
+            const SizedBox(height: 16),
+            AppCard(
+              color: c.bg,
+              child: DetailGrid(rows: [
+                if (at != null) (l.checkedInLabel, '${Fmt.timeWithSeconds(at)} · ${widget.gate}'),
+                (l.recordedBy, widget.recordedBy),
+                (l.ticketLabel, widget.ticketLabel),
+              ]),
             ),
-          ),
+            const SizedBox(height: 16),
+            LabeledTextField(
+              label: l.reasonRequired,
+              controller: _reason,
+              hintText: l.reasonHint,
+              textInputAction: TextInputAction.done,
+              onChanged: (_) => setState(() => _error = null),
+            ),
+            if (_error != null) ...[
+              const SizedBox(height: 10),
+              InfoBanner(text: _error!, tone: Tone.danger),
+            ],
+            const SizedBox(height: 16),
+            PrimaryButton(
+              label: l.undoEntry,
+              icon: LucideIcons.undo2,
+              tone: Tone.danger,
+              isLoading: _busy,
+              onPressed: _reason.text.trim().isEmpty ? null : _confirm,
+            ),
+            const SizedBox(height: 8),
+            GhostButton(label: l.actionKeep, color: c.textMuted, onPressed: _busy ? null : () => Navigator.of(context).pop(false)),
+          ],
         ),
       ),
     );

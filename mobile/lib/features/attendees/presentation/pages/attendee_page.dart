@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../core/presentation/failure_text.dart';
+import '../../../../core/presentation/l10n.dart';
 import '../../../../core/theme/app_palette.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
@@ -14,20 +17,15 @@ import '../../../checkin/presentation/widgets/reversal_sheet.dart';
 import '../../../settings/presentation/settings_controller.dart';
 import '../../domain/entities/attendee.dart';
 import '../view_models/attendee_view_model.dart';
-import '../../../../core/presentation/failure_text.dart';
+import 'search_page.dart' show ticketStatusBadge;
 
-/// C3 · Attendee record — ручная отметка, по одному билету за раз.
+/// C3 · Карточка гостя: билеты заказа, ручная отметка, отмена входа.
 class AttendeePage extends StatelessWidget {
   const AttendeePage({super.key});
 
   Future<void> _checkIn(BuildContext context, List<String> ids) async {
-    final failure = await context.read<AttendeeViewModel>().checkIn(ids);
-    if (!context.mounted) return;
-    showMessage(
-      context,
-      failure?.text(context) ??
-          (ids.length == 1 ? 'Checked in.' : '${ids.length} tickets checked in.'),
-    );
+    final f = await context.read<AttendeeViewModel>().checkIn(ids);
+    if (context.mounted) showMessage(context, f?.text(context) ?? context.l10n.checkedInToast);
   }
 
   Future<void> _reverse(BuildContext context, Attendee a, AttendeeTicket t) async {
@@ -41,11 +39,13 @@ class AttendeePage extends StatelessWidget {
       recordedBy: t.checkedInBy ?? vm.staffName,
       onConfirm: (reason) => vm.undo(t.id, reason),
     );
-    if (done && context.mounted) showMessage(context, 'Check-in reversed. The ticket is valid again.');
+    if (done && context.mounted) showMessage(context, context.l10n.reversedBody);
   }
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
+    final c = context.colors;
     final vm = context.watch<AttendeeViewModel>();
     final a = vm.attendee;
 
@@ -53,84 +53,87 @@ class AttendeePage extends StatelessWidget {
     if (vm.isLoading) {
       body = const LoadingView();
     } else if (a == null) {
-      body = Padding(
-        padding: const EdgeInsets.all(AppSpacing.sideLight),
-        child: MessageView(
-          icon: Icons.person_off_outlined,
-          title: 'Attendee not found',
-          message: vm.failure?.text(context) ?? 'This record is not available.',
-          actionLabel: 'Try again',
-          onAction: vm.load,
+      body = Center(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.side),
+          child: MessageView(
+            icon: LucideIcons.userX,
+            title: l.recordUnavailable,
+            message: vm.failure?.text(context) ?? '',
+            actionLabel: l.tryAgain,
+            onAction: vm.load,
+          ),
         ),
       );
     } else {
-      final pending = a.tickets.where((t) => t.canCheckIn).map((t) => t.id).toList();
+      final pending = [for (final t in a.tickets) if (t.canCheckIn) t.id];
       body = Column(
         children: [
           Expanded(
             child: ListView(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.sideLight, 26, AppSpacing.sideLight, 16),
+              padding: const EdgeInsets.fromLTRB(AppSpacing.side, 8, AppSpacing.side, 16),
               children: [
-                Text(a.fullName, style: AppText.personName.copyWith(color: context.colors.text)),
-                const SizedBox(height: 4),
-                Text(
-                  [a.email, a.orderNumber].whereType<String>().join(' · '),
-                  style: AppText.meta.copyWith(color: context.colors.textMuted),
-                ),
-                const SizedBox(height: 14),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: TagLabel(
-                    pending.isEmpty
-                        ? 'All tickets used or void'
-                        : '${pending.length} ${pending.length == 1 ? 'ticket' : 'tickets'} not arrived',
-                    filled: pending.isNotEmpty,
+                AppCard(
+                  child: Row(
+                    children: [
+                      InitialAvatar(a.fullName, size: 48),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(a.fullName, style: AppText.headerTitle.copyWith(color: c.text)),
+                            Text([?a.email, ?a.orderNumber].join(' · '), style: AppText.meta.copyWith(color: c.textMuted)),
+                            const SizedBox(height: 6),
+                            TagLabel(
+                              pending.isEmpty ? l.allUsedOrVoid : l.notArrivedCount(pending.length),
+                              tone: pending.isEmpty ? Tone.neutral : Tone.success,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(height: AppSpacing.section),
-                const SectionLabel('Tickets in this order'),
-                const SizedBox(height: 4),
-                for (final t in a.tickets)
-                  _TicketRow(
+                SectionLabel(l.ticketsInOrder),
+                const SizedBox(height: 10),
+                for (final t in a.tickets) ...[
+                  _TicketCard(
                     ticket: t,
                     busy: vm.isBusy,
                     onCheckIn: () => _checkIn(context, [t.id]),
                     onReverse: () => _reverse(context, a, t),
                   ),
+                  const SizedBox(height: 10),
+                ],
                 if (a.history.isNotEmpty) ...[
-                  const SizedBox(height: AppSpacing.section),
-                  const SectionLabel('History'),
+                  const SizedBox(height: AppSpacing.block),
+                  SectionLabel(l.history),
                   const SizedBox(height: 8),
                   for (final h in a.history)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 6),
-                      child: Text(
-                        '${Fmt.shortDateTime(h.at)} — ${h.text}',
-                        style: AppText.bodySecondary.copyWith(color: context.colors.textMuted),
-                      ),
+                      child: Text('${Fmt.shortDateTime(h.at)} — ${h.text}', style: AppText.bodySecondary.copyWith(color: c.textMuted)),
                     ),
                 ],
               ],
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(AppSpacing.sideLight, 8, AppSpacing.sideLight, AppSpacing.bottomClearance),
+            padding: const EdgeInsets.fromLTRB(AppSpacing.side, 8, AppSpacing.side, 16),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (pending.length > 1) ...[
                   PrimaryButton(
-                    label: pending.length == 2 ? 'Check in both tickets' : 'Check in all ${pending.length} tickets',
+                    label: l.checkInAll(pending.length),
+                    icon: LucideIcons.logIn,
                     isLoading: vm.isBusy,
                     onPressed: () => _checkIn(context, pending),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 10),
                 ],
-                Text(
-                  'Manual check-ins are recorded against your name and appear in the '
-                  'organizer\'s activity timeline.',
-                  style: AppText.finePrint.copyWith(color: context.colors.textMuted),
-                ),
+                Text(l.manualNote, textAlign: TextAlign.center, style: AppText.finePrint.copyWith(color: c.textMuted)),
               ],
             ),
           ),
@@ -142,7 +145,7 @@ class AttendeePage extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            ScreenHeader(title: 'Attendee', onBack: () => context.pop()),
+            ScreenHeader(title: l.guest, onBack: () => context.pop()),
             Expanded(child: body),
           ],
         ),
@@ -151,13 +154,8 @@ class AttendeePage extends StatelessWidget {
   }
 }
 
-class _TicketRow extends StatelessWidget {
-  const _TicketRow({
-    required this.ticket,
-    required this.busy,
-    required this.onCheckIn,
-    required this.onReverse,
-  });
+class _TicketCard extends StatelessWidget {
+  const _TicketCard({required this.ticket, required this.busy, required this.onCheckIn, required this.onReverse});
 
   final AttendeeTicket ticket;
   final bool busy;
@@ -166,28 +164,35 @@ class _TicketRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
+    final c = context.colors;
     final t = ticket;
-    final status = switch (t.status) {
-      AttendeeTicketStatus.valid => 'valid',
-      AttendeeTicketStatus.checkedIn => 'checked in ${t.checkedInAt == null ? '' : Fmt.time(t.checkedInAt!)}'.trim(),
-      AttendeeTicketStatus.refunded => 'refunded',
-      AttendeeTicketStatus.cancelled => 'cancelled',
-    };
-    final Widget trailing = switch (t.status) {
-      AttendeeTicketStatus.valid => SizedBox(
-          width: 112,
-          child: SecondaryButton(label: 'Check in', onPressed: busy ? null : onCheckIn),
-        ),
-      AttendeeTicketStatus.checkedIn => SizedBox(
-          width: 112,
-          child: SecondaryButton(label: 'Undo', onPressed: busy ? null : onReverse),
-        ),
-      _ => const TagLabel('Void'),
-    };
-    return ListRow(
-      title: t.type,
-      subtitle: [t.label, ?t.seat, status].join(' · '),
-      trailing: trailing,
+    final badge = ticketStatusBadge(l, t.status);
+    return AppCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(child: Text(t.type, style: AppText.listTitle.copyWith(color: c.text))),
+              TagLabel(badge.label, tone: badge.tone),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            [t.label, ?t.seat, if (t.checkedInAt != null) Fmt.time(t.checkedInAt!)].join(' · '),
+            style: AppText.mono.copyWith(color: c.textMuted, fontWeight: FontWeight.w400),
+          ),
+          if (t.canCheckIn) ...[
+            const SizedBox(height: 12),
+            PrimaryButton(label: l.markEntry, icon: LucideIcons.logIn, onPressed: busy ? null : onCheckIn),
+          ],
+          if (t.status == AttendeeTicketStatus.checkedIn) ...[
+            const SizedBox(height: 12),
+            SecondaryButton(label: l.undoEntry, icon: LucideIcons.undo2, onPressed: busy ? null : onReverse),
+          ],
+        ],
+      ),
     );
   }
 }
