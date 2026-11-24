@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import '../../../app/role_tab_bar.dart';
 import '../../../app/routes.dart';
 import '../../../core/presentation/loadable.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/formatters.dart';
@@ -108,7 +108,7 @@ class _GroupCard extends StatelessWidget {
     final orderId = g.orderId;
     return Container(
       padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(color: AppColors.paper, border: Border.all(color: AppColors.divider)),
+      decoration: BoxDecoration(color: context.colors.surface, border: Border.all(color: context.colors.border)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -117,21 +117,21 @@ class _GroupCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   g.startsAt == null ? 'DATE TBA' : Fmt.dayStamp(g.startsAt!),
-                  style: AppText.fieldLabel.copyWith(color: AppColors.accent700),
+                  style: AppText.fieldLabel.copyWith(color: context.colors.primary),
                 ),
               ),
               TagLabel(status, filled: status == 'Valid'),
             ],
           ),
           const SizedBox(height: 6),
-          Text(g.eventTitle ?? 'Event', style: AppText.listTitle.copyWith(color: AppColors.ink)),
+          Text(g.eventTitle ?? 'Event', style: AppText.listTitle.copyWith(color: context.colors.text)),
           Text(
             [
               ?g.venue,
               '$count ${count == 1 ? 'ticket' : 'tickets'}',
               if (g.seats.isNotEmpty) g.seats.join(', '),
             ].where((s) => s.isNotEmpty).join(' · '),
-            style: AppText.meta.copyWith(color: AppColors.neutral600),
+            style: AppText.meta.copyWith(color: context.colors.textMuted),
           ),
           const SizedBox(height: 12),
           SecondaryButton(

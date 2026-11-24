@@ -9,7 +9,7 @@ import '../../../core/error/failure.dart';
 import '../../../core/error/result.dart';
 import '../../../core/platform/document_actions.dart';
 import '../../../core/presentation/loadable.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/formatters.dart';
@@ -74,11 +74,11 @@ class OrderPage extends StatelessWidget {
     final ok = await showDialog<bool>(
       context: context,
       builder: (c) => AlertDialog(
-        title: Text('Cancel this order?', style: AppText.headerTitle.copyWith(color: AppColors.ink)),
+        title: Text('Cancel this order?', style: AppText.headerTitle.copyWith(color: context.colors.text)),
         content: Text(
           'All tickets in the order become invalid and will be refused at the gate. '
           'Refunds follow the organizer\'s policy.',
-          style: AppText.body.copyWith(color: AppColors.neutral700),
+          style: AppText.body.copyWith(color: context.colors.textMuted),
         ),
         actions: [
           TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('KEEP')),
@@ -127,10 +127,10 @@ class OrderPage extends StatelessWidget {
                         o.status == OrderStatus.completed
                             ? (issued == 1 ? 'Your ticket is ready' : '$issued tickets are yours')
                             : o.status.label,
-                        style: AppText.screenTitle.copyWith(color: AppColors.ink),
+                        style: AppText.screenTitle.copyWith(color: context.colors.text),
                       ),
                       if (o.attendeeEmail != null)
-                        Text('Confirmation sent to ${o.attendeeEmail}', style: AppText.meta.copyWith(color: AppColors.neutral600)),
+                        Text('Confirmation sent to ${o.attendeeEmail}', style: AppText.meta.copyWith(color: context.colors.textMuted)),
                       const SizedBox(height: 16),
                       Row(children: [
                         Expanded(
@@ -145,19 +145,19 @@ class OrderPage extends StatelessWidget {
                       const SizedBox(height: 8),
                       if (d.tickets.isEmpty)
                         Text('Tickets are issued after payment is confirmed.',
-                            style: AppText.bodySecondary.copyWith(color: AppColors.neutral700)),
+                            style: AppText.bodySecondary.copyWith(color: context.colors.textMuted)),
                       for (final t in d.tickets)
                         Container(
                           margin: const EdgeInsets.only(bottom: 12),
                           padding: const EdgeInsets.all(14),
-                          decoration: BoxDecoration(color: AppColors.paper, border: Border.all(color: AppColors.divider)),
+                          decoration: BoxDecoration(color: context.colors.surface, border: Border.all(color: context.colors.border)),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(children: [
                                 Expanded(
                                   child: Text(t.attendeeName ?? o.attendeeName ?? 'Attendee',
-                                      style: AppText.listTitle.copyWith(color: AppColors.ink)),
+                                      style: AppText.listTitle.copyWith(color: context.colors.text)),
                                 ),
                                 TagLabel(t.status.label, filled: t.status == TicketStatus.valid),
                               ]),
@@ -180,7 +180,7 @@ class OrderPage extends StatelessWidget {
                       Text(
                         'Show the QR on your phone or on paper. Each ticket admits one person once — '
                         'a printed copy and the screen copy are the same ticket, not two.',
-                        style: AppText.finePrint.copyWith(color: AppColors.neutral600),
+                        style: AppText.finePrint.copyWith(color: context.colors.textMuted),
                       ),
                       const SizedBox(height: AppSpacing.section),
                       const SectionLabel('Order'),

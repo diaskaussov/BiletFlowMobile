@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../theme/app_colors.dart';
+import '../theme/app_palette.dart';
 import '../theme/app_text_styles.dart';
 import 'buttons.dart';
 
-/// Пустое состояние / ошибка: знак 40 pt, заголовок, пояснение, действие.
+/// Пустое состояние / ошибка: иконка в круге, заголовок, пояснение, действие
+/// (A2 «Вас пока не назначили…», A9 «Нет подключения»).
 class MessageView extends StatelessWidget {
   const MessageView({
     super.key,
@@ -13,6 +14,7 @@ class MessageView extends StatelessWidget {
     required this.message,
     this.actionLabel,
     this.onAction,
+    this.tone = Tone.neutral,
   });
 
   final IconData icon;
@@ -20,20 +22,28 @@ class MessageView extends StatelessWidget {
   final String message;
   final String? actionLabel;
   final VoidCallback? onAction;
+  final Tone tone;
 
   @override
   Widget build(BuildContext context) {
+    final c = context.colors;
+    final t = c.tone(tone == Tone.neutral ? Tone.primary : tone);
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 40, color: AppColors.neutral600),
-        const SizedBox(height: 18),
-        Text(title, style: AppText.screenTitle.copyWith(color: AppColors.ink)),
-        const SizedBox(height: 8),
-        Text(message, style: AppText.body.copyWith(color: AppColors.neutral700)),
+        Container(
+          width: 72,
+          height: 72,
+          decoration: BoxDecoration(color: t.bg, shape: BoxShape.circle),
+          child: Icon(icon, size: 32, color: t.fg),
+        ),
+        const SizedBox(height: 16),
+        Text(title, textAlign: TextAlign.center, style: AppText.headerTitle.copyWith(color: c.text)),
+        const SizedBox(height: 6),
+        Text(message, textAlign: TextAlign.center, style: AppText.bodySecondary.copyWith(color: c.textMuted)),
         if (actionLabel != null) ...[
-          const SizedBox(height: 26),
+          const SizedBox(height: 20),
           SecondaryButton(label: actionLabel!, onPressed: onAction),
         ],
       ],
@@ -46,12 +56,7 @@ class LoadingView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: SizedBox.square(
-        dimension: 22,
-        child: CircularProgressIndicator(strokeWidth: 2),
-      ),
-    );
+    return const Center(child: SizedBox.square(dimension: 24, child: CircularProgressIndicator(strokeWidth: 2.4)));
   }
 }
 

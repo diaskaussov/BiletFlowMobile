@@ -1,39 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-import '../core/theme/app_colors.dart';
-import '../core/theme/app_spacing.dart';
-import '../core/theme/app_text_styles.dart';
+import '../core/widgets/floating_nav_bar.dart';
 import '../features/auth/domain/entities/user_session.dart';
 import 'routes.dart';
 
 class RoleTab {
-  const RoleTab(this.label, this.route);
+  const RoleTab(this.label, this.route, this.icon);
 
   final String label;
   final String route;
+  final IconData icon;
 }
 
-/// Вкладки каждой роли. Сканер (EVENT_ADMIN) использует свой MainTabBar.
+/// Вкладки ролей по TicketTon.pen. Сканер (EVENT_ADMIN) использует свои.
 abstract final class RoleTabs {
   static const attendee = [
-    RoleTab('EVENTS', Routes.catalog),
-    RoleTab('TICKETS', Routes.myTickets),
-    RoleTab('SUPPORT', Routes.attendeeSupport),
-    RoleTab('ACCOUNT', Routes.attendeeAccount),
+    RoleTab('Events', Routes.catalog, LucideIcons.calendar),
+    RoleTab('Tickets', Routes.myTickets, LucideIcons.ticket),
+    RoleTab('Support', Routes.attendeeSupport, LucideIcons.lifeBuoy),
+    RoleTab('Profile', Routes.attendeeAccount, LucideIcons.user),
   ];
 
   static const organizer = [
-    RoleTab('EVENTS', Routes.organizer),
-    RoleTab('SUPPORT', Routes.organizerSupport),
-    RoleTab('ACCOUNT', Routes.organizerAccount),
+    RoleTab('Events', Routes.organizer, LucideIcons.calendar),
+    RoleTab('Support', Routes.organizerSupport, LucideIcons.lifeBuoy),
+    RoleTab('Alerts', Routes.organizerNotifications, LucideIcons.bell),
+    RoleTab('Profile', Routes.organizerAccount, LucideIcons.user),
   ];
 
   static const admin = [
-    RoleTab('QUEUES', Routes.adminQueues),
-    RoleTab('EVENTS', Routes.adminEvents),
-    RoleTab('USERS', Routes.adminUsers),
-    RoleTab('ACCOUNT', Routes.adminAccount),
+    RoleTab('Queues', Routes.adminQueues, LucideIcons.inbox),
+    RoleTab('Users', Routes.adminUsers, LucideIcons.users),
+    RoleTab('Events', Routes.adminEvents, LucideIcons.calendar),
+    RoleTab('Orders', Routes.adminOrders, LucideIcons.receipt),
   ];
 
   static List<RoleTab> of(UserRole role) => switch (role) {
@@ -44,7 +45,6 @@ abstract final class RoleTabs {
       };
 }
 
-/// Нижние вкладки: равные пункты, линия сверху, активный — accent (§04).
 class RoleTabBar extends StatelessWidget {
   const RoleTabBar({super.key, required this.tabs, required this.current});
 
@@ -53,47 +53,16 @@ class RoleTabBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.bg,
-        border: Border(top: BorderSide(color: AppColors.divider)),
-      ),
-      child: SafeArea(
-        top: false,
-        child: Row(
-          children: [
-            for (final (i, tab) in tabs.indexed) ...[
-              if (i > 0)
-                const SizedBox(height: 22, child: VerticalDivider(width: 1, color: AppColors.divider)),
-              Expanded(
-                child: Semantics(
-                  button: true,
-                  selected: tab.route == current,
-                  child: InkWell(
-                    onTap: tab.route == current ? null : () => context.go(tab.route),
-                    child: SizedBox(
-                      height: AppSizes.tabBar,
-                      child: Center(
-                        child: Text(
-                          tab.label,
-                          style: AppText.tabItem.copyWith(
-                            color: tab.route == current ? AppColors.accent : AppColors.neutral600,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ],
-        ),
-      ),
+    final index = tabs.indexWhere((t) => t.route == current);
+    return FloatingNavBar(
+      items: [for (final t in tabs) NavItem(icon: t.icon, label: t.label)],
+      current: index < 0 ? 0 : index,
+      onSelect: (i) => context.go(tabs[i].route),
     );
   }
 }
 
-/// Каркас главного экрана роли: заголовок 26 pt и вкладки снизу.
+/// Каркас главного экрана роли: крупная шапка и плавающая навигация.
 class RoleScaffold extends StatelessWidget {
   const RoleScaffold({
     super.key,
@@ -108,6 +77,8 @@ class RoleScaffold extends StatelessWidget {
   final List<RoleTab> tabs;
   final String current;
   final String title;
+
+  /// Строка над заголовком.
   final String? subtitle;
   final Widget? action;
   final Widget body;
@@ -120,26 +91,7 @@ class RoleScaffold extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.sideList, 18, AppSpacing.sideList, 12),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(title, style: AppText.screenTitle.copyWith(color: AppColors.ink)),
-                        if (subtitle != null)
-                          Text(subtitle!, style: AppText.meta.copyWith(color: AppColors.neutral600)),
-                      ],
-                    ),
-                  ),
-                  ?action,
-                ],
-              ),
-            ),
-            const Divider(),
+            LargeHeader(title: title, context_: subtitle, action: action),
             Expanded(child: body),
           ],
         ),

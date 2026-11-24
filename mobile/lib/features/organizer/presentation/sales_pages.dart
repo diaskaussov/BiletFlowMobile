@@ -9,7 +9,7 @@ import '../../../core/error/failure.dart';
 import '../../../core/error/result.dart';
 import '../../../core/platform/document_actions.dart';
 import '../../../core/presentation/loadable.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/formatters.dart';
@@ -118,7 +118,7 @@ class _EventAttendeesPageState extends State<EventAttendeesPage> {
                     return ListView(children: [
                       Padding(
                         padding: const EdgeInsets.all(AppSpacing.sideList),
-                        child: Text('No attendees match.', style: AppText.bodySecondary.copyWith(color: AppColors.neutral600)),
+                        child: Text('No attendees match.', style: AppText.bodySecondary.copyWith(color: context.colors.textMuted)),
                       ),
                     ]);
                   }
@@ -239,19 +239,19 @@ class _ManageOrderPageState extends State<ManageOrderPage> {
                         ),
                       if (refundable) ...[
                         const SizedBox(height: AppSpacing.section),
-                        const SectionLabel('Confirm full refund', color: AppColors.accent700),
+                        SectionLabel('Confirm full refund', color: context.colors.primary),
                         const SizedBox(height: 8),
                         Text(
                           'All tickets become invalid immediately and will be refused at the gate. Seats return '
                           'to the map. The attendee is emailed automatically.',
-                          style: AppText.bodySecondary.copyWith(color: AppColors.neutral700),
+                          style: AppText.bodySecondary.copyWith(color: context.colors.textMuted),
                         ),
                         if (used > 0) ...[
                           const SizedBox(height: 8),
                           Text(
                             '$used ticket${used == 1 ? ' was' : 's were'} already checked in. Refunding does not undo the '
                             'admission — reverse the check-in first if that was a mistake.',
-                            style: AppText.bodySecondary.copyWith(color: AppColors.ink),
+                            style: AppText.bodySecondary.copyWith(color: context.colors.text),
                           ),
                         ],
                         const SizedBox(height: 12),

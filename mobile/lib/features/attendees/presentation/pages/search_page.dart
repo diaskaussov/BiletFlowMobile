@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../app/routes.dart';
-import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_palette.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/formatters.dart';
@@ -98,7 +98,7 @@ class _SearchPageState extends State<SearchPage> {
                     ? 'Attendees who bought under another name will not appear. '
                         'Ask for the order confirmation email.'
                     : 'Search covers this event only. Match on name, email or ticket code.',
-                style: AppText.finePrint.copyWith(color: AppColors.neutral600),
+                style: AppText.finePrint.copyWith(color: context.colors.textMuted),
               ),
             ),
           ],
@@ -127,16 +127,16 @@ class _SearchPageState extends State<SearchPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Icon(Icons.search_off, size: 40, color: AppColors.neutral600),
+            Icon(Icons.search_off, size: 40, color: context.colors.textMuted),
             const SizedBox(height: 18),
             Text(
               'No attendee matches “${vm.query.trim()}”',
-              style: AppText.screenTitle.copyWith(color: AppColors.ink),
+              style: AppText.screenTitle.copyWith(color: context.colors.text),
             ),
             const SizedBox(height: 8),
             Text(
               'Check the spelling, or search by the ticket ID printed under the QR code.',
-              style: AppText.body.copyWith(color: AppColors.neutral700),
+              style: AppText.body.copyWith(color: context.colors.textMuted),
             ),
             const SizedBox(height: 26),
             SecondaryButton(label: 'Search by ticket ID', onPressed: _searchByTicketId),
@@ -171,12 +171,12 @@ class _FilterChip extends StatelessWidget {
         alignment: Alignment.center,
         decoration: BoxDecoration(
           border: Border(
-            bottom: BorderSide(color: active ? AppColors.accent : Colors.transparent, width: 2),
+            bottom: BorderSide(color: active ? context.colors.primary : Colors.transparent, width: 2),
           ),
         ),
         child: Text(
           label.toUpperCase(),
-          style: AppText.sectionLabel.copyWith(color: active ? AppColors.accent : AppColors.neutral600),
+          style: AppText.sectionLabel.copyWith(color: active ? context.colors.primary : context.colors.textMuted),
         ),
       ),
     );

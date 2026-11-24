@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-import '../theme/app_colors.dart';
+import '../theme/app_palette.dart';
 import '../theme/app_spacing.dart';
 import '../theme/app_text_styles.dart';
 
-/// Кнопка «назад»: рисуется квадрат 30 pt, нажимается зона 44 × 44 (§04).
+/// Кнопка «назад»: круг 44 pt с рамкой.
 class BackBox extends StatelessWidget {
   const BackBox({super.key, required this.onPressed, this.onDark = false});
 
@@ -13,24 +14,19 @@ class BackBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = onDark ? AppColors.paper : AppColors.ink;
-    final border =
-        onDark ? AppColors.paper.withValues(alpha: 0.35) : AppColors.divider;
+    final c = context.colors;
     return Semantics(
       button: true,
-      label: 'Back',
-      child: GestureDetector(
-        onTap: onPressed,
-        behavior: HitTestBehavior.opaque,
-        child: SizedBox.square(
-          dimension: AppSizes.minTap,
-          child: Center(
-            child: Container(
-              width: AppSizes.backBox,
-              height: AppSizes.backBox,
-              decoration: BoxDecoration(border: Border.all(color: border)),
-              child: Icon(Icons.chevron_left, size: 18, color: color),
-            ),
+      label: MaterialLocalizations.of(context).backButtonTooltip,
+      child: Material(
+        color: onDark ? Colors.white.withValues(alpha: 0.15) : c.surface,
+        shape: CircleBorder(side: onDark ? BorderSide.none : BorderSide(color: c.border)),
+        child: InkWell(
+          customBorder: const CircleBorder(),
+          onTap: onPressed,
+          child: SizedBox.square(
+            dimension: AppSizes.minTap,
+            child: Icon(LucideIcons.chevronLeft, size: 20, color: onDark ? Colors.white : c.text),
           ),
         ),
       ),
@@ -38,8 +34,8 @@ class BackBox extends StatelessWidget {
   }
 }
 
-/// Шапка экрана: назад + заголовок 17 pt над подписью капсом 10 pt,
-/// тонкая линия снизу (§07).
+/// Шапка вложенного экрана: назад, над заголовком — контекст мелким
+/// приглушённым шрифтом (M-B3 «Мои события» над названием события).
 class ScreenHeader extends StatelessWidget {
   const ScreenHeader({
     super.key,
@@ -47,10 +43,12 @@ class ScreenHeader extends StatelessWidget {
     this.subtitle,
     this.onBack,
     this.trailing,
-    this.side = AppSpacing.sideLight,
+    this.side = AppSpacing.side,
   });
 
   final String title;
+
+  /// Строка над заголовком.
   final String? subtitle;
   final VoidCallback? onBack;
   final Widget? trailing;
@@ -58,53 +56,52 @@ class ScreenHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.fromLTRB(onBack == null ? side : side - 7, 8, side, 10),
-      decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: AppColors.divider)),
-      ),
+    final c = context.colors;
+    return Padding(
+      padding: EdgeInsets.fromLTRB(side, 8, side, 12),
       child: Row(
         children: [
-          if (onBack != null) ...[BackBox(onPressed: onBack!), const SizedBox(width: 5)],
+          if (onBack != null) ...[BackBox(onPressed: onBack!), const SizedBox(width: 12)],
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  title,
-                  style: AppText.headerTitle.copyWith(color: AppColors.ink),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                if (subtitle != null) ...[
-                  const SizedBox(height: 2),
+                if (subtitle != null)
                   Text(
-                    subtitle!.toUpperCase(),
-                    style: AppText.fieldLabel.copyWith(color: AppColors.neutral600),
+                    subtitle!,
+                    style: AppText.caption.copyWith(color: c.textMuted),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                ],
+                Text(
+                  title,
+                  style: AppText.headerTitle.copyWith(color: c.text),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ],
             ),
           ),
-          ?trailing,
+          if (trailing != null) ...[const SizedBox(width: 8), trailing!],
         ],
       ),
     );
   }
 }
 
-/// Заголовок секции капсом 11 pt (§02).
+/// Заголовок блока: «По типам билетов», «Последние входы».
 class SectionLabel extends StatelessWidget {
-  const SectionLabel(this.text, {super.key, this.color = AppColors.neutral600});
+  const SectionLabel(this.text, {super.key, this.color, this.trailing});
 
   final String text;
-  final Color color;
+  final Color? color;
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
-    return Text(text.toUpperCase(), style: AppText.sectionLabel.copyWith(color: color));
+    final label = Text(text, style: AppText.sectionLabel.copyWith(color: color ?? context.colors.text));
+    if (trailing == null) return label;
+    return Row(children: [Expanded(child: label), trailing!]);
   }
 }

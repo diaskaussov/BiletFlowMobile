@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import '../../../app/routes.dart';
 import '../../../core/error/failure.dart';
 import '../../../core/presentation/loadable.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/formatters.dart';
@@ -101,9 +101,9 @@ class SeatMapPage extends StatelessWidget {
                     const SizedBox(height: 16),
                     Container(
                       height: 28,
-                      color: AppColors.neutral200,
+                      color: context.colors.neutralSoft,
                       alignment: Alignment.center,
-                      child: Text('STAGE', style: AppText.sectionLabel.copyWith(color: AppColors.neutral700)),
+                      child: Text('STAGE', style: AppText.sectionLabel.copyWith(color: context.colors.textMuted)),
                     ),
                     const SizedBox(height: 16),
                     for (final section in _sections(seats)) _SectionMap(name: section.$1, seats: section.$2),
@@ -158,7 +158,7 @@ class _SectionMap extends StatelessWidget {
                     padding: const EdgeInsets.only(bottom: 4),
                     child: Row(
                       children: [
-                        SizedBox(width: 24, child: Text(row, style: AppText.meta.copyWith(color: AppColors.neutral600))),
+                        SizedBox(width: 24, child: Text(row, style: AppText.meta.copyWith(color: context.colors.textMuted))),
                         for (final s in list..sort((a, b) => (int.tryParse(a.number) ?? 0).compareTo(int.tryParse(b.number) ?? 0)))
                           _SeatBox(seat: s),
                       ],
@@ -183,12 +183,12 @@ class _SeatBox extends StatelessWidget {
     final vm = context.watch<SeatMapViewModel>();
     final selected = vm.selected.contains(seat.id);
     final (Color bg, Color fg, String mark) = selected
-        ? (AppColors.accent, AppColors.paper, '✓')
+        ? (context.colors.primary, context.colors.surface, '✓')
         : switch (seat.status) {
-            SeatStatus.available => (AppColors.paper, AppColors.ink, ''),
-            SeatStatus.held => (AppColors.neutral300, AppColors.neutral700, seat.heldByMe ? '✓' : 'H'),
-            SeatStatus.sold => (AppColors.neutral700, AppColors.paper, '✕'),
-            SeatStatus.unavailable => (AppColors.neutral200, AppColors.neutral500, '−'),
+            SeatStatus.available => (context.colors.surface, context.colors.text, ''),
+            SeatStatus.held => (context.colors.border, context.colors.textMuted, seat.heldByMe ? '✓' : 'H'),
+            SeatStatus.sold => (context.colors.textMuted, context.colors.surface, '✕'),
+            SeatStatus.unavailable => (context.colors.neutralSoft, context.colors.textMuted, '−'),
           };
     return Semantics(
       button: true,
@@ -200,7 +200,7 @@ class _SeatBox extends StatelessWidget {
           width: 30,
           height: 30,
           margin: const EdgeInsets.only(right: 4),
-          decoration: BoxDecoration(color: bg, border: Border.all(color: AppColors.neutral400)),
+          decoration: BoxDecoration(color: bg, border: Border.all(color: context.colors.border)),
           alignment: Alignment.center,
           child: Text(mark.isEmpty ? seat.number : mark, style: AppText.tag.copyWith(color: fg, fontSize: 10)),
         ),
@@ -220,23 +220,23 @@ class _Legend extends StatelessWidget {
             Container(
               width: 18,
               height: 18,
-              decoration: BoxDecoration(color: c, border: Border.all(color: AppColors.neutral400)),
+              decoration: BoxDecoration(color: c, border: Border.all(color: context.colors.border)),
               alignment: Alignment.center,
-              child: Text(mark, style: AppText.tag.copyWith(fontSize: 9, color: c == AppColors.paper ? AppColors.ink : AppColors.paper)),
+              child: Text(mark, style: AppText.tag.copyWith(fontSize: 9, color: c == context.colors.surface ? context.colors.text : context.colors.surface)),
             ),
             const SizedBox(width: 6),
-            Text(label, style: AppText.meta.copyWith(color: AppColors.neutral700)),
+            Text(label, style: AppText.meta.copyWith(color: context.colors.textMuted)),
           ],
         );
     return Wrap(
       spacing: 14,
       runSpacing: 8,
       children: [
-        item(AppColors.paper, '', 'Available'),
-        item(AppColors.accent, '✓', 'Selected'),
-        item(AppColors.neutral300, 'H', 'Held'),
-        item(AppColors.neutral700, '✕', 'Sold'),
-        item(AppColors.neutral200, '−', 'Unavailable'),
+        item(context.colors.surface, '', 'Available'),
+        item(context.colors.primary, '✓', 'Selected'),
+        item(context.colors.border, 'H', 'Held'),
+        item(context.colors.textMuted, '✕', 'Sold'),
+        item(context.colors.neutralSoft, '−', 'Unavailable'),
       ],
     );
   }
@@ -253,9 +253,9 @@ class _SelectionBar extends StatelessWidget {
     final needed = vm.cart.ticketCount;
     final picked = vm.selected.length;
     return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.bg,
-        border: Border(top: BorderSide(color: AppColors.divider)),
+      decoration: BoxDecoration(
+        color: context.colors.bg,
+        border: Border(top: BorderSide(color: context.colors.border)),
       ),
       padding: const EdgeInsets.fromLTRB(AppSpacing.sideLight, 12, AppSpacing.sideLight, AppSpacing.bottomClearance),
       child: Column(
@@ -263,13 +263,13 @@ class _SelectionBar extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           for (final s in vm.selectedSeats)
-            Text('${s.label} · ${Fmt.money(s.price ?? 0)}', style: AppText.bodySecondary.copyWith(color: AppColors.ink)),
+            Text('${s.label} · ${Fmt.money(s.price ?? 0)}', style: AppText.bodySecondary.copyWith(color: context.colors.text)),
           const SizedBox(height: 6),
           Row(
             children: [
-              Text('$picked of $needed seats', style: AppText.bodySecondary.copyWith(color: AppColors.neutral700)),
+              Text('$picked of $needed seats', style: AppText.bodySecondary.copyWith(color: context.colors.textMuted)),
               const Spacer(),
-              Text(Fmt.money(vm.total), style: AppText.statNumeral.copyWith(fontSize: 22, color: AppColors.ink)),
+              Text(Fmt.money(vm.total), style: AppText.statNumeral.copyWith(fontSize: 22, color: context.colors.text)),
             ],
           ),
           const SizedBox(height: 10),
@@ -281,7 +281,7 @@ class _SelectionBar extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(top: 6),
             child: Text('Seats are held for you for 10 minutes once you continue.',
-                style: AppText.finePrint.copyWith(color: AppColors.neutral600)),
+                style: AppText.finePrint.copyWith(color: context.colors.textMuted)),
           ),
         ],
       ),

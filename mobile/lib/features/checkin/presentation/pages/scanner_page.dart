@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 import '../../../../app/routes.dart';
 import '../../../../core/error/failure.dart';
 import '../../../../core/error/result.dart';
-import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_palette.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/formatters.dart';
@@ -116,14 +116,14 @@ class _ScannerPageState extends State<ScannerPage> with WidgetsBindingObserver {
     final event = vm.event;
 
     return Scaffold(
-      backgroundColor: AppColors.cameraLive,
+      backgroundColor: AppPalette.camera,
       body: Stack(
         fit: StackFit.expand,
         children: [
           MobileScanner(
             controller: _camera,
             onDetect: _onDetect,
-            placeholderBuilder: (_) => const ColoredBox(color: AppColors.cameraLive),
+            placeholderBuilder: (_) => const ColoredBox(color: AppPalette.camera),
             errorBuilder: (context, error) {
               if (error.errorCode == MobileScannerErrorCode.permissionDenied && !_permissionDenied) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -179,7 +179,7 @@ class _ScannerPageState extends State<ScannerPage> with WidgetsBindingObserver {
                                 ? 'Checking ticket…'
                                 : (torchOn ? 'Reading code…' : 'Hold the ticket QR in the frame'),
                             textAlign: TextAlign.center,
-                            style: AppText.headerTitle.copyWith(color: AppColors.paper),
+                            style: AppText.headerTitle.copyWith(color: AppPalette.onStrong),
                           ),
                           const SizedBox(height: 6),
                           Text(
@@ -187,7 +187,7 @@ class _ScannerPageState extends State<ScannerPage> with WidgetsBindingObserver {
                                 ? 'Move a little closer if it does not catch.'
                                 : 'Paper or phone screen. Works in grayscale.',
                             textAlign: TextAlign.center,
-                            style: AppText.meta.copyWith(color: AppColors.paper.withValues(alpha: 0.6)),
+                            style: AppText.meta.copyWith(color: AppPalette.onStrong.withValues(alpha: 0.6)),
                           ),
                         ],
                       ),
@@ -228,11 +228,11 @@ class _ScannerPageState extends State<ScannerPage> with WidgetsBindingObserver {
             ),
           ),
           if (vm.isChecking)
-            const Positioned(
+            Positioned(
               left: 0,
               right: 0,
               bottom: 0,
-              child: LinearProgressIndicator(minHeight: 3, color: AppColors.accent300),
+              child: LinearProgressIndicator(minHeight: 3, color: context.colors.primarySoft),
             ),
         ],
       ),
@@ -272,12 +272,12 @@ class _TopBar extends StatelessWidget {
                   title,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: AppText.headerTitle.copyWith(color: AppColors.paper),
+                  style: AppText.headerTitle.copyWith(color: AppPalette.onStrong),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   subtitle.toUpperCase(),
-                  style: AppText.fieldLabel.copyWith(color: AppColors.paper.withValues(alpha: 0.6)),
+                  style: AppText.fieldLabel.copyWith(color: AppPalette.onStrong.withValues(alpha: 0.6)),
                 ),
               ],
             ),
@@ -293,8 +293,8 @@ class _TopBar extends StatelessWidget {
                   width: AppSizes.minTap,
                   height: AppSizes.minTap,
                   decoration: BoxDecoration(
-                    color: on ? AppColors.paper : null,
-                    border: on ? null : Border.all(color: AppColors.paper.withValues(alpha: 0.35)),
+                    color: on ? AppPalette.onStrong : null,
+                    border: on ? null : Border.all(color: AppPalette.onStrong.withValues(alpha: 0.35)),
                   ),
                   child: Stack(
                     alignment: Alignment.center,
@@ -302,14 +302,14 @@ class _TopBar extends StatelessWidget {
                       Icon(
                         on ? Icons.flashlight_on_outlined : Icons.flashlight_off_outlined,
                         size: 22,
-                        color: on ? AppColors.ink : AppColors.paper,
+                        color: on ? context.colors.text : AppPalette.onStrong,
                       ),
                       if (torch == TorchState.auto)
                         Positioned(
                           bottom: 2,
                           child: Text(
                             'AUTO',
-                            style: AppText.fieldLabel.copyWith(fontSize: 7, color: AppColors.paper),
+                            style: AppText.fieldLabel.copyWith(fontSize: 7, color: AppPalette.onStrong),
                           ),
                         ),
                     ],
@@ -337,8 +337,8 @@ class _Banner extends StatelessWidget {
         width: double.infinity,
         margin: const EdgeInsets.symmetric(horizontal: AppSpacing.sideDark),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
-        color: AppColors.paper,
-        child: Text(text, style: AppText.statusStrip.copyWith(color: AppColors.ink)),
+        color: AppPalette.onStrong,
+        child: Text(text, style: AppText.statusStrip.copyWith(color: context.colors.text)),
       ),
     );
   }
@@ -354,8 +354,8 @@ class _Reticle extends StatelessWidget {
         final side = (constraints.maxWidth - 2 * 40).clamp(160.0, 300.0);
         return SizedBox.square(
           dimension: side,
-          child: const CustomPaint(
-            painter: ReticlePainter(cornerColor: AppColors.paper, lineColor: AppColors.accent300),
+          child: CustomPaint(
+            painter: ReticlePainter(cornerColor: AppPalette.onStrong, lineColor: context.colors.primarySoft),
           ),
         );
       },
@@ -371,14 +371,14 @@ class _CameraError extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: AppColors.cameraLowLight,
+      color: AppPalette.camera,
       child: Center(
         child: Padding(
           padding: const EdgeInsets.all(40),
           child: Text(
             message,
             textAlign: TextAlign.center,
-            style: AppText.bodySecondary.copyWith(color: AppColors.paper.withValues(alpha: 0.6)),
+            style: AppText.bodySecondary.copyWith(color: AppPalette.onStrong.withValues(alpha: 0.6)),
           ),
         ),
       ),
@@ -406,14 +406,14 @@ class _PermissionDenied extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(Icons.no_photography_outlined, size: 40, color: AppColors.neutral600),
+                    Icon(Icons.no_photography_outlined, size: 40, color: context.colors.textMuted),
                     const SizedBox(height: 18),
-                    Text('Camera access is off', style: AppText.screenTitle.copyWith(color: AppColors.ink)),
+                    Text('Camera access is off', style: AppText.screenTitle.copyWith(color: context.colors.text)),
                     const SizedBox(height: 8),
                     Text(
                       'BiletFlow needs the camera to read ticket QR codes. Turn it on in '
                       'Settings → BiletFlow → Camera, then come back to this screen.',
-                      style: AppText.body.copyWith(color: AppColors.neutral700),
+                      style: AppText.body.copyWith(color: context.colors.textMuted),
                     ),
                   ],
                 ),
@@ -431,7 +431,7 @@ class _PermissionDenied extends StatelessWidget {
                   Text(
                     'Manual search still records a real check-in against the same ticket, '
                     'so an attendee is never admitted twice.',
-                    style: AppText.finePrint.copyWith(color: AppColors.neutral600),
+                    style: AppText.finePrint.copyWith(color: context.colors.textMuted),
                   ),
                 ],
               ),

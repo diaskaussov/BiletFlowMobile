@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../../app/routes.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/formatters.dart';
@@ -47,20 +47,20 @@ class OfflinePage extends StatelessWidget {
                 children: [
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                    color: online ? AppColors.accent100 : AppColors.neutral900,
+                    color: online ? context.colors.primaryTint : context.colors.text,
                     child: Row(
                       children: [
                         Icon(
                           online ? Icons.wifi : Icons.wifi_off,
                           size: 18,
-                          color: online ? AppColors.accent800 : AppColors.paper,
+                          color: online ? context.colors.primary : context.colors.surface,
                         ),
                         const SizedBox(width: 10),
                         Expanded(
                           child: Text(
                             online ? 'CONNECTED — SCANNING AVAILABLE' : 'NO CONNECTION — SCANNING PAUSED',
                             style: AppText.statusStrip.copyWith(
-                              color: online ? AppColors.accent800 : AppColors.paper,
+                              color: online ? context.colors.primary : context.colors.surface,
                             ),
                           ),
                         ),
@@ -71,7 +71,7 @@ class OfflinePage extends StatelessWidget {
                   Text(
                     'Tickets are verified on the server, so scanning stays paused until the device '
                     'reconnects. Nothing scanned during an outage is stored on the phone.',
-                    style: AppText.body.copyWith(color: AppColors.neutral700),
+                    style: AppText.body.copyWith(color: context.colors.textMuted),
                   ),
                   const SizedBox(height: AppSpacing.block),
                   ValueRow(
@@ -89,7 +89,7 @@ class OfflinePage extends StatelessWidget {
                   Text(
                     'Hold the queue or record names manually and re-scan once the connection '
                     'returns. Offline check-in is deferred past this release.',
-                    style: AppText.bodySecondary.copyWith(color: AppColors.neutral700),
+                    style: AppText.bodySecondary.copyWith(color: context.colors.textMuted),
                   ),
                 ],
               ),

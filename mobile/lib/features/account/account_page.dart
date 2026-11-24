@@ -6,7 +6,7 @@ import '../../app/role_tab_bar.dart';
 import '../../app/routes.dart';
 import '../../core/config/app_config.dart';
 import '../../core/config/server_address.dart';
-import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_palette.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/widgets/buttons.dart';
@@ -42,8 +42,8 @@ class AccountPage extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(AppSpacing.sideList, 22, AppSpacing.sideList, 24),
         children: [
-          Text(session?.fullName ?? '', style: AppText.listTitle.copyWith(color: AppColors.ink)),
-          Text(session?.email ?? '', style: AppText.meta.copyWith(color: AppColors.neutral600)),
+          Text(session?.fullName ?? '', style: AppText.listTitle.copyWith(color: context.colors.text)),
+          Text(session?.email ?? '', style: AppText.meta.copyWith(color: context.colors.textMuted)),
           const SizedBox(height: 10),
           Align(alignment: Alignment.centerLeft, child: TagLabel(roleLabel, filled: true)),
           const SizedBox(height: AppSpacing.section),
@@ -69,7 +69,7 @@ class AccountPage extends StatelessWidget {
           Text(
             'BiletFlow ${AppConfig.appVersion} · ${context.watch<ServerAddress>().current}\n'
             'All payments in this build are demonstration only — no money moves.',
-            style: AppText.finePrint.copyWith(color: AppColors.neutral600),
+            style: AppText.finePrint.copyWith(color: context.colors.textMuted),
           ),
         ],
       ),

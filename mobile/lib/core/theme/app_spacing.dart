@@ -1,41 +1,56 @@
 import 'package:flutter/widgets.dart';
 
-/// Отступы из §01 и §03 спеки.
+/// Отступы TicketTon: поля экрана 20, шаг 4.
 abstract final class AppSpacing {
-  // боковые поля по семействам экранов
-  static const sideLight = 24.0; // A4 A5 B3 C3 C4
-  static const sideList = 24.0; // A2 A3 C1 C2
-  static const sideDark = 22.0; // B1 B2 B4–B10
-  static const sideSignIn = 30.0;
-  static const sheetInset = 18.0;
+  static const side = 20.0;
 
-  // вертикальные шаги
-  static const tight = 6.0;
-  static const related = 10.0;
-  static const block = 22.0;
-  static const section = 30.0;
-  static const statement = 44.0;
+  // Старые имена семейств экранов — все поля теперь одинаковые.
+  static const sideLight = side;
+  static const sideList = side;
+  static const sideDark = side;
+  static const sideSignIn = 24.0;
+  static const sheetInset = side;
 
-  /// Отступ сверху стандартного экрана под статус-баром.
-  static const topStandard = 16.0;
+  static const tight = 4.0;
+  static const related = 8.0;
+  static const block = 16.0;
+  static const section = 24.0;
+  static const statement = 32.0;
 
-  /// Нижний отступ 42 = 34 home indicator + 8.
-  static const bottomClearance = 8.0;
+  static const topStandard = 4.0;
 
-  static const actionGap = 10.0;
+  /// Отступ под нижней навигацией и кнопками.
+  static const bottomClearance = 12.0;
 
-  static EdgeInsets screen(double side) =>
+  static const actionGap = 12.0;
+
+  static EdgeInsets screen([double side = AppSpacing.side]) =>
       EdgeInsets.fromLTRB(side, topStandard, side, bottomClearance);
+}
+
+abstract final class AppRadius {
+  static const xs = 6.0;
+  static const sm = 8.0;
+  static const md = 12.0;
+  static const field = 14.0;
+  static const card = 16.0;
+  static const button = 16.0;
+  static const buttonLarge = 18.0;
+  static const panel = 24.0;
+  static const result = 28.0;
+  static const pill = 999.0;
 }
 
 abstract final class AppSizes {
   static const minTap = 44.0;
-  static const buttonResult = 56.0;
-  static const buttonPrimary = 50.0;
-  static const buttonSecondary = 48.0;
+  static const buttonLarge = 64.0;
+  static const buttonResult = 64.0;
+  static const buttonPrimary = 56.0;
+  static const buttonSecondary = 56.0;
+  static const buttonSmall = 40.0;
   static const buttonGhost = 44.0;
-  static const textField = 46.0;
-  static const backBox = 30.0;
+  static const textField = 56.0;
+  static const backBox = 44.0;
+  static const nav = 64.0;
   static const verdictMark = 54.0;
-  static const tabBar = 52.0;
 }

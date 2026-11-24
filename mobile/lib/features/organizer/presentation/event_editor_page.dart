@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import '../../../app/routes.dart';
 import '../../../core/error/result.dart';
 import '../../../core/presentation/loadable.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/buttons.dart';
@@ -110,7 +110,7 @@ class _EventEditorPageState extends State<EventEditorPage> {
                       onChanged: (v) => vm.update((x) => x.copyWith(category: v)),
                     ),
                     const SizedBox(height: 14),
-                    Text('Visibility', style: AppText.meta.copyWith(color: AppColors.neutral600)),
+                    Text('Visibility', style: AppText.meta.copyWith(color: context.colors.textMuted)),
                     const SizedBox(height: 6),
                     ChoiceChips<EventVisibility>(
                       options: EventVisibility.values,
@@ -180,7 +180,7 @@ class _EventEditorPageState extends State<EventEditorPage> {
                     ),
                     const SizedBox(height: 6),
                     Text('Image upload is not available in this build — paste a link to a hosted image.',
-                        style: AppText.finePrint.copyWith(color: AppColors.neutral600)),
+                        style: AppText.finePrint.copyWith(color: context.colors.textMuted)),
                   ],
                 ),
               ),
@@ -191,7 +191,7 @@ class _EventEditorPageState extends State<EventEditorPage> {
                 child: Column(
                   children: [
                     if (vm.error != null) ...[
-                      Text(vm.error!, style: AppText.bodySecondary.copyWith(color: AppColors.ink)),
+                      Text(vm.error!, style: AppText.bodySecondary.copyWith(color: context.colors.text)),
                       const SizedBox(height: 8),
                     ],
                     PrimaryButton(

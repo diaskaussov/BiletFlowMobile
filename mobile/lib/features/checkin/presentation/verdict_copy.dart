@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../domain/entities/scan_log.dart';
 import '../domain/entities/scan_result.dart';
@@ -39,11 +39,11 @@ abstract final class VerdictCopy {
         _ => 32,
       };
 
-  static Color field(Verdict v) => switch (v) {
-        Verdict.valid => AppColors.fieldValid,
-        Verdict.repeatScan => AppColors.fieldRepeat,
-        Verdict.campaignCode => AppColors.fieldCampaign,
-        _ => AppColors.fieldRefused,
+  static Color field(Verdict v, AppPalette c) => switch (v) {
+        Verdict.valid => c.successStrong,
+        Verdict.repeatScan => c.primary,
+        Verdict.campaignCode => c.infoStrong,
+        _ => c.dangerStrong,
       };
 
   /// Строка журнала для A4 «Recent».

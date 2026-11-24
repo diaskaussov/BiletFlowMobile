@@ -7,7 +7,7 @@ import '../../../app/routes.dart';
 import '../../../core/error/failure.dart';
 import '../../../core/error/result.dart';
 import '../../../core/presentation/loadable.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/formatters.dart';
@@ -64,7 +64,7 @@ class SupportListPage extends StatelessWidget {
           await context.push(Routes.newSupportCase(base));
           vm.load();
         },
-        icon: const Icon(Icons.add, color: AppColors.ink),
+        icon: Icon(Icons.add, color: context.colors.text),
       ),
       body: Column(
         children: [
@@ -239,7 +239,7 @@ class _NewCasePageState extends State<NewCasePage> {
                       Text(
                         'Support cases go to the organizer of an event. Register for or buy a ticket first, '
                         'then open the case from that event or order.',
-                        style: AppText.bodySecondary.copyWith(color: AppColors.ink),
+                        style: AppText.bodySecondary.copyWith(color: context.colors.text),
                       )
                     else
                       ChoiceChips<CaseContext?>(
@@ -266,11 +266,11 @@ class _NewCasePageState extends State<NewCasePage> {
                   if (vm.eventId != null || vm.orderId != null)
                     Text(
                       'The ${vm.orderId != null ? 'order' : 'event'} is attached automatically, so support sees the context.',
-                      style: AppText.finePrint.copyWith(color: AppColors.neutral600),
+                      style: AppText.finePrint.copyWith(color: context.colors.textMuted),
                     ),
                   if (vm.error != null) ...[
                     const SizedBox(height: 10),
-                    Text(vm.error!, style: AppText.bodySecondary.copyWith(color: AppColors.ink)),
+                    Text(vm.error!, style: AppText.bodySecondary.copyWith(color: context.colors.text)),
                   ],
                 ],
               ),
@@ -397,12 +397,12 @@ class _SupportThreadPageState extends State<SupportThreadPage> {
                       const Divider(height: 28),
                     ],
                     if (messages.isEmpty)
-                      Text('No messages yet.', style: AppText.bodySecondary.copyWith(color: AppColors.neutral600)),
+                      Text('No messages yet.', style: AppText.bodySecondary.copyWith(color: context.colors.textMuted)),
                     for (final m in messages) _Bubble(message: m, mine: m.senderId == session?.userId),
                     const SizedBox(height: 8),
                     Text(
                       'Replies arrive by email and in your account. Messages are asynchronous — nobody has to be online.',
-                      style: AppText.finePrint.copyWith(color: AppColors.neutral600),
+                      style: AppText.finePrint.copyWith(color: context.colors.textMuted),
                     ),
                     if (!isOrganizer && c != null && c.status != CaseStatus.resolved)
                       GhostButton(
@@ -417,7 +417,7 @@ class _SupportThreadPageState extends State<SupportThreadPage> {
               ),
             ),
             Container(
-              decoration: const BoxDecoration(border: Border(top: BorderSide(color: AppColors.divider))),
+              decoration: BoxDecoration(border: Border(top: BorderSide(color: context.colors.border))),
               padding: const EdgeInsets.fromLTRB(AppSpacing.sideLight, 10, AppSpacing.sideLight, AppSpacing.bottomClearance),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -459,8 +459,8 @@ class _Bubble extends StatelessWidget {
       margin: EdgeInsets.only(bottom: 12, left: mine ? 40 : 0, right: mine ? 0 : 40),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: mine ? AppColors.accent100 : AppColors.paper,
-        border: Border.all(color: mine ? AppColors.accent300 : AppColors.divider),
+        color: mine ? context.colors.primaryTint : context.colors.surface,
+        border: Border.all(color: mine ? context.colors.primarySoft : context.colors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -468,10 +468,10 @@ class _Bubble extends StatelessWidget {
           Text(
             '${mine ? 'YOU' : m.senderName.toUpperCase()}'
             '${m.createdAt == null ? '' : ' · ${Fmt.shortDateTime(m.createdAt!).toUpperCase()}'}',
-            style: AppText.fieldLabel.copyWith(color: AppColors.neutral600),
+            style: AppText.fieldLabel.copyWith(color: context.colors.textMuted),
           ),
           const SizedBox(height: 4),
-          Text(m.text, style: AppText.body.copyWith(color: AppColors.ink)),
+          Text(m.text, style: AppText.body.copyWith(color: context.colors.text)),
         ],
       ),
     );

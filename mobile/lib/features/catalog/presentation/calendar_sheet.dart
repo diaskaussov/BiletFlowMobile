@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/error/result.dart';
 import '../../../core/platform/document_actions.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/buttons.dart';
@@ -22,8 +22,8 @@ Future<void> showCalendarSheet(
 }) {
   return showModalBottomSheet<void>(
     context: context,
-    backgroundColor: AppColors.bg,
-    barrierColor: AppColors.neutral900.withValues(alpha: 0.55),
+    backgroundColor: context.colors.bg,
+    barrierColor: context.colors.scrim,
     builder: (sheetContext) => SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(AppSpacing.sheetInset, 20, AppSpacing.sheetInset, 12),
@@ -31,9 +31,9 @@ Future<void> showCalendarSheet(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SectionLabel('Add to calendar', color: AppColors.accent700),
+            SectionLabel('Add to calendar', color: context.colors.primary),
             const SizedBox(height: 6),
-            Text(event.title, style: AppText.listTitle.copyWith(color: AppColors.ink)),
+            Text(event.title, style: AppText.listTitle.copyWith(color: context.colors.text)),
             const SizedBox(height: 16),
             if (CalendarLinks.google(event) case final g?) ...[
               SecondaryButton(label: 'Google Calendar', onPressed: () => actions.openUrl(g)),
@@ -60,7 +60,7 @@ Future<void> showCalendarSheet(
             Text(
               'Includes venue address and the event\'s time. If the organizer changes the time, '
               'the updated file replaces your entry.',
-              style: AppText.finePrint.copyWith(color: AppColors.neutral600),
+              style: AppText.finePrint.copyWith(color: context.colors.textMuted),
             ),
           ],
         ),

@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import '../../../core/error/failure.dart';
 import '../../../core/error/result.dart';
 import '../../../core/presentation/loadable.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/formatters.dart';
@@ -53,7 +53,7 @@ class TicketTypesPage extends StatelessWidget {
     final draft = await showModalBottomSheet<TicketTypeDraft>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: AppColors.bg,
+      backgroundColor: context.colors.bg,
       builder: (_) => _TicketTypeSheet(initial: t == null ? const TicketTypeDraft() : TicketTypeDraft.from(t)),
     );
     if (draft == null) return;
@@ -97,12 +97,12 @@ class TicketTypesPage extends StatelessWidget {
                         Container(
                           margin: const EdgeInsets.only(bottom: 12),
                           padding: const EdgeInsets.all(14),
-                          decoration: BoxDecoration(color: AppColors.paper, border: Border.all(color: AppColors.divider)),
+                          decoration: BoxDecoration(color: context.colors.surface, border: Border.all(color: context.colors.border)),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(children: [
-                                Expanded(child: Text(t.name, style: AppText.listTitle.copyWith(color: AppColors.ink))),
+                                Expanded(child: Text(t.name, style: AppText.listTitle.copyWith(color: context.colors.text))),
                                 TagLabel(
                                   t.hidden
                                       ? 'Hidden'
@@ -115,7 +115,7 @@ class TicketTypesPage extends StatelessWidget {
                                 ),
                               ]),
                               if (t.description != null && t.description!.isNotEmpty)
-                                Text(t.description!, style: AppText.meta.copyWith(color: AppColors.neutral600)),
+                                Text(t.description!, style: AppText.meta.copyWith(color: context.colors.textMuted)),
                               const SizedBox(height: 10),
                               DetailGrid(rows: [
                                 ('Price', Fmt.money(t.price)),
@@ -222,7 +222,7 @@ class _TicketTypeSheetState extends State<_TicketTypeSheet> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SectionLabel(widget.initial.name.isEmpty ? 'New ticket type' : 'Edit ticket type', color: AppColors.accent700),
+              SectionLabel(widget.initial.name.isEmpty ? 'New ticket type' : 'Edit ticket type', color: context.colors.primary),
               const SizedBox(height: 14),
               LabeledTextField(label: 'Name', controller: _name, hintText: 'General Admission'),
               const SizedBox(height: 12),
@@ -244,11 +244,11 @@ class _TicketTypeSheetState extends State<_TicketTypeSheet> {
                 Padding(
                   padding: const EdgeInsets.only(top: 8),
                   child: Text('Paid tickets can be sold only after paid sales are activated for this event.',
-                      style: AppText.finePrint.copyWith(color: AppColors.neutral600)),
+                      style: AppText.finePrint.copyWith(color: context.colors.textMuted)),
                 ),
               if (_error != null) ...[
                 const SizedBox(height: 10),
-                Text(_error!, style: AppText.bodySecondary.copyWith(color: AppColors.ink)),
+                Text(_error!, style: AppText.bodySecondary.copyWith(color: context.colors.text)),
               ],
               const SizedBox(height: 16),
               PrimaryButton(label: 'Save', onPressed: _submit),

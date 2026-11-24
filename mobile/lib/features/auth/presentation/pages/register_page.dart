@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/error/result.dart';
-import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_palette.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/widgets/buttons.dart';
@@ -92,15 +92,15 @@ class _RegisterPageState extends State<RegisterPage> {
           child: Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: selected ? AppColors.accent100 : null,
-              border: Border.all(color: selected ? AppColors.accent : AppColors.divider, width: selected ? 2 : 1),
+              color: selected ? context.colors.primaryTint : null,
+              border: Border.all(color: selected ? context.colors.primary : context.colors.border, width: selected ? 2 : 1),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title.toUpperCase(), style: AppText.sectionLabel.copyWith(color: selected ? AppColors.accent800 : AppColors.ink)),
+                Text(title.toUpperCase(), style: AppText.sectionLabel.copyWith(color: selected ? context.colors.primary : context.colors.text)),
                 const SizedBox(height: 4),
-                Text(text, style: AppText.meta.copyWith(color: AppColors.neutral700)),
+                Text(text, style: AppText.meta.copyWith(color: context.colors.textMuted)),
               ],
             ),
           ),
@@ -117,7 +117,7 @@ class _RegisterPageState extends State<RegisterPage> {
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(AppSpacing.sideSignIn, 24, AppSpacing.sideSignIn, 24),
                 children: [
-                  Text('I want to', style: AppText.meta.copyWith(color: AppColors.neutral600)),
+                  Text('I want to', style: AppText.meta.copyWith(color: context.colors.textMuted)),
                   const SizedBox(height: 6),
                   IntrinsicHeight(
                     child: Row(
@@ -161,7 +161,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   const SizedBox(height: 22),
                   if (vm.error != null) ...[
-                    Text(vm.error!, style: AppText.bodySecondary.copyWith(color: AppColors.ink)),
+                    Text(vm.error!, style: AppText.bodySecondary.copyWith(color: context.colors.text)),
                     const SizedBox(height: 10),
                   ],
                   PrimaryButton(
@@ -182,7 +182,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   Text(
                     'We send a confirmation link to your email. Event staff accounts are '
                     'created by organizers, not here.',
-                    style: AppText.finePrint.copyWith(color: AppColors.neutral600),
+                    style: AppText.finePrint.copyWith(color: context.colors.textMuted),
                   ),
                 ],
               ),

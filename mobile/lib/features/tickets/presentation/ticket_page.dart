@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 import '../../../core/error/result.dart';
 import '../../../core/platform/document_actions.dart';
 import '../../../core/presentation/loadable.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/formatters.dart';
@@ -61,7 +61,7 @@ class TicketPage extends StatelessWidget {
     final vm = context.watch<TicketViewModel>();
     const actions = DocumentActions();
     return Scaffold(
-      backgroundColor: AppColors.bg,
+      backgroundColor: context.colors.bg,
       body: SafeArea(
         child: Column(
           children: [
@@ -75,18 +75,18 @@ class TicketPage extends StatelessWidget {
                     padding: const EdgeInsets.fromLTRB(AppSpacing.sideLight, 20, AppSpacing.sideLight, 24),
                     children: [
                       BlueprintFrame(
-                        background: AppColors.paper,
+                        background: context.colors.surface,
                         padding: const EdgeInsets.all(18),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('BILETFLOW ADMISSION TICKET', style: AppText.fieldLabel.copyWith(color: AppColors.accent700)),
+                            Text('BILETFLOW ADMISSION TICKET', style: AppText.fieldLabel.copyWith(color: context.colors.primary)),
                             const SizedBox(height: 8),
-                            Text(t.eventTitle ?? 'Event', style: AppText.screenTitle.copyWith(color: AppColors.ink)),
+                            Text(t.eventTitle ?? 'Event', style: AppText.screenTitle.copyWith(color: context.colors.text)),
                             if (t.eventStartsAt != null)
-                              Text(Fmt.dateTime(t.eventStartsAt!), style: AppText.meta.copyWith(color: AppColors.neutral700)),
+                              Text(Fmt.dateTime(t.eventStartsAt!), style: AppText.meta.copyWith(color: context.colors.textMuted)),
                             if (t.eventVenue != null && t.eventVenue!.isNotEmpty)
-                              Text(t.eventVenue!, style: AppText.meta.copyWith(color: AppColors.neutral700)),
+                              Text(t.eventVenue!, style: AppText.meta.copyWith(color: context.colors.textMuted)),
                             const SizedBox(height: 18),
                             Center(
                               child: Opacity(
@@ -94,7 +94,7 @@ class TicketPage extends StatelessWidget {
                                 child: Container(
                                   width: 240,
                                   height: 240,
-                                  color: AppColors.paper,
+                                  color: context.colors.surface,
                                   alignment: Alignment.center,
                                   child: vm.qr == null
                                       ? const LoadingView()
@@ -111,9 +111,9 @@ class TicketPage extends StatelessWidget {
                               ),
                             const SizedBox(height: 18),
                             Row(children: [
-                              Text('ADMITS', style: AppText.fieldLabel.copyWith(color: AppColors.neutral600)),
+                              Text('ADMITS', style: AppText.fieldLabel.copyWith(color: context.colors.textMuted)),
                               const SizedBox(width: 8),
-                              Text('1', style: AppText.statNumeral.copyWith(color: AppColors.ink)),
+                              Text('1', style: AppText.statNumeral.copyWith(color: context.colors.text)),
                             ]),
                             const SizedBox(height: 10),
                             DetailGrid(rows: [
@@ -131,7 +131,7 @@ class TicketPage extends StatelessWidget {
                       Text(
                         'Keep the QR clean and unfolded. This ticket admits one person once; the digital and '
                         'printed copies share one identifier.',
-                        style: AppText.finePrint.copyWith(color: AppColors.neutral600),
+                        style: AppText.finePrint.copyWith(color: context.colors.textMuted),
                       ),
                       const SizedBox(height: AppSpacing.block),
                       PrimaryButton(

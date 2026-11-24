@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import '../../../app/role_tab_bar.dart';
 import '../../../app/routes.dart';
 import '../../../core/presentation/loadable.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/formatters.dart';
@@ -72,7 +72,7 @@ class OrganizerDashboardPage extends StatelessWidget {
           await context.push(Routes.newEvent);
           vm.load();
         },
-        icon: const Icon(Icons.add, color: AppColors.ink),
+        icon: Icon(Icons.add, color: context.colors.text),
       ),
       body: Column(
         children: [
@@ -112,7 +112,7 @@ class OrganizerDashboardPage extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 24),
                         child: Text('No ${groupLabel(vm.group).toLowerCase()} events.',
-                            style: AppText.bodySecondary.copyWith(color: AppColors.neutral600)),
+                            style: AppText.bodySecondary.copyWith(color: context.colors.textMuted)),
                       ),
                     for (final row in list) ...[
                       row.group == DashboardGroup.active ? _LiveCard(row: row) : _EventRow(row: row),
@@ -140,18 +140,18 @@ class _LiveCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: BlueprintFrame(
-        background: AppColors.accent100,
-        color: AppColors.accent300,
-        cornerColor: AppColors.accent700,
+        background: context.colors.primaryTint,
+        color: context.colors.primarySoft,
+        cornerColor: context.colors.primary,
         child: InkWell(
           onTap: () => context.push(Routes.manageEvent(e.id)),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('ACTIVE NOW · DOORS OPEN', style: AppText.fieldLabel.copyWith(color: AppColors.accent700)),
+              Text('ACTIVE NOW · DOORS OPEN', style: AppText.fieldLabel.copyWith(color: context.colors.primary)),
               const SizedBox(height: 6),
-              Text(e.title, style: AppText.screenTitle.copyWith(color: AppColors.ink)),
-              Text(e.venueLine, style: AppText.meta.copyWith(color: AppColors.neutral700)),
+              Text(e.title, style: AppText.screenTitle.copyWith(color: context.colors.text)),
+              Text(e.venueLine, style: AppText.meta.copyWith(color: context.colors.textMuted)),
               if (a != null) ...[
                 const SizedBox(height: 14),
                 StatQuad(cells: [

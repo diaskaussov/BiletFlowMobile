@@ -6,7 +6,7 @@ import '../../../app/routes.dart';
 import '../../../core/error/failure.dart';
 import '../../../core/error/result.dart';
 import '../../../core/presentation/loadable.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/formatters.dart';
@@ -54,10 +54,10 @@ class EventHubPage extends StatelessWidget {
       final ok = await showDialog<bool>(
         context: context,
         builder: (c) => AlertDialog(
-          title: Text('Cancel this event?', style: AppText.headerTitle.copyWith(color: AppColors.ink)),
+          title: Text('Cancel this event?', style: AppText.headerTitle.copyWith(color: context.colors.text)),
           content: Text(
             'Sales stop and every ticket becomes invalid. Attendees are notified. Records stay in the event history.',
-            style: AppText.body.copyWith(color: AppColors.neutral700),
+            style: AppText.body.copyWith(color: context.colors.textMuted),
           ),
           actions: [
             TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('KEEP')),

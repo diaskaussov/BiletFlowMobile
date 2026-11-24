@@ -85,29 +85,29 @@ void main() {
       );
 
   final cases = <Verdict, (ScanResult, String, String)>{
-    Verdict.valid: (result(Verdict.valid, t: ticket), 'VALID', 'SCAN NEXT TICKET'),
+    Verdict.valid: (result(Verdict.valid, t: ticket), 'VALID', 'Scan next ticket'),
     Verdict.alreadyUsed: (
       result(Verdict.alreadyUsed, t: ticket),
       'ALREADY\nUSED',
-      'OPEN ATTENDEE RECORD',
+      'Open attendee record',
     ),
     Verdict.repeatScan: (
       result(Verdict.repeatScan, t: ticket, previous: scannedAt.subtract(const Duration(seconds: 3))),
       'SAME TICKET\nJUST NOW',
-      'CONTINUE SCANNING',
+      'Continue scanning',
     ),
-    Verdict.refunded: (result(Verdict.refunded, t: ticket), 'REFUNDED\nTICKET', 'COPY TICKET ID'),
-    Verdict.cancelled: (result(Verdict.cancelled, t: ticket), 'CANCELLED\nTICKET', 'COPY TICKET ID'),
-    Verdict.unknownCode: (result(Verdict.unknownCode), 'CODE NOT\nRECOGNIZED', 'FIND BY NAME'),
+    Verdict.refunded: (result(Verdict.refunded, t: ticket), 'REFUNDED\nTICKET', 'Copy ticket ID'),
+    Verdict.cancelled: (result(Verdict.cancelled, t: ticket), 'CANCELLED\nTICKET', 'Copy ticket ID'),
+    Verdict.unknownCode: (result(Verdict.unknownCode), 'CODE NOT\nRECOGNIZED', 'Find by name'),
     Verdict.wrongEvent: (
       result(Verdict.wrongEvent, t: const ScannedTicket(eventTitle: 'Qazaq Jazz Nights vol. 4')),
       'WRONG\nEVENT',
-      'FIND BY NAME',
+      'Find by name',
     ),
     Verdict.campaignCode: (
       result(Verdict.campaignCode, c: const CampaignInfo(link: 'https://biletflow.kz', promoCode: 'STUDENT-20')),
       'PROMOTIONAL\nCODE',
-      'FIND BY NAME',
+      'Find by name',
     ),
   };
 
@@ -127,7 +127,7 @@ void main() {
 
   testWidgets('B4 undo is offered only when the server returned a ticket id', (tester) async {
     await pump(tester, result(Verdict.valid, t: const ScannedTicket(attendeeName: 'X')));
-    final button = tester.widget<OutlinedButton>(find.widgetWithText(OutlinedButton, 'UNDO THIS CHECK-IN'));
+    final button = tester.widget<OutlinedButton>(find.widgetWithText(OutlinedButton, 'Undo this check-in'));
     expect(button.onPressed, isNull);
   });
 }

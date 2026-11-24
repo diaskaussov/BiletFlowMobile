@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../../core/error/result.dart';
 import '../../../core/presentation/loadable.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/formatters.dart';
@@ -75,7 +75,7 @@ class AnalyticsPage extends StatelessWidget {
                       const SectionLabel('Sales over time · tickets per day'),
                       const SizedBox(height: 10),
                       if (d.sales.isEmpty)
-                        Text('No completed orders yet.', style: AppText.bodySecondary.copyWith(color: AppColors.neutral600))
+                        Text('No completed orders yet.', style: AppText.bodySecondary.copyWith(color: context.colors.textMuted))
                       else
                         BarStrip(
                           values: [for (final s in d.sales) s.tickets],
@@ -112,8 +112,8 @@ class AnalyticsPage extends StatelessWidget {
                       const SizedBox(height: AppSpacing.section),
                       const SectionLabel('Attendance'),
                       const SizedBox(height: 8),
-                      Text('${a.checkInPercentage.round()}%', style: AppText.heroMetric.copyWith(color: AppColors.ink)),
-                      Text('checked in', style: AppText.meta.copyWith(color: AppColors.neutral600)),
+                      Text('${a.checkInPercentage.round()}%', style: AppText.heroMetric.copyWith(color: context.colors.text)),
+                      Text('checked in', style: AppText.meta.copyWith(color: context.colors.textMuted)),
                       const SizedBox(height: 10),
                       DetailGrid(rows: [
                         ('Checked in', Fmt.count(a.checkedIn)),
@@ -177,23 +177,23 @@ class TimelinePage extends StatelessWidget {
                     for (final e in vm.visible)
                       Container(
                         padding: const EdgeInsets.symmetric(vertical: 12),
-                        decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: AppColors.divider))),
+                        decoration: BoxDecoration(border: Border(bottom: BorderSide(color: context.colors.border))),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             SizedBox(
                               width: 86,
                               child: Text(e.at == null ? '' : Fmt.shortDateTime(e.at!),
-                                  style: AppText.detail.copyWith(color: AppColors.neutral600)),
+                                  style: AppText.detail.copyWith(color: context.colors.textMuted)),
                             ),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(e.actionType.replaceAll('_', ' '), style: AppText.fieldLabel.copyWith(color: AppColors.accent700)),
-                                  Text(e.description, style: AppText.bodySecondary.copyWith(color: AppColors.ink)),
+                                  Text(e.actionType.replaceAll('_', ' '), style: AppText.fieldLabel.copyWith(color: context.colors.primary)),
+                                  Text(e.description, style: AppText.bodySecondary.copyWith(color: context.colors.text)),
                                   if (e.userId != null)
-                                    Text('User #${e.userId}', style: AppText.meta.copyWith(color: AppColors.neutral500)),
+                                    Text('User #${e.userId}', style: AppText.meta.copyWith(color: context.colors.textMuted)),
                                 ],
                               ),
                             ),
@@ -202,7 +202,7 @@ class TimelinePage extends StatelessWidget {
                       ),
                     const SizedBox(height: 12),
                     Text('Entries cannot be edited or deleted. Platform admins can read the same trail.',
-                        style: AppText.finePrint.copyWith(color: AppColors.neutral600)),
+                        style: AppText.finePrint.copyWith(color: context.colors.textMuted)),
                   ],
                 ),
               ),

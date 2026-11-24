@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../../core/error/result.dart';
 import '../../../core/presentation/loadable.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/formatters.dart';
@@ -65,8 +65,8 @@ class NotificationsPage extends StatelessWidget {
                       onTap: () => vm.open(n),
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 14),
-                        decoration: const BoxDecoration(
-                          border: Border(bottom: BorderSide(color: AppColors.divider)),
+                        decoration: BoxDecoration(
+                          border: Border(bottom: BorderSide(color: context.colors.border)),
                         ),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -76,18 +76,18 @@ class NotificationsPage extends StatelessWidget {
                               child: Container(
                                 width: 8,
                                 height: 8,
-                                color: n.read ? Colors.transparent : AppColors.accent,
+                                color: n.read ? Colors.transparent : context.colors.primary,
                               ),
                             ),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(n.title, style: AppText.listTitle.copyWith(color: AppColors.ink, fontSize: 16)),
+                                  Text(n.title, style: AppText.listTitle.copyWith(color: context.colors.text, fontSize: 16)),
                                   const SizedBox(height: 2),
-                                  Text(n.message, style: AppText.bodySecondary.copyWith(color: AppColors.neutral700)),
+                                  Text(n.message, style: AppText.bodySecondary.copyWith(color: context.colors.textMuted)),
                                   if (n.createdAt != null)
-                                    Text(Fmt.shortDateTime(n.createdAt!), style: AppText.meta.copyWith(color: AppColors.neutral500)),
+                                    Text(Fmt.shortDateTime(n.createdAt!), style: AppText.meta.copyWith(color: context.colors.textMuted)),
                                 ],
                               ),
                             ),

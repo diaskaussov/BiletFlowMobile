@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import '../../../app/main_tab_bar.dart';
 import '../../../core/config/app_config.dart';
 import '../../../core/config/server_address.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/buttons.dart';
@@ -31,7 +31,7 @@ class SettingsPage extends StatelessWidget {
     final gate = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Assigned gate', style: AppText.headerTitle.copyWith(color: AppColors.ink)),
+        title: Text('Assigned gate', style: AppText.headerTitle.copyWith(color: context.colors.text)),
         content: LabeledTextField(
           controller: controller,
           autofocus: true,
@@ -42,11 +42,11 @@ class SettingsPage extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: Text('CANCEL', style: AppText.buttonGhost.copyWith(color: AppColors.neutral700)),
+            child: Text('CANCEL', style: AppText.buttonGhost.copyWith(color: context.colors.textMuted)),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(controller.text),
-            child: Text('SAVE', style: AppText.buttonGhost.copyWith(color: AppColors.accent700)),
+            child: Text('SAVE', style: AppText.buttonGhost.copyWith(color: context.colors.primary)),
           ),
         ],
       ),
@@ -64,16 +64,16 @@ class SettingsPage extends StatelessWidget {
     Widget toggle(String label, bool value, ScannerSettings Function(bool) apply) {
       return Container(
         constraints: const BoxConstraints(minHeight: 48),
-        decoration: const BoxDecoration(
-          border: Border(bottom: BorderSide(color: AppColors.divider)),
+        decoration: BoxDecoration(
+          border: Border(bottom: BorderSide(color: context.colors.border)),
         ),
         child: SwitchListTile(
           contentPadding: EdgeInsets.zero,
           dense: true,
-          title: Text(label, style: AppText.body.copyWith(color: AppColors.ink)),
+          title: Text(label, style: AppText.body.copyWith(color: context.colors.text)),
           value: value,
-          activeThumbColor: AppColors.paper,
-          activeTrackColor: AppColors.accent,
+          activeThumbColor: context.colors.surface,
+          activeTrackColor: context.colors.primary,
           onChanged: (v) => _update(context, apply(v)),
         ),
       );
@@ -85,10 +85,10 @@ class SettingsPage extends StatelessWidget {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(AppSpacing.sideLight, 18, AppSpacing.sideLight, 24),
           children: [
-            Text('Settings', style: AppText.screenTitle.copyWith(color: AppColors.ink)),
+            Text('Settings', style: AppText.screenTitle.copyWith(color: context.colors.text)),
             const SizedBox(height: AppSpacing.block),
-            Text(session?.fullName ?? '', style: AppText.listTitle.copyWith(color: AppColors.ink)),
-            Text(session?.email ?? '', style: AppText.meta.copyWith(color: AppColors.neutral600)),
+            Text(session?.fullName ?? '', style: AppText.listTitle.copyWith(color: context.colors.text)),
+            Text(session?.email ?? '', style: AppText.meta.copyWith(color: context.colors.textMuted)),
             const SizedBox(height: 10),
             Row(
               children: [
@@ -115,7 +115,7 @@ class SettingsPage extends StatelessWidget {
             const SizedBox(height: 14),
             Text(
               'BiletFlow Scanner ${AppConfig.appVersion} · ${context.watch<ServerAddress>().current}',
-              style: AppText.finePrint.copyWith(color: AppColors.neutral600),
+              style: AppText.finePrint.copyWith(color: context.colors.textMuted),
             ),
           ],
         ),

@@ -1,55 +1,68 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-import '../theme/app_colors.dart';
+import '../theme/app_palette.dart';
 import '../theme/app_spacing.dart';
 import '../theme/app_text_styles.dart';
+import 'data_blocks.dart';
 
-/// Картинка события. Без картинки — тонированный блок с категорией,
-/// как плейсхолдер в веб-макетах.
+/// Градиенты обложек-заглушек: событие без картинки получает стабильный
+/// цвет по названию (M-B1 «Thumb»).
+const _coverGradients = [
+  [Color(0xFF6D4AFF), Color(0xFFA78BFA)],
+  [Color(0xFF2563EB), Color(0xFF60A5FA)],
+  [Color(0xFFDB2777), Color(0xFFF472B6)],
+  [Color(0xFF059669), Color(0xFF34D399)],
+  [Color(0xFFEA580C), Color(0xFFFBBF24)],
+];
+
+LinearGradient coverGradient(String seed) {
+  final g = _coverGradients[seed.codeUnits.fold<int>(0, (a, b) => a + b) % _coverGradients.length];
+  return LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: g);
+}
+
+/// Картинка события; без неё — градиентная обложка.
 class EventImage extends StatelessWidget {
-  const EventImage({super.key, this.url, this.label, this.height = 120});
+  const EventImage({super.key, this.url, this.label, this.height = 120, this.width, this.radius = AppRadius.card});
 
   final String? url;
+
+  /// Название или категория — от них зависит цвет заглушки.
   final String? label;
   final double height;
+  final double? width;
+  final double radius;
 
   @override
   Widget build(BuildContext context) {
     final placeholder = Container(
       height: height,
-      width: double.infinity,
-      color: AppColors.accent200,
-      alignment: Alignment.bottomLeft,
-      padding: const EdgeInsets.all(10),
-      child: Text(
-        (label ?? 'Event').toUpperCase(),
-        style: AppText.fieldLabel.copyWith(color: AppColors.accent800),
-      ),
+      width: width ?? double.infinity,
+      decoration: BoxDecoration(gradient: coverGradient(label ?? ''), borderRadius: BorderRadius.circular(radius)),
+      alignment: Alignment.center,
+      child: Icon(LucideIcons.ticket, color: Colors.white.withValues(alpha: 0.85), size: height > 80 ? 36 : 22),
     );
     final u = url;
     if (u == null || u.isEmpty) return placeholder;
-    return SizedBox(
-      height: height,
-      width: double.infinity,
-      child: Image.network(
-        u,
-        fit: BoxFit.cover,
-        errorBuilder: (_, _, _) => placeholder,
-        loadingBuilder: (context, child, progress) => progress == null ? child : placeholder,
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(radius),
+      child: SizedBox(
+        height: height,
+        width: width ?? double.infinity,
+        child: Image.network(
+          u,
+          fit: BoxFit.cover,
+          errorBuilder: (_, _, _) => placeholder,
+          loadingBuilder: (context, child, progress) => progress == null ? child : placeholder,
+        ),
       ),
     );
   }
 }
 
-/// «− 2 +» — выбор количества билетов (W2).
+/// «− 2 +» — выбор количества билетов.
 class QuantityStepper extends StatelessWidget {
-  const QuantityStepper({
-    super.key,
-    required this.value,
-    required this.onChanged,
-    this.max = 99,
-    this.enabled = true,
-  });
+  const QuantityStepper({super.key, required this.value, required this.onChanged, this.max = 99, this.enabled = true});
 
   final int value;
   final int max;
@@ -58,34 +71,74 @@ class QuantityStepper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = context.colors;
     Widget button(IconData icon, String label, VoidCallback? onTap) => Semantics(
           button: true,
           label: label,
-          child: InkWell(
-            onTap: onTap,
-            child: Container(
-              width: AppSizes.minTap,
-              height: AppSizes.minTap,
-              decoration: BoxDecoration(border: Border.all(color: AppColors.divider)),
-              child: Icon(icon, size: 18, color: onTap == null ? AppColors.neutral400 : AppColors.ink),
+          child: Material(
+            color: onTap == null ? c.bg : c.primaryTint,
+            shape: const CircleBorder(),
+            child: InkWell(
+              customBorder: const CircleBorder(),
+              onTap: onTap,
+              child: SizedBox.square(
+                dimension: 40,
+                child: Icon(icon, size: 18, color: onTap == null ? c.textMuted.withValues(alpha: 0.5) : c.primary),
+              ),
             ),
           ),
         );
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        button(Icons.remove, 'Fewer', enabled && value > 0 ? () => onChanged(value - 1) : null),
+        button(LucideIcons.minus, '−', enabled && value > 0 ? () => onChanged(value - 1) : null),
         SizedBox(
           width: 36,
-          child: Text('$value', textAlign: TextAlign.center, style: AppText.statNumeral.copyWith(fontSize: 20, color: AppColors.ink)),
+          child: Text('$value', textAlign: TextAlign.center, style: AppText.cardTitle.copyWith(color: c.text, fontSize: 17)),
         ),
-        button(Icons.add, 'More', enabled && value < max ? () => onChanged(value + 1) : null),
+        button(LucideIcons.plus, '+', enabled && value < max ? () => onChanged(value + 1) : null),
       ],
     );
   }
 }
 
-/// Вкладка-фильтр с подчёркиванием: «UPCOMING · 2».
+/// Чип-фильтр (M-B1 «Все 4»): активный — тёмный, остальные — с рамкой.
+class FilterChipPill extends StatelessWidget {
+  const FilterChipPill({super.key, required this.label, required this.active, required this.onTap});
+
+  final String label;
+  final bool active;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    return Semantics(
+      selected: active,
+      button: true,
+      child: Material(
+        color: active ? c.text : c.surface,
+        shape: StadiumBorder(side: active ? BorderSide.none : BorderSide(color: c.border)),
+        child: InkWell(
+          customBorder: const StadiumBorder(),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+            child: Text(
+              label,
+              style: AppText.meta.copyWith(
+                color: active ? c.bg : c.textMuted,
+                fontWeight: active ? FontWeight.w600 : FontWeight.w500,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Старое имя одиночной вкладки-фильтра.
 class UnderlineTab extends StatelessWidget {
   const UnderlineTab({super.key, required this.label, required this.active, required this.onTap});
 
@@ -94,26 +147,10 @@ class UnderlineTab extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        constraints: const BoxConstraints(minHeight: AppSizes.minTap),
-        alignment: Alignment.center,
-        padding: const EdgeInsets.symmetric(horizontal: 2),
-        decoration: BoxDecoration(
-          border: Border(bottom: BorderSide(color: active ? AppColors.accent : Colors.transparent, width: 2)),
-        ),
-        child: Text(
-          label.toUpperCase(),
-          style: AppText.sectionLabel.copyWith(color: active ? AppColors.accent : AppColors.neutral600),
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => FilterChipPill(label: label, active: active, onTap: onTap);
 }
 
-/// Горизонтальный ряд вкладок с прокруткой, если не помещаются.
+/// Ряд чипов-фильтров с горизонтальной прокруткой.
 class UnderlineTabs extends StatelessWidget {
   const UnderlineTabs({super.key, required this.labels, required this.current, required this.onSelect});
 
@@ -125,12 +162,12 @@ class UnderlineTabs extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sideList),
+      padding: const EdgeInsets.fromLTRB(AppSpacing.side, 4, AppSpacing.side, 8),
       child: Row(
         children: [
           for (final (i, l) in labels.indexed) ...[
-            if (i > 0) const SizedBox(width: 18),
-            UnderlineTab(label: l, active: i == current, onTap: () => onSelect(i)),
+            if (i > 0) const SizedBox(width: 8),
+            FilterChipPill(label: l, active: i == current, onTap: () => onSelect(i)),
           ],
         ],
       ),
@@ -138,15 +175,9 @@ class UnderlineTabs extends StatelessWidget {
   }
 }
 
-/// Выбор одного варианта из нескольких (чипы с рамкой).
+/// Выбор одного варианта (категория, тип скидки, способ оплаты).
 class ChoiceChips<T> extends StatelessWidget {
-  const ChoiceChips({
-    super.key,
-    required this.options,
-    required this.selected,
-    required this.onSelected,
-    required this.label,
-  });
+  const ChoiceChips({super.key, required this.options, required this.selected, required this.onSelected, required this.label});
 
   final List<T> options;
   final T selected;
@@ -155,23 +186,33 @@ class ChoiceChips<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = context.colors;
     return Wrap(
       spacing: 8,
       runSpacing: 8,
       children: [
         for (final o in options)
-          InkWell(
-            onTap: () => onSelected(o),
-            child: Container(
-              constraints: const BoxConstraints(minHeight: 38),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
-              decoration: BoxDecoration(
-                color: o == selected ? AppColors.accent : null,
-                border: Border.all(color: o == selected ? AppColors.accent : AppColors.divider),
-              ),
-              child: Text(
-                label(o),
-                style: AppText.bodySecondary.copyWith(color: o == selected ? AppColors.paper : AppColors.ink, height: 1.2),
+          Material(
+            color: o == selected ? c.primaryTint : c.surface,
+            shape: StadiumBorder(side: BorderSide(color: o == selected ? c.primary : c.border)),
+            child: InkWell(
+              customBorder: const StadiumBorder(),
+              onTap: () => onSelected(o),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (o == selected) ...[Icon(LucideIcons.check, size: 14, color: c.primary), const SizedBox(width: 6)],
+                    Text(
+                      label(o),
+                      style: AppText.meta.copyWith(
+                        color: o == selected ? c.primary : c.text,
+                        fontWeight: o == selected ? FontWeight.w600 : FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -180,32 +221,17 @@ class ChoiceChips<T> extends StatelessWidget {
   }
 }
 
-/// Полоса «DEMONSTRATION PAYMENT» — §4.6: демо-платежи не выдаются за настоящие.
+/// Плашка «демонстрационный режим» (§4.6: демо-платежи не выдаются за настоящие).
 class DemoNotice extends StatelessWidget {
   const DemoNotice({super.key, this.text});
 
   final String? text;
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: AppColors.neutral100,
-        border: Border.all(color: AppColors.divider),
-      ),
-      child: Text.rich(
-        TextSpan(children: [
-          TextSpan(text: 'DEMONSTRATION. ', style: AppText.sectionLabel.copyWith(color: AppColors.ink)),
-          TextSpan(
-            text: text ??
-                'This academic build uses a payment sandbox. No money moves, no card is stored, '
-                    'and every amount shown is simulated.',
-            style: AppText.meta.copyWith(color: AppColors.neutral700),
-          ),
-        ]),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => InfoBanner(
+        tone: Tone.warning,
+        icon: LucideIcons.flaskConical,
+        text: text ??
+            'Demonstration build: payments run in a sandbox. No money moves and no card is stored.',
+      );
 }

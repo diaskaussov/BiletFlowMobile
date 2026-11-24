@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_palette.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/formatters.dart';
@@ -70,11 +70,11 @@ class AttendeePage extends StatelessWidget {
             child: ListView(
               padding: const EdgeInsets.fromLTRB(AppSpacing.sideLight, 26, AppSpacing.sideLight, 16),
               children: [
-                Text(a.fullName, style: AppText.personName.copyWith(color: AppColors.ink)),
+                Text(a.fullName, style: AppText.personName.copyWith(color: context.colors.text)),
                 const SizedBox(height: 4),
                 Text(
                   [a.email, a.orderNumber].whereType<String>().join(' · '),
-                  style: AppText.meta.copyWith(color: AppColors.neutral600),
+                  style: AppText.meta.copyWith(color: context.colors.textMuted),
                 ),
                 const SizedBox(height: 14),
                 Align(
@@ -105,7 +105,7 @@ class AttendeePage extends StatelessWidget {
                       padding: const EdgeInsets.only(bottom: 6),
                       child: Text(
                         '${Fmt.shortDateTime(h.at)} — ${h.text}',
-                        style: AppText.bodySecondary.copyWith(color: AppColors.neutral700),
+                        style: AppText.bodySecondary.copyWith(color: context.colors.textMuted),
                       ),
                     ),
                 ],
@@ -128,7 +128,7 @@ class AttendeePage extends StatelessWidget {
                 Text(
                   'Manual check-ins are recorded against your name and appear in the '
                   'organizer\'s activity timeline.',
-                  style: AppText.finePrint.copyWith(color: AppColors.neutral600),
+                  style: AppText.finePrint.copyWith(color: context.colors.textMuted),
                 ),
               ],
             ),

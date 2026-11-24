@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../app/routes.dart';
 import '../../../../core/config/server_address.dart';
-import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_palette.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/widgets/buttons.dart';
@@ -39,17 +39,17 @@ class _SignInPageState extends State<SignInPage> {
     showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Forgot password', style: AppText.headerTitle.copyWith(color: AppColors.ink)),
+        title: Text('Forgot password', style: AppText.headerTitle.copyWith(color: context.colors.text)),
         content: Text(
           'Password reset is not available in this build yet. Event staff can '
           'ask their organizer; attendees and organizers can contact '
           'support@biletflow.kz.',
-          style: AppText.body.copyWith(color: AppColors.neutral700),
+          style: AppText.body.copyWith(color: context.colors.textMuted),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: Text('OK', style: AppText.buttonGhost.copyWith(color: AppColors.accent700)),
+            child: Text('OK', style: AppText.buttonGhost.copyWith(color: context.colors.primary)),
           ),
         ],
       ),
@@ -65,7 +65,7 @@ class _SignInPageState extends State<SignInPage> {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
-          title: Text('Server address', style: AppText.headerTitle.copyWith(color: AppColors.ink)),
+          title: Text('Server address', style: AppText.headerTitle.copyWith(color: context.colors.text)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -80,7 +80,7 @@ class _SignInPageState extends State<SignInPage> {
               Text(
                 error ?? 'On a real phone use the computer\'s Wi-Fi IP, not localhost.',
                 style: AppText.finePrint.copyWith(
-                  color: error == null ? AppColors.neutral600 : AppColors.ink,
+                  color: error == null ? context.colors.textMuted : context.colors.text,
                 ),
               ),
             ],
@@ -91,7 +91,7 @@ class _SignInPageState extends State<SignInPage> {
                 await server.reset();
                 if (context.mounted) Navigator.of(context).pop(true);
               },
-              child: Text('RESET', style: AppText.buttonGhost.copyWith(color: AppColors.neutral700)),
+              child: Text('RESET', style: AppText.buttonGhost.copyWith(color: context.colors.textMuted)),
             ),
             TextButton(
               onPressed: () async {
@@ -103,7 +103,7 @@ class _SignInPageState extends State<SignInPage> {
                   setDialogState(() => error = e);
                 }
               },
-              child: Text('SAVE', style: AppText.buttonGhost.copyWith(color: AppColors.accent700)),
+              child: Text('SAVE', style: AppText.buttonGhost.copyWith(color: context.colors.primary)),
             ),
           ],
         ),
@@ -138,15 +138,15 @@ class _SignInPageState extends State<SignInPage> {
                       style: AppText.sectionLabel.copyWith(
                         fontSize: 12,
                         letterSpacing: 0.22 * 12,
-                        color: AppColors.accent700,
+                        color: context.colors.primary,
                       ),
                     ),
                     const SizedBox(height: 44),
-                    Text('Sign in to\nBiletFlow', style: AppText.signInTitle.copyWith(color: AppColors.ink)),
+                    Text('Sign in to\nBiletFlow', style: AppText.signInTitle.copyWith(color: context.colors.text)),
                     const SizedBox(height: 10),
                     Text(
                       'Attendees, organizers, event staff and platform admins.',
-                      style: AppText.bodySecondary.copyWith(color: AppColors.neutral700),
+                      style: AppText.bodySecondary.copyWith(color: context.colors.textMuted),
                     ),
                     const SizedBox(height: 38),
                     LabeledTextField(
@@ -173,13 +173,13 @@ class _SignInPageState extends State<SignInPage> {
                         icon: Icon(
                           vm.isPasswordHidden ? Icons.visibility_outlined : Icons.visibility_off_outlined,
                           size: 18,
-                          color: AppColors.neutral600,
+                          color: context.colors.textMuted,
                         ),
                       ),
                     ),
                     const SizedBox(height: 26),
                     if (error != null) ...[
-                      Text(error, style: AppText.bodySecondary.copyWith(color: AppColors.ink)),
+                      Text(error, style: AppText.bodySecondary.copyWith(color: context.colors.text)),
                       const SizedBox(height: 10),
                     ],
                     PrimaryButton(
@@ -198,7 +198,7 @@ class _SignInPageState extends State<SignInPage> {
                     Text(
                       'Check-in requires a connection. Offline verification is '
                       'out of scope for this release.',
-                      style: AppText.finePrint.copyWith(color: AppColors.neutral600),
+                      style: AppText.finePrint.copyWith(color: context.colors.textMuted),
                     ),
                     const SizedBox(height: 6),
                     InkWell(
@@ -210,12 +210,12 @@ class _SignInPageState extends State<SignInPage> {
                             Expanded(
                               child: Text(
                                 'Server: ${context.watch<ServerAddress>().current}',
-                                style: AppText.finePrint.copyWith(color: AppColors.neutral700),
+                                style: AppText.finePrint.copyWith(color: context.colors.textMuted),
                               ),
                             ),
                             Text(
                               'CHANGE',
-                              style: AppText.fieldLabel.copyWith(color: AppColors.accent700),
+                              style: AppText.fieldLabel.copyWith(color: context.colors.primary),
                             ),
                           ],
                         ),

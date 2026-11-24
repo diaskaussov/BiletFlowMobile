@@ -44,6 +44,7 @@ abstract final class Routes {
   static const organizerSupport = '/o/support';
   static const organizerProfile = '/o/profile';
   static const organizerAccount = '/o/account';
+  static const organizerNotifications = '/o/notifications';
 
   // — админ платформы (PLATFORM_ADMIN), экраны P1–P2 —
   static const adminQueues = '/p';

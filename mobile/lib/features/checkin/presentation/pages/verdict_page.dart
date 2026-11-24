@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../app/routes.dart';
-import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_palette.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/formatters.dart';
@@ -51,7 +51,7 @@ class _VerdictPageState extends State<VerdictPage> {
     final v = r.verdict;
     final gate = context.watch<SettingsController>().settings.gate;
     final stats = vm.active.stats;
-    const paper = AppColors.paper;
+    const paper = AppPalette.onStrong;
 
     final strip = Row(
       children: [
@@ -73,7 +73,7 @@ class _VerdictPageState extends State<VerdictPage> {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light,
       child: Scaffold(
-        backgroundColor: VerdictCopy.field(v),
+        backgroundColor: VerdictCopy.field(v, context.colors),
         body: Stack(
           fit: StackFit.expand,
           children: [
@@ -130,7 +130,7 @@ class _VerdictPageState extends State<VerdictPage> {
   List<Widget> _body(BuildContext context, VerdictViewModel vm) {
     final r = vm.result;
     final t = r.ticket;
-    const paper = AppColors.paper;
+    const paper = AppPalette.onStrong;
     final muted = paper.withValues(alpha: 0.72);
     final name = t?.attendeeName;
 
@@ -329,7 +329,7 @@ class _VerdictPageState extends State<VerdictPage> {
     };
 
     return [
-      ResultPrimaryButton(label: primary, onPressed: next, textColor: VerdictCopy.field(r.verdict)),
+      ResultPrimaryButton(label: primary, onPressed: next, textColor: VerdictCopy.field(r.verdict, context.colors)),
       if (secondary != null) ...[
         const SizedBox(height: AppSpacing.actionGap),
         SecondaryButton(label: secondary.$1, onDark: true, onPressed: secondary.$2),
@@ -384,13 +384,13 @@ class _VerdictMark extends StatelessWidget {
     final icon = Icon(
       VerdictCopy.icon(verdict),
       size: VerdictCopy.iconSize(verdict),
-      color: AppColors.paper,
+      color: AppPalette.onStrong,
     );
     if (verdict == Verdict.repeatScan) {
       return SizedBox.square(
         dimension: AppSizes.verdictMark,
         child: CustomPaint(
-          painter: const DashedBorderPainter(color: AppColors.paper),
+          painter: const DashedBorderPainter(color: AppPalette.onStrong),
           child: Center(child: icon),
         ),
       );
@@ -398,7 +398,7 @@ class _VerdictMark extends StatelessWidget {
     return Container(
       width: AppSizes.verdictMark,
       height: AppSizes.verdictMark,
-      decoration: BoxDecoration(border: Border.all(color: AppColors.paper, width: 2)),
+      decoration: BoxDecoration(border: Border.all(color: AppPalette.onStrong, width: 2)),
       child: Center(child: icon),
     );
   }

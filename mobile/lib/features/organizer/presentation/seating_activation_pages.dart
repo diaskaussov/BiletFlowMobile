@@ -6,7 +6,7 @@ import '../../../app/routes.dart';
 import '../../../core/error/failure.dart';
 import '../../../core/error/result.dart';
 import '../../../core/presentation/loadable.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/buttons.dart';
@@ -109,7 +109,7 @@ class _SeatingPageState extends State<SeatingPage> {
                       const SizedBox(height: 6),
                       if (d.seats.isEmpty)
                         Text('No seat map yet. Attendees cannot pick seats until you add one.',
-                            style: AppText.bodySecondary.copyWith(color: AppColors.neutral700))
+                            style: AppText.bodySecondary.copyWith(color: context.colors.textMuted))
                       else ...[
                         DetailGrid(rows: [
                           for (final e in bySection.entries) ('Section ${e.key}', '${e.value} seats'),
@@ -127,13 +127,13 @@ class _SeatingPageState extends State<SeatingPage> {
                         ),
                         if (sold > 0)
                           Text('Seats are already sold, so the map cannot be removed.',
-                              style: AppText.finePrint.copyWith(color: AppColors.neutral600)),
+                              style: AppText.finePrint.copyWith(color: context.colors.textMuted)),
                       ],
                       const SizedBox(height: AppSpacing.section),
                       const SectionLabel('New layout'),
                       const SizedBox(height: 6),
                       Text('Saving replaces the current map. Each section uses one ticket type and its price.',
-                          style: AppText.meta.copyWith(color: AppColors.neutral600)),
+                          style: AppText.meta.copyWith(color: context.colors.textMuted)),
                       for (final (i, s) in vm.sections.indexed)
                         ListRow(
                           title: 'Section ${s.name}',
@@ -144,11 +144,11 @@ class _SeatingPageState extends State<SeatingPage> {
                       const SizedBox(height: 12),
                       if (d.types.isEmpty)
                         Text('Add a ticket type first — sections are priced by ticket type.',
-                            style: AppText.bodySecondary.copyWith(color: AppColors.ink))
+                            style: AppText.bodySecondary.copyWith(color: context.colors.text))
                       else ...[
                         LabeledTextField(label: 'Section name', controller: _name, hintText: 'A'),
                         const SizedBox(height: 10),
-                        Text('Ticket type', style: AppText.meta.copyWith(color: AppColors.neutral600)),
+                        Text('Ticket type', style: AppText.meta.copyWith(color: context.colors.textMuted)),
                         const SizedBox(height: 6),
                         ChoiceChips<int?>(
                           options: [for (final t in d.types) t.id],
@@ -238,7 +238,7 @@ class ActivationPage extends StatelessWidget {
                 builder: (context, c) {
                   Widget step(int n, bool done, String title, String text, {Widget? action}) => Container(
                         padding: const EdgeInsets.symmetric(vertical: 14),
-                        decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: AppColors.divider))),
+                        decoration: BoxDecoration(border: Border(bottom: BorderSide(color: context.colors.border))),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -247,25 +247,25 @@ class ActivationPage extends StatelessWidget {
                               height: 26,
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
-                                color: done ? AppColors.accent : null,
-                                border: Border.all(color: done ? AppColors.accent : AppColors.divider),
+                                color: done ? context.colors.primary : null,
+                                border: Border.all(color: done ? context.colors.primary : context.colors.border),
                               ),
                               child: done
-                                  ? const Icon(Icons.check, size: 16, color: AppColors.paper)
-                                  : Text('$n', style: AppText.tag.copyWith(color: AppColors.ink)),
+                                  ? Icon(Icons.check, size: 16, color: context.colors.surface)
+                                  : Text('$n', style: AppText.tag.copyWith(color: context.colors.text)),
                             ),
                             const SizedBox(width: 12),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(title, style: AppText.listTitle.copyWith(color: AppColors.ink, fontSize: 16)),
-                                  Text(text, style: AppText.meta.copyWith(color: AppColors.neutral600)),
+                                  Text(title, style: AppText.listTitle.copyWith(color: context.colors.text, fontSize: 16)),
+                                  Text(text, style: AppText.meta.copyWith(color: context.colors.textMuted)),
                                   if (action != null) ...[const SizedBox(height: 8), action],
                                 ],
                               ),
                             ),
-                            Text(done ? 'DONE' : '', style: AppText.fieldLabel.copyWith(color: AppColors.accent700)),
+                            Text(done ? 'DONE' : '', style: AppText.fieldLabel.copyWith(color: context.colors.primary)),
                           ],
                         ),
                       );
@@ -275,14 +275,14 @@ class ActivationPage extends StatelessWidget {
                       if (c.alreadyActivated)
                         Container(
                           padding: const EdgeInsets.all(12),
-                          color: AppColors.accent100,
-                          child: Text('PAID SALES ARE ACTIVE FOR THIS EVENT', style: AppText.sectionLabel.copyWith(color: AppColors.accent800)),
+                          color: context.colors.primaryTint,
+                          child: Text('PAID SALES ARE ACTIVE FOR THIS EVENT', style: AppText.sectionLabel.copyWith(color: context.colors.primary)),
                         )
                       else
                         Text(
                           'Free registration works now. Selling paid tickets needs these steps and a one-time '
                           'activation fee for this event only.',
-                          style: AppText.body.copyWith(color: AppColors.neutral700),
+                          style: AppText.body.copyWith(color: context.colors.textMuted),
                         ),
                       const SizedBox(height: 10),
                       step(1, c.hasPaidTicketType, 'A paid ticket type exists', 'Add one under Ticket types.'),
@@ -301,7 +301,7 @@ class ActivationPage extends StatelessWidget {
                                   controlAffinity: ListTileControlAffinity.leading,
                                   value: vm.termsAccepted,
                                   onChanged: (v) => vm.setTerms(v ?? false),
-                                  title: Text('I accept the paid-event terms', style: AppText.bodySecondary.copyWith(color: AppColors.ink)),
+                                  title: Text('I accept the paid-event terms', style: AppText.bodySecondary.copyWith(color: context.colors.text)),
                                 )),
                       const SizedBox(height: 16),
                       const DemoNotice(

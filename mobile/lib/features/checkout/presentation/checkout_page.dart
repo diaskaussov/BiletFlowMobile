@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../../../app/routes.dart';
 import '../../../core/error/result.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/formatters.dart';
@@ -133,11 +133,11 @@ class _CheckoutPageState extends State<CheckoutPage> {
               if (left != null)
                 Container(
                   width: double.infinity,
-                  color: vm.holdExpired ? AppColors.neutral900 : AppColors.accent100,
+                  color: vm.holdExpired ? context.colors.text : context.colors.primaryTint,
                   padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sideLight, vertical: 10),
                   child: Text(
                     vm.holdExpired ? 'SEAT HOLD EXPIRED — GO BACK AND CHOOSE AGAIN' : 'HOLD EXPIRES IN ${Fmt.countdown(left)}',
-                    style: AppText.statusStrip.copyWith(color: vm.holdExpired ? AppColors.paper : AppColors.accent800),
+                    style: AppText.statusStrip.copyWith(color: vm.holdExpired ? context.colors.surface : context.colors.primary),
                   ),
                 ),
               Expanded(
@@ -173,10 +173,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     const SizedBox(height: AppSpacing.section),
                     const SectionLabel('Order summary'),
                     const SizedBox(height: 8),
-                    Text(cart.event.title, style: AppText.listTitle.copyWith(color: AppColors.ink)),
+                    Text(cart.event.title, style: AppText.listTitle.copyWith(color: context.colors.text)),
                     if (cart.event.startsAt != null)
                       Text('${Fmt.dateTime(cart.event.startsAt!)} · ${cart.event.venueLine}',
-                          style: AppText.meta.copyWith(color: AppColors.neutral600)),
+                          style: AppText.meta.copyWith(color: context.colors.textMuted)),
                     const SizedBox(height: 12),
                     DetailGrid(rows: [
                       for (final (type, qty) in cart.lines) ...[
@@ -187,13 +187,13 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     ]),
                     const Divider(height: 24),
                     Row(children: [
-                      Text('TOTAL · KZT', style: AppText.sectionLabel.copyWith(color: AppColors.ink)),
+                      Text('TOTAL · KZT', style: AppText.sectionLabel.copyWith(color: context.colors.text)),
                       const Spacer(),
-                      Text(Fmt.money(cart.total), style: AppText.statNumeral.copyWith(color: AppColors.ink)),
+                      Text(Fmt.money(cart.total), style: AppText.statNumeral.copyWith(color: context.colors.text)),
                     ]),
                     if (cart.promo != null)
                       Text('The server recalculates the discount; the charged total may differ slightly.',
-                          style: AppText.finePrint.copyWith(color: AppColors.neutral600)),
+                          style: AppText.finePrint.copyWith(color: context.colors.textMuted)),
                   ],
                 ),
               ),
@@ -202,7 +202,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 child: Column(
                   children: [
                     if (vm.error != null) ...[
-                      Text(vm.error!, style: AppText.bodySecondary.copyWith(color: AppColors.ink)),
+                      Text(vm.error!, style: AppText.bodySecondary.copyWith(color: context.colors.text)),
                       const SizedBox(height: 8),
                     ],
                     PrimaryButton(
@@ -215,7 +215,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       cart.isFree
                           ? 'Free orders are confirmed immediately and tickets are issued at once.'
                           : 'Tickets are issued only after the sandbox confirms payment.',
-                      style: AppText.finePrint.copyWith(color: AppColors.neutral600),
+                      style: AppText.finePrint.copyWith(color: context.colors.textMuted),
                     ),
                   ],
                 ),

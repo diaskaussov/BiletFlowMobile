@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 import '../../../app/routes.dart';
 import '../../../core/error/result.dart';
 import '../../../core/presentation/loadable.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/formatters.dart';
@@ -132,7 +132,7 @@ class _EventPageState extends State<EventPage> {
       children: [
         if (promo != null)
           Container(
-            color: AppColors.accent,
+            color: context.colors.primary,
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sideLight, vertical: 12),
             child: Row(
               children: [
@@ -141,15 +141,15 @@ class _EventPageState extends State<EventPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text('${promo.code} APPLIED — ${promo.label.toUpperCase()}',
-                          style: AppText.sectionLabel.copyWith(color: AppColors.paper)),
+                          style: AppText.sectionLabel.copyWith(color: context.colors.surface)),
                       Text('Verified on the server. You will see the final total before paying.',
-                          style: AppText.meta.copyWith(color: AppColors.paper.withValues(alpha: 0.8))),
+                          style: AppText.meta.copyWith(color: context.colors.surface.withValues(alpha: 0.8))),
                     ],
                   ),
                 ),
                 TextButton(
                   onPressed: vm.removePromo,
-                  child: Text('REMOVE', style: AppText.buttonGhost.copyWith(color: AppColors.paper)),
+                  child: Text('REMOVE', style: AppText.buttonGhost.copyWith(color: context.colors.surface)),
                 ),
               ],
             ),
@@ -166,7 +166,7 @@ class _EventPageState extends State<EventPage> {
                 TagLabel(e.visibility.label),
               ]),
               const SizedBox(height: 12),
-              Text(e.title, style: AppText.screenTitle.copyWith(color: AppColors.ink)),
+              Text(e.title, style: AppText.screenTitle.copyWith(color: context.colors.text)),
               const SizedBox(height: 14),
               DetailGrid(rows: [
                 if (e.startsAt != null) ('Date', Fmt.range(e.startsAt!, e.endsAt)),
@@ -176,7 +176,7 @@ class _EventPageState extends State<EventPage> {
               ]),
               if (e.description != null && e.description!.isNotEmpty) ...[
                 const SizedBox(height: 16),
-                Text(e.description!, style: AppText.body.copyWith(color: AppColors.ink)),
+                Text(e.description!, style: AppText.body.copyWith(color: context.colors.text)),
               ],
               const SizedBox(height: AppSpacing.section),
               const SectionLabel('Tickets'),
@@ -185,13 +185,13 @@ class _EventPageState extends State<EventPage> {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   child: Text('Registration is closed for this event.',
-                      style: AppText.bodySecondary.copyWith(color: AppColors.neutral700)),
+                      style: AppText.bodySecondary.copyWith(color: context.colors.textMuted)),
                 ),
               if (d.ticketTypes.isEmpty)
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   child: Text('No tickets are on sale yet.',
-                      style: AppText.bodySecondary.copyWith(color: AppColors.neutral700)),
+                      style: AppText.bodySecondary.copyWith(color: context.colors.textMuted)),
                 ),
               for (final t in d.ticketTypes) _TicketTypeRow(type: t, cart: cart, open: e.isRegistrationOpen(now)),
               const SizedBox(height: AppSpacing.block),
@@ -220,7 +220,7 @@ class _EventPageState extends State<EventPage> {
                 ),
                 if (vm.promoError != null) ...[
                   const SizedBox(height: 6),
-                  Text(vm.promoError!, style: AppText.meta.copyWith(color: AppColors.ink)),
+                  Text(vm.promoError!, style: AppText.meta.copyWith(color: context.colors.text)),
                 ],
               ],
               const SizedBox(height: AppSpacing.section),
@@ -258,27 +258,27 @@ class _TicketTypeRow extends StatelessWidget {
     final discounted = promo == null ? null : t.price - promo.discountFor(t.price);
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 14),
-      decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: AppColors.divider))),
+      decoration: BoxDecoration(border: Border(bottom: BorderSide(color: context.colors.border))),
       child: Row(
         children: [
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(t.name, style: AppText.listTitle.copyWith(color: AppColors.ink)),
+                Text(t.name, style: AppText.listTitle.copyWith(color: context.colors.text)),
                 Row(
                   children: [
                     Text(
                       Fmt.money(t.price),
                       style: AppText.bodySecondary.copyWith(
-                        color: AppColors.ink,
+                        color: context.colors.text,
                         decoration: discounted != null && discounted < t.price ? TextDecoration.lineThrough : null,
                       ),
                     ),
                     if (discounted != null && discounted < t.price) ...[
                       const SizedBox(width: 8),
                       Text(Fmt.money(discounted, freeWord: false),
-                          style: AppText.bodySecondary.copyWith(color: AppColors.accent700)),
+                          style: AppText.bodySecondary.copyWith(color: context.colors.primary)),
                     ],
                   ],
                 ),
@@ -287,11 +287,11 @@ class _TicketTypeRow extends StatelessWidget {
                     if (t.description != null && t.description!.isNotEmpty) t.description!,
                     if (t.maxPerOrder != null) 'max ${t.maxPerOrder} per order',
                   ].join(' · '),
-                  style: AppText.meta.copyWith(color: AppColors.neutral600),
+                  style: AppText.meta.copyWith(color: context.colors.textMuted),
                 ),
                 Text(
                   t.isSoldOut ? 'Sold out' : (onSale ? '${Fmt.count(t.remaining)} left' : 'Not on sale'),
-                  style: AppText.meta.copyWith(color: t.isSoldOut ? AppColors.ink : AppColors.neutral500),
+                  style: AppText.meta.copyWith(color: t.isSoldOut ? context.colors.text : context.colors.textMuted),
                 ),
               ],
             ),
@@ -318,9 +318,9 @@ class _CheckoutBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final count = cart.ticketCount;
     return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.bg,
-        border: Border(top: BorderSide(color: AppColors.divider)),
+      decoration: BoxDecoration(
+        color: context.colors.bg,
+        border: Border(top: BorderSide(color: context.colors.border)),
       ),
       padding: const EdgeInsets.fromLTRB(AppSpacing.sideLight, 12, AppSpacing.sideLight, AppSpacing.bottomClearance),
       child: Column(
@@ -335,10 +335,10 @@ class _CheckoutBar extends StatelessWidget {
                     child: Text(
                       '$count ${count == 1 ? 'ticket' : 'tickets'}'
                       '${cart.discount > 0 ? ' · −${Fmt.money(cart.discount, freeWord: false)}' : ''}',
-                      style: AppText.bodySecondary.copyWith(color: AppColors.neutral700),
+                      style: AppText.bodySecondary.copyWith(color: context.colors.textMuted),
                     ),
                   ),
-                  Text(Fmt.money(cart.total), style: AppText.statNumeral.copyWith(fontSize: 22, color: AppColors.ink)),
+                  Text(Fmt.money(cart.total), style: AppText.statNumeral.copyWith(fontSize: 22, color: context.colors.text)),
                 ],
               ),
             ),
@@ -355,7 +355,7 @@ class _CheckoutBar extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(top: 6),
               child: Text('Seats are held for 10 minutes at checkout.',
-                  style: AppText.finePrint.copyWith(color: AppColors.neutral600)),
+                  style: AppText.finePrint.copyWith(color: context.colors.textMuted)),
             ),
         ],
       ),

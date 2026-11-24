@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../app/routes.dart';
-import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_palette.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/formatters.dart';
@@ -48,14 +48,14 @@ class EventSummaryPage extends StatelessWidget {
                     else if (stats == null)
                       Text(
                         vm.failure?.message ?? 'Counts are unavailable.',
-                        style: AppText.body.copyWith(color: AppColors.neutral700),
+                        style: AppText.body.copyWith(color: context.colors.textMuted),
                       )
                     else ...[
-                      Text(Fmt.count(stats.checkedIn), style: AppText.heroMetric.copyWith(color: AppColors.ink)),
+                      Text(Fmt.count(stats.checkedIn), style: AppText.heroMetric.copyWith(color: context.colors.text)),
                       const SizedBox(height: 8),
                       Text(
                         'of ${Fmt.count(stats.registered)} issued · ${Fmt.percent(stats.checkedIn, stats.registered)}',
-                        style: AppText.bodySecondary.copyWith(color: AppColors.neutral700),
+                        style: AppText.bodySecondary.copyWith(color: context.colors.textMuted),
                       ),
                       const SizedBox(height: 14),
                       ProgressStrip(value: stats.ratio),
@@ -69,7 +69,7 @@ class EventSummaryPage extends StatelessWidget {
                       const SizedBox(height: 8),
                       Text(
                         'Rejected, reversed and void counts come from this device\'s shift.',
-                        style: AppText.finePrint.copyWith(color: AppColors.neutral600),
+                        style: AppText.finePrint.copyWith(color: context.colors.textMuted),
                       ),
                     ],
                     if (log.admittedByType.isNotEmpty) ...[
@@ -87,7 +87,7 @@ class EventSummaryPage extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         child: Text(
                           'No scans on this device yet.',
-                          style: AppText.bodySecondary.copyWith(color: AppColors.neutral600),
+                          style: AppText.bodySecondary.copyWith(color: context.colors.textMuted),
                         ),
                       )
                     else
@@ -124,20 +124,20 @@ class _RecentRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10),
-      decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: AppColors.divider)),
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: context.colors.border)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
             width: 52,
-            child: Text(Fmt.time(entry.at), style: AppText.detail.copyWith(color: AppColors.neutral600)),
+            child: Text(Fmt.time(entry.at), style: AppText.detail.copyWith(color: context.colors.textMuted)),
           ),
           Expanded(
             child: Text(
               VerdictCopy.logLine(entry),
-              style: AppText.bodySecondary.copyWith(color: AppColors.ink),
+              style: AppText.bodySecondary.copyWith(color: context.colors.text),
             ),
           ),
         ],

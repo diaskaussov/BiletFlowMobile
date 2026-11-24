@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 import '../../../app/routes.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/field_painters.dart';
@@ -46,7 +46,7 @@ class _PromoScanPageState extends State<PromoScanPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.cameraLive,
+      backgroundColor: AppPalette.camera,
       body: Stack(
         fit: StackFit.expand,
         children: [
@@ -61,7 +61,7 @@ class _PromoScanPageState extends State<PromoScanPage> {
                       ? 'Camera access is off. Turn it on in Settings to scan campaign codes.'
                       : 'Camera is unavailable.',
                   textAlign: TextAlign.center,
-                  style: AppText.bodySecondary.copyWith(color: AppColors.paper),
+                  style: AppText.bodySecondary.copyWith(color: AppPalette.onStrong),
                 ),
               ),
             ),
@@ -75,15 +75,15 @@ class _PromoScanPageState extends State<PromoScanPage> {
                     children: [
                       BackBox(onPressed: () => context.pop(), onDark: true),
                       const SizedBox(width: 5),
-                      Text('Scan a campaign QR', style: AppText.headerTitle.copyWith(color: AppColors.paper)),
+                      Text('Scan a campaign QR', style: AppText.headerTitle.copyWith(color: AppPalette.onStrong)),
                     ],
                   ),
                 ),
                 const Spacer(),
-                const SizedBox.square(
+                SizedBox.square(
                   dimension: 260,
                   child: CustomPaint(
-                    painter: ReticlePainter(cornerColor: AppColors.paper, lineColor: AppColors.accent300),
+                    painter: ReticlePainter(cornerColor: AppPalette.onStrong, lineColor: context.colors.primarySoft),
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -93,7 +93,7 @@ class _PromoScanPageState extends State<PromoScanPage> {
                     'Point at a poster or flyer QR. The event opens with its discount applied after '
                     'the server checks the code.',
                     textAlign: TextAlign.center,
-                    style: AppText.meta.copyWith(color: AppColors.paper.withValues(alpha: 0.7)),
+                    style: AppText.meta.copyWith(color: AppPalette.onStrong.withValues(alpha: 0.7)),
                   ),
                 ),
                 const Spacer(),

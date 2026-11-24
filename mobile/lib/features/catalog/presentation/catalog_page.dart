@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import '../../../app/role_tab_bar.dart';
 import '../../../app/routes.dart';
 import '../../../core/presentation/loadable.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/formatters.dart';
@@ -59,8 +59,8 @@ class _CatalogPageState extends State<CatalogPage> {
     final next = await showModalBottomSheet<EventFilter>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: AppColors.bg,
-      barrierColor: AppColors.neutral900.withValues(alpha: 0.55),
+      backgroundColor: context.colors.bg,
+      barrierColor: context.colors.scrim,
       builder: (_) => _FilterSheet(initial: vm.filter, cities: vm.cities, categories: vm.categories),
     );
     if (next != null) vm.setFilter(next.copyWith(query: vm.filter.query));
@@ -79,7 +79,7 @@ class _CatalogPageState extends State<CatalogPage> {
       action: IconButton(
         tooltip: 'Scan a campaign QR',
         onPressed: () => context.push('${Routes.catalog}/scan-promo'),
-        icon: const Icon(Icons.qr_code_scanner, color: AppColors.ink),
+        icon: Icon(Icons.qr_code_scanner, color: context.colors.text),
       ),
       body: Column(
         children: [
@@ -103,8 +103,8 @@ class _CatalogPageState extends State<CatalogPage> {
                     onPressed: vm.data == null ? null : () => _openFilters(vm),
                     style: OutlinedButton.styleFrom(
                       shape: const RoundedRectangleBorder(),
-                      side: BorderSide(color: count > 0 ? AppColors.accent : AppColors.divider),
-                      foregroundColor: count > 0 ? AppColors.accent : AppColors.ink,
+                      side: BorderSide(color: count > 0 ? context.colors.primary : context.colors.border),
+                      foregroundColor: count > 0 ? context.colors.primary : context.colors.text,
                     ),
                     icon: const Icon(Icons.tune, size: 18),
                     label: Text(count > 0 ? 'FILTERS · $count' : 'FILTERS', style: AppText.buttonGhost),
@@ -171,7 +171,7 @@ class _EventCard extends StatelessWidget {
     return InkWell(
       onTap: () => context.push(Routes.publicEvent(e.id)),
       child: Container(
-        decoration: BoxDecoration(border: Border.all(color: AppColors.divider), color: AppColors.paper),
+        decoration: BoxDecoration(border: Border.all(color: context.colors.border), color: context.colors.surface),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -182,17 +182,17 @@ class _EventCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (e.startsAt != null)
-                    Text(Fmt.dayStamp(e.startsAt!), style: AppText.fieldLabel.copyWith(color: AppColors.accent700)),
+                    Text(Fmt.dayStamp(e.startsAt!), style: AppText.fieldLabel.copyWith(color: context.colors.primary)),
                   const SizedBox(height: 4),
-                  Text(e.title, style: AppText.listTitle.copyWith(color: AppColors.ink)),
+                  Text(e.title, style: AppText.listTitle.copyWith(color: context.colors.text)),
                   Text(
                     [e.venueLine, ?e.category].where((s) => s.isNotEmpty).join(' · '),
-                    style: AppText.meta.copyWith(color: AppColors.neutral600),
+                    style: AppText.meta.copyWith(color: context.colors.textMuted),
                   ),
                   const SizedBox(height: 10),
                   Row(
                     children: [
-                      Text(priceText, style: AppText.sectionLabel.copyWith(color: AppColors.ink)),
+                      Text(priceText, style: AppText.sectionLabel.copyWith(color: context.colors.text)),
                       const Spacer(),
                       if (e.assignedSeating) const TagLabel('Seated'),
                       if (price == 0 && listing.hasTickets) ...[
@@ -235,7 +235,7 @@ class _FilterSheetState extends State<_FilterSheet> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SectionLabel('Filters', color: AppColors.accent700),
+              SectionLabel('Filters', color: context.colors.primary),
               const SizedBox(height: 16),
               const SectionLabel('City'),
               const SizedBox(height: 8),

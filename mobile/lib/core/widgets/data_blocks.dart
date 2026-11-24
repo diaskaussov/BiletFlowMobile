@@ -1,35 +1,70 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-import '../theme/app_colors.dart';
+import '../theme/app_palette.dart';
+import '../theme/app_spacing.dart';
 import '../theme/app_text_styles.dart';
 
-/// Таблица «подпись / значение» в две колонки, шаг 10 / 20 (§07).
-class DetailGrid extends StatelessWidget {
-  const DetailGrid({super.key, required this.rows, this.color = AppColors.ink});
+/// Карточка TicketTon: surface, рамка border, скругление 16.
+class AppCard extends StatelessWidget {
+  const AppCard({
+    super.key,
+    required this.child,
+    this.padding = const EdgeInsets.all(16),
+    this.onTap,
+    this.color,
+    this.borderColor,
+    this.radius = AppRadius.card,
+  });
 
-  final List<(String, String)> rows;
-  final Color color;
+  final Widget child;
+  final EdgeInsetsGeometry padding;
+  final VoidCallback? onTap;
+  final Color? color;
+  final Color? borderColor;
+  final double radius;
 
   @override
   Widget build(BuildContext context) {
+    final c = context.colors;
+    final shape = RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(radius),
+      side: BorderSide(color: borderColor ?? c.border),
+    );
+    return Material(
+      color: color ?? c.surface,
+      shape: shape,
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(onTap: onTap, child: Padding(padding: padding, child: child)),
+    );
+  }
+}
+
+/// Пары «подпись — значение» (детали заказа, билета).
+class DetailGrid extends StatelessWidget {
+  const DetailGrid({super.key, required this.rows, this.color});
+
+  final List<(String, String)> rows;
+
+  /// Цвет текста на цветном фоне (карточка результата).
+  final Color? color;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    final value = color ?? c.text;
+    final label = color?.withValues(alpha: 0.75) ?? c.textMuted;
     return Column(
       children: [
-        for (final (i, (label, value)) in rows.indexed) ...[
+        for (final (i, (l, v)) in rows.indexed) ...[
           if (i > 0) const SizedBox(height: 10),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                label,
-                style: AppText.detail.copyWith(color: color.withValues(alpha: 0.72)),
-              ),
-              const SizedBox(width: 20),
+              Text(l, style: AppText.bodySecondary.copyWith(color: label)),
+              const SizedBox(width: 16),
               Expanded(
-                child: Text(
-                  value,
-                  textAlign: TextAlign.right,
-                  style: AppText.detail.copyWith(color: color),
-                ),
+                child: Text(v, textAlign: TextAlign.right, style: AppText.detail.copyWith(color: value)),
               ),
             ],
           ),
@@ -39,120 +74,35 @@ class DetailGrid extends StatelessWidget {
   }
 }
 
-/// Сетка 2 × 2 с линиями 1 pt между ячейками (§07).
-class StatQuad extends StatelessWidget {
-  const StatQuad({super.key, required this.cells});
+/// Плитка показателя (Components «KPI»): подпись, крупное значение, подсказка.
+class KpiTile extends StatelessWidget {
+  const KpiTile({super.key, required this.label, required this.value, this.hint, this.valueColor});
 
-  /// Ровно четыре пары «число, подпись».
-  final List<(String, String)> cells;
+  final String label;
+  final String value;
+  final String? hint;
+  final Color? valueColor;
 
   @override
   Widget build(BuildContext context) {
-    Widget cell((String, String) c) => Expanded(
-          child: Container(
-            color: AppColors.bg,
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(c.$1, style: AppText.statNumeral.copyWith(color: AppColors.ink)),
-                const SizedBox(height: 6),
-                Text(
-                  c.$2.toUpperCase(),
-                  style: AppText.fieldLabel.copyWith(color: AppColors.neutral600),
-                ),
-              ],
-            ),
-          ),
-        );
-
-    return Container(
-      color: AppColors.divider,
-      padding: const EdgeInsets.all(1),
+    final c = context.colors;
+    return AppCard(
+      radius: 14,
+      padding: const EdgeInsets.all(14),
       child: Column(
-        children: [
-          IntrinsicHeight(
-            child: Row(children: [cell(cells[0]), const SizedBox(width: 1), cell(cells[1])]),
-          ),
-          const SizedBox(height: 1),
-          IntrinsicHeight(
-            child: Row(children: [cell(cells[2]), const SizedBox(width: 1), cell(cells[3])]),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Полоса прогресса 10 pt: рамка 1 pt, заливка accent, квадратные концы.
-class ProgressStrip extends StatelessWidget {
-  const ProgressStrip({super.key, required this.value, this.height = 10});
-
-  /// 0…1
-  final double value;
-  final double height;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: height,
-      decoration: BoxDecoration(border: Border.all(color: AppColors.divider)),
-      child: FractionallySizedBox(
-        alignment: Alignment.centerLeft,
-        widthFactor: value.clamp(0.0, 1.0),
-        child: const ColoredBox(color: AppColors.accent),
-      ),
-    );
-  }
-}
-
-/// Метка «IN 19:43» и похожие (.tag).
-class TagLabel extends StatelessWidget {
-  const TagLabel(this.text, {super.key, this.filled = false, this.onTap});
-
-  final String text;
-  final bool filled;
-
-  /// Метка-ссылка: открывает раздел, к которому относится. Получает
-  /// шеврон, чтобы было видно, что на неё можно нажать.
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final tag = _tag();
-    if (onTap == null) return tag;
-    return Semantics(
-      button: true,
-      child: InkWell(
-        onTap: onTap,
-        // Зона нажатия 44 pt по высоте, рисуется только метка (§04).
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: 44),
-          child: Align(widthFactor: 1, child: tag),
-        ),
-      ),
-    );
-  }
-
-  Widget _tag() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-      decoration: BoxDecoration(
-        color: filled ? AppColors.accent100 : null,
-        border: Border.all(color: filled ? AppColors.accent300 : AppColors.divider),
-      ),
-      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            text.toUpperCase(),
-            style: AppText.tag.copyWith(
-              color: filled ? AppColors.accent800 : AppColors.neutral700,
-            ),
+          Text(label, style: AppText.meta.copyWith(color: c.textMuted), maxLines: 1, overflow: TextOverflow.ellipsis),
+          const SizedBox(height: 6),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(value, style: AppText.statNumeral.copyWith(color: valueColor ?? c.text)),
           ),
-          if (onTap != null) ...[
-            const SizedBox(width: 2),
-            Icon(Icons.chevron_right, size: 12, color: filled ? AppColors.accent800 : AppColors.neutral700),
+          if (hint != null) ...[
+            const SizedBox(height: 4),
+            Text(hint!, style: AppText.finePrint.copyWith(color: c.textMuted), maxLines: 2),
           ],
         ],
       ),
@@ -160,68 +110,134 @@ class TagLabel extends StatelessWidget {
   }
 }
 
-/// Рамка-чертёж: тонкая рамка + уголки 11 pt со смещением −6 (§07).
-class BlueprintFrame extends StatelessWidget {
-  const BlueprintFrame({
-    super.key,
-    required this.child,
-    this.color = AppColors.divider,
-    this.cornerColor = AppColors.neutral600,
-    this.padding = const EdgeInsets.all(16),
-    this.background,
-  });
+/// Сетка показателей в две колонки.
+class StatQuad extends StatelessWidget {
+  const StatQuad({super.key, required this.cells});
 
-  final Widget child;
-  final Color color;
-  final Color cornerColor;
-  final EdgeInsets padding;
-  final Color? background;
+  /// Пары «значение, подпись».
+  final List<(String, String)> cells;
 
   @override
   Widget build(BuildContext context) {
-    return CustomPaint(
-      foregroundPainter: _CornersPainter(cornerColor),
-      child: Container(
-        padding: padding,
-        decoration: BoxDecoration(
-          color: background,
-          border: Border.all(color: color),
+    final rows = <Widget>[];
+    for (var i = 0; i < cells.length; i += 2) {
+      rows.add(IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(child: KpiTile(label: cells[i].$2, value: cells[i].$1)),
+            const SizedBox(width: 10),
+            Expanded(
+              child: i + 1 < cells.length ? KpiTile(label: cells[i + 1].$2, value: cells[i + 1].$1) : const SizedBox(),
+            ),
+          ],
         ),
-        child: child,
+      ));
+      if (i + 2 < cells.length) rows.add(const SizedBox(height: 10));
+    }
+    return Column(children: rows);
+  }
+}
+
+/// Полоса прогресса 6 pt со скруглёнными концами (A3 «Вошло 87 из 150»).
+class ProgressStrip extends StatelessWidget {
+  const ProgressStrip({super.key, required this.value, this.height = 6, this.color});
+
+  /// 0…1
+  final double value;
+  final double height;
+  final Color? color;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    final fill = color ?? c.primary;
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(height / 2),
+      child: Container(
+        height: height,
+        color: fill.withValues(alpha: 0.14),
+        child: FractionallySizedBox(
+          alignment: Alignment.centerLeft,
+          widthFactor: value.clamp(0.0, 1.0),
+          child: ColoredBox(color: fill),
+        ),
       ),
     );
   }
 }
 
-class _CornersPainter extends CustomPainter {
-  _CornersPainter(this.color);
+/// Бейдж-пилюля со статусом и точкой (Components «StatusBadge»).
+class TagLabel extends StatelessWidget {
+  const TagLabel(this.text, {super.key, this.filled = false, this.onTap, this.tone, this.dot = true});
 
-  final Color color;
+  final String text;
+
+  /// Старый флаг «выделить» — то же, что tone: primary.
+  final bool filled;
+  final VoidCallback? onTap;
+  final Tone? tone;
+  final bool dot;
 
   @override
-  void paint(Canvas canvas, Size size) {
-    const arm = 11.0;
-    const o = -6.0;
-    final p = Paint()
-      ..color = color
-      ..strokeWidth = 1;
-    final l = o, t = o, r = size.width - o, b = size.height - o;
-    canvas
-      ..drawLine(Offset(l, t), Offset(l + arm, t), p)
-      ..drawLine(Offset(l, t), Offset(l, t + arm), p)
-      ..drawLine(Offset(r, t), Offset(r - arm, t), p)
-      ..drawLine(Offset(r, t), Offset(r, t + arm), p)
-      ..drawLine(Offset(l, b), Offset(l + arm, b), p)
-      ..drawLine(Offset(l, b), Offset(l, b - arm), p)
-      ..drawLine(Offset(r, b), Offset(r - arm, b), p)
-      ..drawLine(Offset(r, b), Offset(r, b - arm), p);
+  Widget build(BuildContext context) {
+    final t = context.colors.tone(tone ?? (filled ? Tone.primary : Tone.neutral));
+    final badge = Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(color: t.bg, borderRadius: BorderRadius.circular(AppRadius.pill)),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (dot) ...[
+            Container(width: 6, height: 6, decoration: BoxDecoration(color: t.dot, shape: BoxShape.circle)),
+            const SizedBox(width: 6),
+          ],
+          Flexible(child: Text(text, style: AppText.badge.copyWith(color: t.fg), overflow: TextOverflow.ellipsis)),
+          if (onTap != null) ...[
+            const SizedBox(width: 2),
+            Icon(LucideIcons.chevronRight, size: 12, color: t.fg),
+          ],
+        ],
+      ),
+    );
+    if (onTap == null) return badge;
+    return Semantics(
+      button: true,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(AppRadius.pill),
+        onTap: onTap,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: AppSizes.minTap),
+          child: Align(widthFactor: 1, child: badge),
+        ),
+      ),
+    );
   }
-
-  @override
-  bool shouldRepaint(_CornersPainter old) => old.color != color;
 }
 
-/// Строка списка 52–64 pt с линией снизу; вся строка — зона нажатия.
+/// Раньше «рамка-чертёж»; в TicketTon — выделенная карточка.
+class BlueprintFrame extends StatelessWidget {
+  const BlueprintFrame({
+    super.key,
+    required this.child,
+    this.color,
+    this.cornerColor,
+    this.padding = const EdgeInsets.all(16),
+    this.background,
+  });
+
+  final Widget child;
+  final Color? color;
+  final Color? cornerColor;
+  final EdgeInsets padding;
+  final Color? background;
+
+  @override
+  Widget build(BuildContext context) =>
+      AppCard(padding: padding, color: background, borderColor: color, child: child);
+}
+
+/// Строка списка: заголовок, подпись, справа бейдж или шеврон.
 class ListRow extends StatelessWidget {
   const ListRow({
     super.key,
@@ -230,6 +246,7 @@ class ListRow extends StatelessWidget {
     this.overline,
     this.trailing,
     this.onTap,
+    this.leading,
   });
 
   final String title;
@@ -237,39 +254,41 @@ class ListRow extends StatelessWidget {
   final String? overline;
   final Widget? trailing;
   final VoidCallback? onTap;
+  final Widget? leading;
 
   @override
   Widget build(BuildContext context) {
+    final c = context.colors;
     return InkWell(
       onTap: onTap,
       child: Container(
-        constraints: const BoxConstraints(minHeight: 56),
+        constraints: const BoxConstraints(minHeight: 60),
         padding: const EdgeInsets.symmetric(vertical: 12),
-        decoration: const BoxDecoration(
-          border: Border(bottom: BorderSide(color: AppColors.divider)),
-        ),
+        decoration: BoxDecoration(border: Border(bottom: BorderSide(color: c.border))),
         child: Row(
           children: [
+            if (leading != null) ...[leading!, const SizedBox(width: 12)],
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (overline != null) ...[
-                    Text(
-                      overline!,
-                      style: AppText.fieldLabel.copyWith(color: AppColors.accent700),
-                    ),
-                    const SizedBox(height: 4),
-                  ],
-                  Text(title, style: AppText.listTitle.copyWith(color: AppColors.ink)),
-                  if (subtitle != null) ...[
+                    Text(overline!, style: AppText.caption.copyWith(color: c.textMuted)),
                     const SizedBox(height: 2),
-                    Text(subtitle!, style: AppText.meta.copyWith(color: AppColors.neutral600)),
+                  ],
+                  Text(title, style: AppText.listTitle.copyWith(color: c.text)),
+                  if (subtitle != null && subtitle!.isNotEmpty) ...[
+                    const SizedBox(height: 2),
+                    Text(subtitle!, style: AppText.meta.copyWith(color: c.textMuted)),
                   ],
                 ],
               ),
             ),
             if (trailing != null) ...[const SizedBox(width: 12), trailing!],
+            if (trailing == null && onTap != null) ...[
+              const SizedBox(width: 8),
+              Icon(LucideIcons.chevronRight, size: 18, color: c.textMuted),
+            ],
           ],
         ),
       ),
@@ -277,36 +296,94 @@ class ListRow extends StatelessWidget {
   }
 }
 
-/// Строка «подпись — значение» для настроек и статусов.
+/// Строка «подпись — значение» в настройках и профиле.
 class ValueRow extends StatelessWidget {
-  const ValueRow({super.key, required this.label, required this.value, this.onTap});
+  const ValueRow({super.key, required this.label, required this.value, this.onTap, this.icon});
 
   final String label;
   final String value;
   final VoidCallback? onTap;
+  final IconData? icon;
 
   @override
   Widget build(BuildContext context) {
+    final c = context.colors;
     return InkWell(
       onTap: onTap,
       child: Container(
-        constraints: const BoxConstraints(minHeight: 48),
+        constraints: const BoxConstraints(minHeight: 52),
         padding: const EdgeInsets.symmetric(vertical: 12),
-        decoration: const BoxDecoration(
-          border: Border(bottom: BorderSide(color: AppColors.divider)),
-        ),
+        decoration: BoxDecoration(border: Border(bottom: BorderSide(color: c.border))),
         child: Row(
           children: [
-            Expanded(
-              child: Text(label, style: AppText.body.copyWith(color: AppColors.ink)),
-            ),
-            Text(value, style: AppText.bodySecondary.copyWith(color: AppColors.neutral700)),
+            if (icon != null) ...[Icon(icon, size: 20, color: c.textMuted), const SizedBox(width: 12)],
+            Expanded(child: Text(label, style: AppText.body.copyWith(color: c.text))),
+            Text(value, style: AppText.bodySecondary.copyWith(color: c.textMuted)),
             if (onTap != null) ...[
               const SizedBox(width: 6),
-              const Icon(Icons.chevron_right, size: 18, color: AppColors.neutral500),
+              Icon(LucideIcons.chevronRight, size: 18, color: c.textMuted),
             ],
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Кружок с инициалом (A8 «Последние входы», M-B13 пользователи).
+class InitialAvatar extends StatelessWidget {
+  const InitialAvatar(this.name, {super.key, this.size = 40});
+
+  final String name;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    final letter = name.trim().isEmpty ? '?' : name.trim()[0].toUpperCase();
+    return Container(
+      width: size,
+      height: size,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(color: c.primaryTint, shape: BoxShape.circle),
+      child: Text(letter, style: AppText.bodyStrong.copyWith(color: c.primary, fontSize: size * 0.4)),
+    );
+  }
+}
+
+/// Цветная плашка с иконкой: ошибка входа, предупреждение, подсказка.
+class InfoBanner extends StatelessWidget {
+  const InfoBanner({super.key, required this.text, this.tone = Tone.info, this.icon, this.action});
+
+  final String text;
+  final Tone tone;
+  final IconData? icon;
+  final Widget? action;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.colors.tone(tone);
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(color: t.bg, borderRadius: BorderRadius.circular(AppRadius.md)),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            icon ??
+                switch (tone) {
+                  Tone.danger => LucideIcons.circleAlert,
+                  Tone.warning => LucideIcons.triangleAlert,
+                  Tone.success => LucideIcons.circleCheck,
+                  _ => LucideIcons.info,
+                },
+            size: 18,
+            color: t.fg,
+          ),
+          const SizedBox(width: 8),
+          Expanded(child: Text(text, style: AppText.label.copyWith(color: t.fg))),
+          if (action != null) ...[const SizedBox(width: 8), action!],
+        ],
       ),
     );
   }

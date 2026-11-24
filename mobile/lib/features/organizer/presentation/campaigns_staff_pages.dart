@@ -8,7 +8,7 @@ import '../../../core/error/failure.dart';
 import '../../../core/error/result.dart';
 import '../../../core/platform/document_actions.dart';
 import '../../../core/presentation/loadable.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/formatters.dart';
@@ -56,7 +56,7 @@ class CampaignsPage extends StatelessWidget {
     final draft = await showModalBottomSheet<CampaignDraft>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: AppColors.bg,
+      backgroundColor: context.colors.bg,
       builder: (_) => const _CampaignSheet(),
     );
     if (draft == null) return;
@@ -74,21 +74,21 @@ class CampaignsPage extends StatelessWidget {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: AppColors.bg,
+      backgroundColor: context.colors.bg,
       builder: (c) => SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(AppSpacing.sheetInset, 20, AppSpacing.sheetInset, 12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SectionLabel('Campaign QR — not a ticket', color: AppColors.accent700),
+              SectionLabel('Campaign QR — not a ticket', color: context.colors.primary),
               const SizedBox(height: 6),
-              Text(name, style: AppText.listTitle.copyWith(color: AppColors.ink)),
+              Text(name, style: AppText.listTitle.copyWith(color: context.colors.text)),
               const SizedBox(height: 14),
               Center(
                 child: BlueprintFrame(
-                  background: AppColors.paper,
-                  child: QrImageView(data: url, size: 220, backgroundColor: AppColors.paper),
+                  background: context.colors.surface,
+                  child: QrImageView(data: url, size: 220, backgroundColor: context.colors.surface),
                 ),
               ),
               const SizedBox(height: 14),
@@ -97,7 +97,7 @@ class CampaignsPage extends StatelessWidget {
               Text(
                 'Opens the event page with $code pre-applied. The link carries the code, never a price — the server '
                 'validates it. The scanner app refuses it at the gate.',
-                style: AppText.finePrint.copyWith(color: AppColors.neutral600),
+                style: AppText.finePrint.copyWith(color: context.colors.textMuted),
               ),
               const SizedBox(height: 14),
               PrimaryButton(label: 'Share link', onPressed: () => const DocumentActions().shareText(url, subject: name)),
@@ -144,12 +144,12 @@ class CampaignsPage extends StatelessWidget {
                       Container(
                         margin: const EdgeInsets.only(bottom: 12),
                         padding: const EdgeInsets.all(14),
-                        decoration: BoxDecoration(color: AppColors.paper, border: Border.all(color: AppColors.divider)),
+                        decoration: BoxDecoration(color: context.colors.surface, border: Border.all(color: context.colors.border)),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(children: [
-                              Expanded(child: Text(c.name, style: AppText.listTitle.copyWith(color: AppColors.ink))),
+                              Expanded(child: Text(c.name, style: AppText.listTitle.copyWith(color: context.colors.text))),
                               TagLabel(c.isLive(now) ? 'Live' : (c.active ? 'Not live' : 'Disabled'), filled: c.isLive(now)),
                             ]),
                             const SizedBox(height: 8),
@@ -193,7 +193,7 @@ class CampaignsPage extends StatelessWidget {
                     Text(
                       'Redemption limits are enforced on the server, one order at a time. Codes of campaigns '
                       'created on other devices are not returned by the API.',
-                      style: AppText.finePrint.copyWith(color: AppColors.neutral600),
+                      style: AppText.finePrint.copyWith(color: context.colors.textMuted),
                     ),
                   ],
                 ),
@@ -244,7 +244,7 @@ class _CampaignSheetState extends State<_CampaignSheet> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SectionLabel('New campaign', color: AppColors.accent700),
+              SectionLabel('New campaign', color: context.colors.primary),
               const SizedBox(height: 14),
               LabeledTextField(label: 'Name', controller: _name, hintText: 'Student discount'),
               const SizedBox(height: 12),
@@ -272,7 +272,7 @@ class _CampaignSheetState extends State<_CampaignSheet> {
               DateTimeField(label: 'Valid to', value: _to, onChanged: (t) => setState(() => _to = t)),
               if (_error != null) ...[
                 const SizedBox(height: 10),
-                Text(_error!, style: AppText.bodySecondary.copyWith(color: AppColors.ink)),
+                Text(_error!, style: AppText.bodySecondary.copyWith(color: context.colors.text)),
               ],
               const SizedBox(height: 16),
               PrimaryButton(
@@ -363,11 +363,11 @@ class _StaffPageState extends State<StaffPage> {
                     Text(
                       'People you add can sign into the scanner app and see this event only. They never see '
                       'revenue, orders or your other events.',
-                      style: AppText.bodySecondary.copyWith(color: AppColors.neutral700),
+                      style: AppText.bodySecondary.copyWith(color: context.colors.textMuted),
                     ),
                     const SizedBox(height: 14),
                     if (d.staff.isEmpty)
-                      Text('Nobody is assigned yet.', style: AppText.bodySecondary.copyWith(color: AppColors.neutral600)),
+                      Text('Nobody is assigned yet.', style: AppText.bodySecondary.copyWith(color: context.colors.textMuted)),
                     for (final s in d.staff)
                       ListRow(
                         title: s.user.fullName,
@@ -379,7 +379,7 @@ class _StaffPageState extends State<StaffPage> {
                                   final f = await vm.remove(s);
                                   if (context.mounted) reportResult(context, f, success: 'Removed from this event.');
                                 },
-                          child: Text('REMOVE', style: AppText.buttonGhost.copyWith(color: AppColors.accent700)),
+                          child: Text('REMOVE', style: AppText.buttonGhost.copyWith(color: context.colors.primary)),
                         ),
                       ),
                     const SizedBox(height: AppSpacing.section),
@@ -416,7 +416,7 @@ class _StaffPageState extends State<StaffPage> {
                     Text(
                       'The API assigns staff by user ID only — adding by email is not available yet. The person '
                       'needs an EVENT_ADMIN account.',
-                      style: AppText.finePrint.copyWith(color: AppColors.neutral600),
+                      style: AppText.finePrint.copyWith(color: context.colors.textMuted),
                     ),
                     if (d.overview != null) ...[
                       const SizedBox(height: AppSpacing.section),
@@ -428,7 +428,7 @@ class _StaffPageState extends State<StaffPage> {
                       ]),
                       const SizedBox(height: 8),
                       if (d.overview!.recent.isEmpty)
-                        Text('No check-ins yet.', style: AppText.meta.copyWith(color: AppColors.neutral600)),
+                        Text('No check-ins yet.', style: AppText.meta.copyWith(color: context.colors.textMuted)),
                       for (final r in d.overview!.recent)
                         ValueRow(
                           label: '${r.who} checked in',

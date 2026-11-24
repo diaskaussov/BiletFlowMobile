@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import '../../../../app/main_tab_bar.dart';
 import '../../../../app/routes.dart';
 import '../../../../core/error/failure.dart';
-import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_palette.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/formatters.dart';
@@ -86,11 +86,11 @@ class EventsPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Expanded(
-                    child: Text('Events', style: AppText.screenTitle.copyWith(color: AppColors.ink)),
+                    child: Text('Events', style: AppText.screenTitle.copyWith(color: context.colors.text)),
                   ),
                   Text(
                     session?.shortName ?? '',
-                    style: AppText.meta.copyWith(color: AppColors.neutral600),
+                    style: AppText.meta.copyWith(color: context.colors.textMuted),
                   ),
                 ],
               ),
@@ -123,7 +123,7 @@ class EventsPage extends StatelessWidget {
             if (e.venueLine.isNotEmpty) e.venueLine,
             if (e.capacity != null) '${Fmt.count(e.capacity!)} capacity',
           ].join(' · '),
-          trailing: const Icon(Icons.chevron_right, size: 18, color: AppColors.neutral500),
+          trailing: Icon(Icons.chevron_right, size: 18, color: context.colors.textMuted),
           onTap: () {
             context.read<EventsViewModel>().open(e);
             context.push(Routes.eventSummary(e.id));
@@ -148,9 +148,9 @@ class _FeaturedCard extends StatelessWidget {
     final when = event.startsAt == null ? null : Fmt.relativeDay(event.startsAt!);
 
     return BlueprintFrame(
-      background: AppColors.accent100,
-      color: AppColors.accent300,
-      cornerColor: AppColors.accent700,
+      background: context.colors.primaryTint,
+      color: context.colors.primarySoft,
+      cornerColor: context.colors.primary,
       padding: const EdgeInsets.all(18),
       child: InkWell(
         onTap: () {
@@ -164,14 +164,14 @@ class _FeaturedCard extends StatelessWidget {
               isToday
                   ? 'DOORS OPEN · ${gate.toUpperCase()}'
                   : (event.startsAt == null ? 'ASSIGNED' : Fmt.dayStamp(event.startsAt!)),
-              style: AppText.fieldLabel.copyWith(color: AppColors.accent700),
+              style: AppText.fieldLabel.copyWith(color: context.colors.primary),
             ),
             const SizedBox(height: 8),
-            Text(event.title, style: AppText.screenTitle.copyWith(color: AppColors.ink)),
+            Text(event.title, style: AppText.screenTitle.copyWith(color: context.colors.text)),
             const SizedBox(height: 4),
             Text(
               [if (event.venueLine.isNotEmpty) event.venueLine, ?when].join(' · '),
-              style: AppText.meta.copyWith(color: AppColors.neutral700),
+              style: AppText.meta.copyWith(color: context.colors.textMuted),
             ),
             const SizedBox(height: 18),
             Row(
@@ -207,9 +207,9 @@ class _Stat extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(value, style: AppText.statNumeral.copyWith(color: AppColors.ink)),
+        Text(value, style: AppText.statNumeral.copyWith(color: context.colors.text)),
         const SizedBox(height: 4),
-        Text(label.toUpperCase(), style: AppText.fieldLabel.copyWith(color: AppColors.neutral600)),
+        Text(label.toUpperCase(), style: AppText.fieldLabel.copyWith(color: context.colors.textMuted)),
       ],
     );
   }
@@ -240,7 +240,7 @@ class _Empty extends StatelessWidget {
           const Spacer(),
           Text(
             'Signed in as $email',
-            style: AppText.finePrint.copyWith(color: AppColors.neutral600),
+            style: AppText.finePrint.copyWith(color: context.colors.textMuted),
           ),
         ],
       ),

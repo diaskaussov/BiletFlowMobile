@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-import '../theme/app_colors.dart';
+import '../theme/app_palette.dart';
 import '../theme/app_spacing.dart';
 import '../theme/app_text_styles.dart';
 import '../utils/formatters.dart';
 
-/// Поле «дата и время»: показывает значение, по нажатию — системные
-/// выбор даты, затем времени.
+/// Поле «дата и время»: по нажатию — системный выбор даты, затем времени.
 class DateTimeField extends StatelessWidget {
-  const DateTimeField({super.key, required this.label, required this.value, required this.onChanged});
+  const DateTimeField({super.key, required this.label, required this.value, required this.onChanged, this.placeholder});
 
   final String label;
   final DateTime? value;
   final ValueChanged<DateTime> onChanged;
+  final String? placeholder;
 
   Future<void> _pick(BuildContext context) async {
     final now = DateTime.now();
@@ -38,29 +39,36 @@ class DateTimeField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = context.colors;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: AppText.meta.copyWith(color: AppColors.neutral600)),
-        const SizedBox(height: 5),
-        InkWell(
-          onTap: () => _pick(context),
-          child: Container(
-            height: AppSizes.textField,
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            alignment: Alignment.centerLeft,
-            decoration: BoxDecoration(color: AppColors.surface, border: Border.all(color: AppColors.divider)),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    value == null ? 'Choose' : '${Fmt.date(value!)} · ${Fmt.time(value!)}',
-                    style: AppText.input.copyWith(color: value == null ? AppColors.neutral500 : AppColors.ink),
+        Text(label, style: AppText.label.copyWith(color: c.textMuted)),
+        const SizedBox(height: 8),
+        Material(
+          color: c.surface,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppRadius.field),
+            side: BorderSide(color: c.border),
+          ),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(AppRadius.field),
+            onTap: () => _pick(context),
+            child: Container(
+              height: AppSizes.textField,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              alignment: Alignment.centerLeft,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      value == null ? (placeholder ?? '—') : Fmt.dateTime(value!),
+                      style: AppText.input.copyWith(color: value == null ? c.textMuted : c.text),
+                    ),
                   ),
-                ),
-                const Icon(Icons.calendar_today_outlined, size: 16, color: AppColors.neutral600),
-              ],
+                  Icon(LucideIcons.calendar, size: 18, color: c.textMuted),
+                ],
+              ),
             ),
           ),
         ),
@@ -69,7 +77,7 @@ class DateTimeField extends StatelessWidget {
   }
 }
 
-/// Переключатель с подписью — для настроек форм.
+/// Переключатель с подписью.
 class LabeledSwitch extends StatelessWidget {
   const LabeledSwitch({super.key, required this.label, required this.value, required this.onChanged, this.hint});
 
@@ -80,20 +88,19 @@ class LabeledSwitch extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SwitchListTile(
+    final c = context.colors;
+    return SwitchListTile.adaptive(
       contentPadding: EdgeInsets.zero,
-      title: Text(label, style: AppText.body.copyWith(color: AppColors.ink)),
-      subtitle: hint == null ? null : Text(hint!, style: AppText.meta.copyWith(color: AppColors.neutral600)),
+      title: Text(label, style: AppText.body.copyWith(color: c.text)),
+      subtitle: hint == null ? null : Text(hint!, style: AppText.meta.copyWith(color: c.textMuted)),
       value: value,
-      activeThumbColor: AppColors.paper,
-      activeTrackColor: AppColors.accent,
+      activeTrackColor: c.primary,
       onChanged: onChanged,
     );
   }
 }
 
-/// Столбики (§07 Bar chart): 96 pt, зазор 5 pt, линия основания,
-/// подписи на концах. Последние столбики темнее — по свежести.
+/// Столбчатый график продаж: скруглённые столбики, подписи на концах.
 class BarStrip extends StatelessWidget {
   const BarStrip({super.key, required this.values, this.startLabel, this.endLabel, this.height = 96});
 
@@ -104,8 +111,8 @@ class BarStrip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = context.colors;
     final max = values.isEmpty ? 1 : values.reduce((a, b) => a > b ? a : b).clamp(1, double.infinity);
-    const shades = [AppColors.accent300, AppColors.accent400, AppColors.accent500];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -115,13 +122,16 @@ class BarStrip extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               for (final (i, v) in values.indexed) ...[
-                if (i > 0) const SizedBox(width: 5),
+                if (i > 0) const SizedBox(width: 6),
                 Expanded(
                   child: Tooltip(
                     message: '$v',
                     child: Container(
-                      height: (v / max * height).clamp(2, height).toDouble(),
-                      color: shades[(i * shades.length / values.length).floor().clamp(0, 2)],
+                      height: (v / max * height).clamp(4, height).toDouble(),
+                      decoration: BoxDecoration(
+                        color: i == values.length - 1 ? c.primary : c.primary.withValues(alpha: 0.35),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
                     ),
                   ),
                 ),
@@ -129,13 +139,12 @@ class BarStrip extends StatelessWidget {
             ],
           ),
         ),
-        const Divider(height: 1, color: AppColors.neutral500),
-        const SizedBox(height: 4),
+        const SizedBox(height: 6),
         Row(
           children: [
-            Text(startLabel ?? '', style: AppText.fieldLabel.copyWith(color: AppColors.neutral600)),
+            Text(startLabel ?? '', style: AppText.caption.copyWith(color: c.textMuted)),
             const Spacer(),
-            Text(endLabel ?? '', style: AppText.fieldLabel.copyWith(color: AppColors.neutral600)),
+            Text(endLabel ?? '', style: AppText.caption.copyWith(color: c.textMuted)),
           ],
         ),
       ],
@@ -143,33 +152,38 @@ class BarStrip extends StatelessWidget {
   }
 }
 
-/// Горизонтальная полоса «имя · значение» с долей — продажи по типам.
+/// «Early Bird · 60 / 100» с полосой — продажи и входы по типам билетов.
 class ShareRow extends StatelessWidget {
-  const ShareRow({super.key, required this.label, required this.value, required this.ratio});
+  const ShareRow({super.key, required this.label, required this.value, required this.ratio, this.color});
 
   final String label;
   final String value;
   final double ratio;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
+    final c = context.colors;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(children: [
-            Expanded(child: Text(label, style: AppText.bodySecondary.copyWith(color: AppColors.ink))),
-            Text(value, style: AppText.detail.copyWith(color: AppColors.neutral700)),
+            Expanded(child: Text(label, style: AppText.label.copyWith(color: c.text))),
+            Text(value, style: AppText.detail.copyWith(color: c.textMuted)),
           ]),
-          const SizedBox(height: 6),
-          Container(
-            height: 10,
-            decoration: BoxDecoration(border: Border.all(color: AppColors.divider)),
-            child: FractionallySizedBox(
-              alignment: Alignment.centerLeft,
-              widthFactor: ratio.clamp(0, 1),
-              child: const ColoredBox(color: AppColors.accent),
+          const SizedBox(height: 8),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(3),
+            child: Container(
+              height: 6,
+              color: (color ?? c.primary).withValues(alpha: 0.14),
+              child: FractionallySizedBox(
+                alignment: Alignment.centerLeft,
+                widthFactor: ratio.clamp(0, 1),
+                child: ColoredBox(color: color ?? c.primary),
+              ),
             ),
           ),
         ],

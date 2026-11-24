@@ -6,7 +6,7 @@ import '../../../app/role_tab_bar.dart';
 import '../../../app/routes.dart';
 import '../../../core/error/failure.dart';
 import '../../../core/presentation/loadable.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/formatters.dart';
@@ -31,9 +31,9 @@ class AdminBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      color: AppColors.ink,
+      color: context.colors.text,
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sideList, vertical: 8),
-      child: Text('PLATFORM ADMIN · INTERNAL STAFF ONLY', style: AppText.statusStrip.copyWith(color: AppColors.paper)),
+      child: Text('PLATFORM ADMIN · INTERNAL STAFF ONLY', style: AppText.statusStrip.copyWith(color: context.colors.surface)),
     );
   }
 }
@@ -82,11 +82,11 @@ class AdminQueuesPage extends StatelessWidget {
                   const SizedBox(height: 8),
                   Text(
                     '${q.totals.users} users · ${q.totals.events} events · ${q.totals.orders} orders on the platform',
-                    style: AppText.meta.copyWith(color: AppColors.neutral600),
+                    style: AppText.meta.copyWith(color: context.colors.textMuted),
                   ),
                   const SizedBox(height: AppSpacing.section),
                   const SectionLabel('Unpaid orders · payment failures and abandoned checkouts'),
-                  if (q.pendingPayments.isEmpty) _none(),
+                  if (q.pendingPayments.isEmpty) _none(context),
                   for (final o in q.pendingPayments.take(10))
                     ListRow(
                       title: '${o.number} · ${Fmt.money(o.total)}',
@@ -95,17 +95,17 @@ class AdminQueuesPage extends StatelessWidget {
                     ),
                   const SizedBox(height: AppSpacing.section),
                   const SectionLabel('Paid sales active · activation records'),
-                  if (q.paidSalesEvents.isEmpty) _none(),
+                  if (q.paidSalesEvents.isEmpty) _none(context),
                   for (final e in q.paidSalesEvents)
                     ListRow(
                       title: e.title,
                       subtitle: [?e.organizerName, e.status.label].join(' · '),
-                      trailing: const Icon(Icons.chevron_right, size: 18, color: AppColors.neutral500),
+                      trailing: Icon(Icons.chevron_right, size: 18, color: context.colors.textMuted),
                       onTap: () => context.push(Routes.adminEvent(e.id)),
                     ),
                   const SizedBox(height: AppSpacing.section),
                   const SectionLabel('Refunds'),
-                  if (q.recentRefunds.isEmpty) _none(),
+                  if (q.recentRefunds.isEmpty) _none(context),
                   for (final o in q.recentRefunds.take(10))
                     ListRow(
                       title: '${o.number} · ${Fmt.money(o.total)}',
@@ -120,7 +120,7 @@ class AdminQueuesPage extends StatelessWidget {
                   Text(
                     'Reported events, activation reviews, escalated support cases, report exports and activation '
                     'fee settings need backend endpoints that do not exist yet.',
-                    style: AppText.bodySecondary.copyWith(color: AppColors.neutral600),
+                    style: AppText.bodySecondary.copyWith(color: context.colors.textMuted),
                   ),
                 ],
               ),
@@ -131,9 +131,9 @@ class AdminQueuesPage extends StatelessWidget {
     );
   }
 
-  static Widget _none() => Padding(
+  static Widget _none(BuildContext context) => Padding(
         padding: const EdgeInsets.symmetric(vertical: 10),
-        child: Text('Nothing here.', style: AppText.meta.copyWith(color: AppColors.neutral600)),
+        child: Text('Nothing here.', style: AppText.meta.copyWith(color: context.colors.textMuted)),
       );
 }
 
@@ -266,9 +266,9 @@ class _ModerationPageState extends State<ModerationPage> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (c) => AlertDialog(
-        title: Text('Suspend this event?', style: AppText.headerTitle.copyWith(color: AppColors.ink)),
+        title: Text('Suspend this event?', style: AppText.headerTitle.copyWith(color: context.colors.text)),
         content: Text('New checkouts stop immediately. Issued tickets stay valid until voided.',
-            style: AppText.body.copyWith(color: AppColors.neutral700)),
+            style: AppText.body.copyWith(color: context.colors.textMuted)),
         actions: [
           TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('KEEP')),
           TextButton(onPressed: () => Navigator.pop(c, true), child: const Text('SUSPEND')),
@@ -306,7 +306,7 @@ class _ModerationPageState extends State<ModerationPage> {
                       Text(
                         '${e.organizerName ?? 'Organizer'} · ${Fmt.count(m.ticketsSold)} tickets sold · '
                         '${Fmt.money(m.collected, freeWord: false)} collected',
-                        style: AppText.bodySecondary.copyWith(color: AppColors.neutral700),
+                        style: AppText.bodySecondary.copyWith(color: context.colors.textMuted),
                       ),
                       const SizedBox(height: 14),
                       DetailGrid(rows: [
@@ -326,7 +326,7 @@ class _ModerationPageState extends State<ModerationPage> {
                       ]),
                       if (!vm.suspended) ...[
                         const SizedBox(height: AppSpacing.section),
-                        const SectionLabel('Suspending will', color: AppColors.accent700),
+                        SectionLabel('Suspending will', color: context.colors.primary),
                         const SizedBox(height: 8),
                         for (final line in const [
                           'Stop new checkouts for this event immediately.',
@@ -336,7 +336,7 @@ class _ModerationPageState extends State<ModerationPage> {
                         ])
                           Padding(
                             padding: const EdgeInsets.only(bottom: 4),
-                            child: Text('— $line', style: AppText.bodySecondary.copyWith(color: AppColors.ink)),
+                            child: Text('— $line', style: AppText.bodySecondary.copyWith(color: context.colors.text)),
                           ),
                         const SizedBox(height: 12),
                         LabeledTextField(
@@ -346,7 +346,7 @@ class _ModerationPageState extends State<ModerationPage> {
                         ),
                         const SizedBox(height: 6),
                         Text('The current API does not store the reason yet; keep it for your records.',
-                            style: AppText.finePrint.copyWith(color: AppColors.neutral600)),
+                            style: AppText.finePrint.copyWith(color: context.colors.textMuted)),
                       ],
                     ],
                   );
@@ -421,10 +421,10 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
       context: context,
       builder: (c) => AlertDialog(
         title: Text(u.suspended ? 'Restore ${u.fullName}?' : 'Suspend ${u.fullName}?',
-            style: AppText.headerTitle.copyWith(color: AppColors.ink)),
+            style: AppText.headerTitle.copyWith(color: context.colors.text)),
         content: Text(
           u.suspended ? 'They can sign in and use BiletFlow again.' : 'They will not be able to sign in until restored.',
-          style: AppText.body.copyWith(color: AppColors.neutral700),
+          style: AppText.body.copyWith(color: context.colors.textMuted),
         ),
         actions: [
           TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('CANCEL')),
@@ -472,7 +472,7 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
                           : TextButton(
                               onPressed: vm.isBusy ? null : () => _toggle(vm, u),
                               child: Text(u.suspended ? 'RESTORE' : 'SUSPEND',
-                                  style: AppText.buttonGhost.copyWith(color: AppColors.accent700)),
+                                  style: AppText.buttonGhost.copyWith(color: context.colors.primary)),
                             ),
                     ),
                 ],
@@ -533,7 +533,7 @@ class AdminOrdersPage extends StatelessWidget {
                       ),
                     const SizedBox(height: 12),
                     Text('No card data is stored or shown. All payments are sandbox.',
-                        style: AppText.finePrint.copyWith(color: AppColors.neutral600)),
+                        style: AppText.finePrint.copyWith(color: context.colors.textMuted)),
                   ],
                 ),
               ),

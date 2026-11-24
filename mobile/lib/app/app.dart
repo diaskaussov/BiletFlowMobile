@@ -61,6 +61,8 @@ class _BiletFlowAppState extends State<BiletFlowApp> {
         title: 'BiletFlow Scanner',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.light,
+        darkTheme: AppTheme.dark,
+        themeMode: ThemeMode.system,
         routerConfig: _router,
       ),
     );
