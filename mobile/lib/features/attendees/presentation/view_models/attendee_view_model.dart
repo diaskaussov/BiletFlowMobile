@@ -6,8 +6,9 @@ import '../../../auth/presentation/controllers/session_controller.dart';
 import '../../../events/presentation/controllers/active_event_controller.dart';
 import '../../domain/entities/attendee.dart';
 import '../../domain/usecases/attendee_usecases.dart';
+import '../../../../core/presentation/safe_notifier.dart';
 
-class AttendeeViewModel extends ChangeNotifier {
+class AttendeeViewModel extends ChangeNotifier with SafeNotifier {
   AttendeeViewModel({
     required this.attendeeId,
     required GetAttendee getAttendee,

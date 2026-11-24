@@ -9,9 +9,10 @@ import '../../../events/domain/usecases/event_usecases.dart';
 import '../../../events/presentation/controllers/active_event_controller.dart';
 import '../../domain/entities/scan_result.dart';
 import '../../domain/usecases/verify_ticket.dart';
+import '../../../../core/presentation/safe_notifier.dart';
 
 /// B1–B3: один скан за раз. Пока идёт проверка, новые коды игнорируются.
-class ScannerViewModel extends ChangeNotifier {
+class ScannerViewModel extends ChangeNotifier with SafeNotifier {
   ScannerViewModel({
     required this._verify,
     required this._getStats,

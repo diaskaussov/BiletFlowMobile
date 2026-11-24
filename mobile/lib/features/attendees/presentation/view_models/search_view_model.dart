@@ -7,10 +7,11 @@ import '../../../../core/error/result.dart';
 import '../../../events/presentation/controllers/active_event_controller.dart';
 import '../../domain/entities/attendee.dart';
 import '../../domain/usecases/attendee_usecases.dart';
+import '../../../../core/presentation/safe_notifier.dart';
 
 enum SearchFilter { all, notArrived }
 
-class SearchViewModel extends ChangeNotifier {
+class SearchViewModel extends ChangeNotifier with SafeNotifier {
   SearchViewModel({
     required this._search,
     required this._active,

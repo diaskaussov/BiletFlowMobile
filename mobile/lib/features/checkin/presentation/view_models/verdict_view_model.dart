@@ -6,8 +6,9 @@ import '../../../events/domain/entities/assigned_event.dart';
 import '../../../events/presentation/controllers/active_event_controller.dart';
 import '../../domain/entities/scan_result.dart';
 import '../../domain/usecases/checkin_usecases.dart';
+import '../../../../core/presentation/safe_notifier.dart';
 
-class VerdictViewModel extends ChangeNotifier {
+class VerdictViewModel extends ChangeNotifier with SafeNotifier {
   VerdictViewModel({
     required this.result,
     required this._undo,

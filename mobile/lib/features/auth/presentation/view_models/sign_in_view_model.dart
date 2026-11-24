@@ -3,8 +3,9 @@ import 'package:flutter/foundation.dart';
 import '../../../../core/error/result.dart';
 import '../../domain/usecases/sign_in.dart';
 import '../controllers/session_controller.dart';
+import '../../../../core/presentation/safe_notifier.dart';
 
-class SignInViewModel extends ChangeNotifier {
+class SignInViewModel extends ChangeNotifier with SafeNotifier {
   SignInViewModel({required this._signIn, required this._session});
 
   final SignIn _signIn;

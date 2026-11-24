@@ -12,8 +12,9 @@ import '../../../../core/widgets/screen_header.dart';
 import '../../domain/entities/user_session.dart';
 import '../../domain/usecases/sign_in.dart';
 import '../controllers/session_controller.dart';
+import '../../../../core/presentation/safe_notifier.dart';
 
-class RegisterViewModel extends ChangeNotifier {
+class RegisterViewModel extends ChangeNotifier with SafeNotifier {
   RegisterViewModel({required this._register, required this._session});
 
   final Register _register;

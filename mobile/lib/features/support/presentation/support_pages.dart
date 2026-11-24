@@ -22,6 +22,7 @@ import '../../../shared/domain/entities/support.dart';
 import '../../auth/domain/entities/user_session.dart';
 import '../../auth/presentation/controllers/session_controller.dart';
 import '../domain/support_domain.dart';
+import '../../../core/presentation/safe_notifier.dart';
 
 // ─── list ──────────────────────────────────────────────────────────────────
 
@@ -126,7 +127,7 @@ class SupportListPage extends StatelessWidget {
 
 // ─── new case ──────────────────────────────────────────────────────────────
 
-class NewCaseViewModel extends ChangeNotifier {
+class NewCaseViewModel extends ChangeNotifier with SafeNotifier {
   NewCaseViewModel(this._open, {this.eventId, this.orderId, this.about, CaseCategory? category})
       : category = category ?? (orderId != null ? CaseCategory.ticketDelivery : CaseCategory.eventInfo);
 

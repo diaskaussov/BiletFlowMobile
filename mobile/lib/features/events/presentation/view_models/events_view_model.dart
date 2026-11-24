@@ -7,8 +7,9 @@ import '../../domain/entities/assigned_event.dart';
 import '../../domain/entities/event_stats.dart';
 import '../../domain/usecases/event_usecases.dart';
 import '../controllers/active_event_controller.dart';
+import '../../../../core/presentation/safe_notifier.dart';
 
-class EventsViewModel extends ChangeNotifier {
+class EventsViewModel extends ChangeNotifier with SafeNotifier {
   EventsViewModel({
     required this._getEvents,
     required this._getStats,

@@ -2,10 +2,11 @@ import 'package:flutter/foundation.dart';
 
 import '../error/failure.dart';
 import '../error/result.dart';
+import 'safe_notifier.dart';
 
 /// Состояние экрана «загрузить и показать»: загрузка, данные, ошибка.
 /// ViewModel'и наследуются от него и добавляют свои действия.
-class Loadable<T> extends ChangeNotifier {
+class Loadable<T> extends ChangeNotifier with SafeNotifier {
   Loadable(this._fetch);
 
   final Future<Result<T>> Function() _fetch;
@@ -13,7 +14,6 @@ class Loadable<T> extends ChangeNotifier {
   T? _data;
   Failure? _failure;
   bool _isLoading = false;
-  bool _disposed = false;
 
   T? get data => _data;
   Failure? get failure => _failure;
@@ -69,13 +69,5 @@ class Loadable<T> extends ChangeNotifier {
   bool _isBusy = false;
   bool get isBusy => _isBusy;
 
-  void _notify() {
-    if (!_disposed) notifyListeners();
-  }
-
-  @override
-  void dispose() {
-    _disposed = true;
-    super.dispose();
-  }
+  void _notify() => notifyListeners();
 }

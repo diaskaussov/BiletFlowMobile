@@ -18,10 +18,11 @@ import '../../../core/widgets/screen_header.dart';
 import '../../auth/presentation/controllers/session_controller.dart';
 import '../domain/cart.dart';
 import '../domain/checkout_domain.dart';
+import '../../../core/presentation/safe_notifier.dart';
 
 enum PaymentMethod { card, kaspi }
 
-class CheckoutViewModel extends ChangeNotifier {
+class CheckoutViewModel extends ChangeNotifier with SafeNotifier {
   CheckoutViewModel({required this.cart, required PlaceOrder placeOrder, required this._release})
       : _place = placeOrder {
     if (cart.heldUntil != null) {
