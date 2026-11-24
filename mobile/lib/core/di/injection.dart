@@ -28,6 +28,7 @@ import '../../features/settings/domain/repositories/settings_repository.dart';
 import '../../features/settings/domain/usecases/settings_usecases.dart';
 import '../../features/settings/presentation/settings_controller.dart';
 import '../config/app_config.dart';
+import 'admin_injection.dart';
 import 'attendee_injection.dart';
 import 'organizer_injection.dart';
 import '../config/server_address.dart';
@@ -109,6 +110,7 @@ Future<void> configureDependencies() async {
 
   configureAttendeeDependencies(sl);
   configureOrganizerDependencies(sl);
+  configureAdminDependencies(sl);
 
   await sl<ServerAddress>().load();
 

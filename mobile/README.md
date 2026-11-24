@@ -1,10 +1,18 @@
-# BiletFlow Scanner (mobile)
+# BiletFlow (mobile)
 
-Flutter app for event admins: sign in, pick an assigned event, scan ticket QR codes,
-check attendees in by name and reverse check-ins (SRS §4.8, UC4).
-Screens A1–A6, B1–B10 and C1–C4 follow `BiletFlow Mobile Screens.html` and
-`BiletFlow Mobile Spec.dc.html` in the repository root. D1–D2 are the organizer's
-mobile web view and belong to the web app (SRS §8 excludes native organizer apps).
+One Flutter app for every BiletFlow role. After sign-in the router opens the section
+for the account's role:
+
+| Role | Screens | Source design |
+|---|---|---|
+| Attendee | W1–W9: events, event page, promo codes and Campaign QR, seat map, checkout (sandbox), tickets with QR / PDF / print / calendar, orders, support | `BiletFlow Web App Screens.html` |
+| Organizer | O1–O10: dashboard, create / edit / publish events, ticket types, seating, paid-sales activation, attendees & refunds, analytics, campaigns with QR, timeline, check-in staff, support inbox | `BiletFlow Web App Screens.html` |
+| Event admin | A1–A6, B1–B10, C1–C4: assigned events, QR scanner and verdicts, manual check-in, reversal | `BiletFlow Mobile Screens.html` |
+| Platform admin | P1–P2: work queues, events and moderation, users, orders | `BiletFlow Web App Screens.html` |
+
+Web designs are adapted to the phone with the tokens from `BiletFlow Mobile Spec.dc.html`
+(Barlow / Barlow Condensed, `#5980a6`, square corners). Attendees and organizers can
+register in the app; event staff are assigned by organizers.
 
 ## Run
 
@@ -47,20 +55,28 @@ Clean Architecture, feature-first:
 
 ```
 lib/
-  app/        root widget, routes (go_router), bottom tabs
-  core/       config, DI (get_it), errors (Failure / Result), network (Dio),
-              theme tokens, shared widgets
+  app/        root widget, router with role guard, per-role routes and tabs
+  core/       config, DI (get_it, one file per role), errors (Failure / Result),
+              network (Dio + request log), Loadable view-model base, theme, widgets
+  shared/     entities and JSON models used by several roles (events, orders,
+              tickets, seats, campaigns, support, analytics)
   features/<feature>/
     domain/        entities, repository interfaces, use cases — pure Dart
     data/          JSON models, data sources, repository implementations
     presentation/  ViewModels (ChangeNotifier + provider), pages, widgets
 ```
 
-Features: `auth` (A1), `events` (A2–A4), `connection` (A5), `settings` (A6),
-`checkin` (B1–B10, C4), `attendees` (C1–C3).
+Features:
+
+- all roles — `auth` (sign-in, registration), `account`, `notifications`, `support`
+- attendee — `catalog` (W1–W3), `checkout` (W4–W5), `tickets` (W6–W8)
+- organizer — `organizer` (O1–O10)
+- event admin — `events` (A2–A4), `connection` (A5), `settings` (A6),
+  `checkin` (B1–B10, C4), `attendees` (C1–C3)
+- platform admin — `admin` (P1–P2)
 
 Dependencies point inward only: presentation → use case → repository interface,
-and `core/di/injection.dart` is the single place where a data implementation is
+and `core/di/*_injection.dart` is the only place where a data implementation is
 bound to its interface.
 
 Key rules live in use cases and are unit-tested:
@@ -68,32 +84,41 @@ Key rules live in use cases and are unit-tested:
 - `VerifyTicket` — campaign QR codes and foreign codes are refused on the phone
   and never sent as tickets (§4.14); the same valid code within 10 s is a repeat (B6),
   not a second check-in; with no connection verification is blocked, not queued (A5).
-- `SignIn` — only `EVENT_ADMIN` may sign in.
+- `SignIn` / `Register` — any known role signs in; only attendees and organizers
+  can register themselves.
 - `UndoCheckIn` — a reason is required.
+- `PlaceOrder` — tickets are issued only after the sandbox confirms payment; an
+  expired seat hold blocks the order.
+- `HoldSeats` — exactly one seat per ticket in the cart, per ticket type.
+- `ChangeEventState` — an event cannot be published without a ticket type.
+- `RefundOrder`, `ModerationActions` — reasons are required; admins cannot suspend
+  themselves or other admins.
 
-## Backend contract used
+## Backend
 
-Checked against the running backend (Swagger at `/swagger-ui.html`), which is richer
-than `API_GUIDE.md`:
+Everything is checked against the running backend; its Swagger (`/v3/api-docs`) is richer
+than `API_GUIDE.md`. What is still missing — and how each screen degrades — is in
+[`docs/BACKEND_GAPS.md`](docs/BACKEND_GAPS.md).
 
-| Screen | Endpoint |
-|---|---|
-| A1 | `POST /api/auth/login` |
-| A2–A3 | `GET /api/staff/my-events` → `[{ id, event: {...}, user }]` |
-| A4, scanner header | `GET /api/checkin/stats/{eventId}` |
-| B4–B10 | `POST /api/checkin/scan { ticketCode, eventId }` → `verdict` = `OK / ALREADY_USED / CANCELLED / REFUNDED / WRONG_EVENT / NOT_FOUND / PROMO_CODE` |
-| C1–C3 | `GET /api/checkin/events/{eventId}/attendees?q=`, `POST /api/checkin/tickets/{ticketId}` |
-| C4 | `POST /api/checkin/undo/{ticketId} { reason }` |
+Server timestamps (`createdAt`, `checkedInAt`, `heldUntil`) come in UTC without a zone and
+are converted to local time; event dates are venue-local and are shown as is.
 
-Server timestamps (`checkedInAt`) come in UTC without a zone and are converted to
-local time; event dates are venue-local and are shown as is.
+## Tests
 
-Still missing: password reset ("Forgot password" tells staff to ask the organizer)
-and order history for C3 (the History block is hidden when empty).
+```bash
+flutter test                                   # unit and widget tests
+flutter test integration_test/all_screens_test.dart -d <simulator-id>
+```
+
+The integration test signs in as each demo account, opens every screen of every role with
+live data and fails on any exception or layout overflow. It needs the backend running with
+the demo data used during development.
 
 ## Not done yet
 
 - Russian and Kazakh localization (planned last).
+- Deep links for Campaign QR (`https://biletflow.kz/events/{id}?promo=`) — attendees scan
+  campaign codes from the Events tab instead.
 - Gate name is stored on the device (Settings → Assigned gate); the API has no gates.
 - A4 breakdown by ticket type, rejected and reversed counts come from this
   device's shift log, because `/checkin/stats` only returns three totals.
