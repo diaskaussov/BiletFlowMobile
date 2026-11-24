@@ -896,4 +896,967 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get organizerProfile => 'Organizer profile & payout';
+
+  @override
+  String get evDraft => 'Draft';
+
+  @override
+  String get evPublished => 'Published';
+
+  @override
+  String get evCancelled => 'Cancelled';
+
+  @override
+  String get evCompleted => 'Completed';
+
+  @override
+  String get evLive => 'Live now';
+
+  @override
+  String get visPublic => 'Public';
+
+  @override
+  String get visUnlisted => 'Unlisted';
+
+  @override
+  String get visPrivate => 'Private';
+
+  @override
+  String get orderPending => 'Awaiting payment';
+
+  @override
+  String get orderPaid => 'Paid';
+
+  @override
+  String get orderCancelled => 'Cancelled';
+
+  @override
+  String get orderRefunded => 'Refunded';
+
+  @override
+  String get caseOpen => 'Open';
+
+  @override
+  String get caseInProgress => 'In progress';
+
+  @override
+  String get caseWaiting => 'Waiting for customer';
+
+  @override
+  String get caseResolved => 'Resolved';
+
+  @override
+  String get catTicketDelivery => 'Ticket delivery';
+
+  @override
+  String get catPayment => 'Payment';
+
+  @override
+  String get catRefund => 'Refund';
+
+  @override
+  String get catSeating => 'Seating';
+
+  @override
+  String get catEventInfo => 'Event information';
+
+  @override
+  String get catCheckIn => 'Check-in';
+
+  @override
+  String get catAccount => 'Account';
+
+  @override
+  String get catActivation => 'Paid sales activation';
+
+  @override
+  String get catTechnical => 'Technical problem';
+
+  @override
+  String get auditEventChanges => 'Event changes';
+
+  @override
+  String get auditRefunds => 'Refunds';
+
+  @override
+  String get auditCampaigns => 'Campaigns';
+
+  @override
+  String get auditCheckIns => 'Check-ins';
+
+  @override
+  String get auditSupport => 'Support';
+
+  @override
+  String seatLabel(String section, String row, String number) {
+    return 'Sec $section · Row $row · Seat $number';
+  }
+
+  @override
+  String get secOverview => 'Overview';
+
+  @override
+  String get secTickets => 'Tickets';
+
+  @override
+  String get secSeating => 'Seat map';
+
+  @override
+  String get secOrders => 'Orders';
+
+  @override
+  String get secPromo => 'Promo';
+
+  @override
+  String get secStaff => 'Staff';
+
+  @override
+  String get secSales => 'Sales';
+
+  @override
+  String get secHistory => 'History';
+
+  @override
+  String get secCheckIn => 'Check-in';
+
+  @override
+  String get eventActions => 'Event actions';
+
+  @override
+  String get actEdit => 'Edit';
+
+  @override
+  String get actDuplicate => 'Duplicate';
+
+  @override
+  String get actPublish => 'Publish';
+
+  @override
+  String get actUnpublish => 'Unpublish';
+
+  @override
+  String get actCancelEvent => 'Cancel event';
+
+  @override
+  String get cancelEventTitle => 'Cancel this event?';
+
+  @override
+  String get cancelEventBody =>
+      'Sales stop and every ticket becomes invalid. Attendees are notified. Records stay in the event history.';
+
+  @override
+  String get publishedToast => 'Published. Attendees can register now.';
+
+  @override
+  String get unpublishedToast => 'Unpublished. The event is a draft again.';
+
+  @override
+  String get cancelledToast => 'Event cancelled.';
+
+  @override
+  String get duplicatedToast =>
+      'Copied into a new draft without orders, tickets or check-ins.';
+
+  @override
+  String get salesNotActive =>
+      'Paid sales are not activated — buyers cannot purchase paid tickets';
+
+  @override
+  String get actActivate => 'Activate';
+
+  @override
+  String get kpiSold => 'Sold';
+
+  @override
+  String get kpiGross => 'Gross revenue';
+
+  @override
+  String get kpiNet => 'Net revenue';
+
+  @override
+  String get kpiAttendance => 'Attendance';
+
+  @override
+  String get kpiOrders => 'Orders';
+
+  @override
+  String get kpiDiscounts => 'Discounts';
+
+  @override
+  String get kpiRefunds => 'Refunds';
+
+  @override
+  String get kpiRemaining => 'Remaining';
+
+  @override
+  String get salesByType => 'Sales by ticket type';
+
+  @override
+  String get promoEffect => 'Promo code performance';
+
+  @override
+  String redeemedOf(String used, String max) {
+    return '$used of $max';
+  }
+
+  @override
+  String redeemed(int count) {
+    return '$count used';
+  }
+
+  @override
+  String get salesOverTime => 'Sales over time';
+
+  @override
+  String get noOrdersYet => 'No orders yet.';
+
+  @override
+  String get eventFallback => 'Event';
+
+  @override
+  String get createEvent => 'Create an event';
+
+  @override
+  String get firstEventTitle => 'Create your first event';
+
+  @override
+  String get firstEventBody =>
+      'Creating events and issuing free tickets costs nothing. Paid sales are activated per event when you need them.';
+
+  @override
+  String filterAllN(int count) {
+    return 'All $count';
+  }
+
+  @override
+  String filterDraftsN(int count) {
+    return 'Drafts $count';
+  }
+
+  @override
+  String filterPublishedN(int count) {
+    return 'Published $count';
+  }
+
+  @override
+  String filterLiveN(int count) {
+    return 'Live $count';
+  }
+
+  @override
+  String filterPastN(int count) {
+    return 'Past $count';
+  }
+
+  @override
+  String filterCancelledN(int count) {
+    return 'Cancelled $count';
+  }
+
+  @override
+  String get searchByTitle => 'Search by title';
+
+  @override
+  String soldOf(String sold, String total) {
+    return 'Sold $sold / $total';
+  }
+
+  @override
+  String get nothingFound => 'Nothing found';
+
+  @override
+  String get noNotifications => 'No notifications yet';
+
+  @override
+  String get noNotificationsHint =>
+      'Orders, refunds and support replies will appear here.';
+
+  @override
+  String get demoPayments =>
+      'Demonstration build: payments run in a sandbox. No money moves and no card is stored.';
+
+  @override
+  String get ordersSearchHint => 'Buyer or order number';
+
+  @override
+  String get filtersTitle => 'Filter';
+
+  @override
+  String get attAll => 'All';
+
+  @override
+  String get attCheckedIn => 'Checked in';
+
+  @override
+  String get attNotArrived => 'Not arrived';
+
+  @override
+  String get attRefunded => 'Refunded or cancelled';
+
+  @override
+  String get attCampaign => 'With promo code';
+
+  @override
+  String get exportCsv => 'Export CSV';
+
+  @override
+  String orderNo(String id) {
+    return '#$id';
+  }
+
+  @override
+  String get noOrder => 'No order';
+
+  @override
+  String get refundMoney => 'Refund';
+
+  @override
+  String refundTitle(String id) {
+    return 'Refund order #$id';
+  }
+
+  @override
+  String get buyer => 'Buyer';
+
+  @override
+  String get positions => 'Items';
+
+  @override
+  String get toRefund => 'To refund';
+
+  @override
+  String get reasonStar => 'Reason *';
+
+  @override
+  String get refundReasonHint => 'e.g. the buyer can no longer attend';
+
+  @override
+  String refundConfirm(String amount) {
+    return 'Refund $amount';
+  }
+
+  @override
+  String get refundedToast => 'Order refunded. The buyer is emailed.';
+
+  @override
+  String refundUsedWarning(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count tickets were',
+      one: '$count ticket was',
+    );
+    return '$_temp0 already checked in. Refunding does not undo admission.';
+  }
+
+  @override
+  String get refundNote =>
+      'Tickets become invalid immediately and seats return to sale.';
+
+  @override
+  String get orderTitle => 'Order';
+
+  @override
+  String get statusLabel => 'Status';
+
+  @override
+  String discountCode(String code) {
+    return 'Discount $code';
+  }
+
+  @override
+  String get paidLabel => 'Paid';
+
+  @override
+  String get placedLabel => 'Placed';
+
+  @override
+  String usedOfTotal(String used, String total) {
+    return '$used of $total';
+  }
+
+  @override
+  String get noOrdersMatch => 'No orders match';
+
+  @override
+  String get orderNotFound => 'Order not found';
+
+  @override
+  String get errOrderNotFound => 'Order not found.';
+
+  @override
+  String get errOrderNoEvent => 'This order has no event.';
+
+  @override
+  String get errRowInvalid => 'Every row needs a label and at least one seat.';
+
+  @override
+  String errSeatsOverTickets(String name, int seats, int quantity) {
+    return 'The map has $seats “$name” seats but only $quantity tickets — increase the quantity';
+  }
+
+  @override
+  String seatPreview(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count seats',
+      one: '$count seat',
+    );
+    return 'Preview · $_temp0';
+  }
+
+  @override
+  String get fullScreen => 'Full screen';
+
+  @override
+  String get stage => 'STAGE';
+
+  @override
+  String get sectionsTitle => 'Sections';
+
+  @override
+  String rowsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count rows',
+      one: '$count row',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String seatsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count seats',
+      one: '$count seat',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get modeQuick => 'Quick';
+
+  @override
+  String get modeManual => 'Manual';
+
+  @override
+  String get sectionName => 'Section name';
+
+  @override
+  String get rowsLabel => 'Rows';
+
+  @override
+  String get seatsPerRowLabel => 'Seats per row';
+
+  @override
+  String get rowLabel => 'Row';
+
+  @override
+  String get seatsLabel => 'Seats';
+
+  @override
+  String get addRow => 'Add row';
+
+  @override
+  String get addSection => 'Add section';
+
+  @override
+  String get saveMap => 'Save seat map';
+
+  @override
+  String get deleteMap => 'Delete seat map';
+
+  @override
+  String get deleteMapTitle => 'Delete the seat map?';
+
+  @override
+  String get deleteMapBody =>
+      'Seats disappear and buyers can no longer pick them.';
+
+  @override
+  String get mapSaved => 'Seat map saved.';
+
+  @override
+  String get mapDeleted => 'Seat map deleted.';
+
+  @override
+  String get mapSoldLocked =>
+      'Seats are already sold, so the map cannot be deleted.';
+
+  @override
+  String get noSeatMapYet =>
+      'No seat map yet. Add a section — each one sells at its ticket type\'s price.';
+
+  @override
+  String get needTicketTypeFirst =>
+      'Add a ticket type first — sections are priced by ticket type.';
+
+  @override
+  String get ticketTypeLabel => 'Ticket type';
+
+  @override
+  String get removeSection => 'Remove section';
+
+  @override
+  String sectionDefault(String name) {
+    return 'Section $name';
+  }
+
+  @override
+  String get actionDelete => 'Delete';
+
+  @override
+  String get activationTitle => 'Paid sales activation';
+
+  @override
+  String activationProgress(int done, int total) {
+    return '$done of $total requirements met. Until paid sales are activated, only free tickets are available.';
+  }
+
+  @override
+  String get chkPaidType => 'A paid ticket type exists';
+
+  @override
+  String get chkPaidTypeMissing => 'Add a ticket type with a price above zero';
+
+  @override
+  String get chkIdentity => 'Identity verified';
+
+  @override
+  String get chkIdentityMissing => 'Sandbox check of the organizer profile';
+
+  @override
+  String get chkPayout => 'Payout details verified';
+
+  @override
+  String get chkPayoutMissing => 'Add your bank and account number';
+
+  @override
+  String get chkFee => 'Activation fee paid';
+
+  @override
+  String get chkFeeMissing =>
+      'One-time fee for this event — charged on activation (sandbox)';
+
+  @override
+  String get doneLabel => 'Done';
+
+  @override
+  String get fixLink => 'Fix →';
+
+  @override
+  String get termsAccept =>
+      'I accept the paid-event terms: refunds, chargebacks, payout timing';
+
+  @override
+  String get activateButton => 'Activate paid sales';
+
+  @override
+  String get activatedTitle => 'Paid sales active';
+
+  @override
+  String get activatedBody => 'Buyers can purchase paid tickets';
+
+  @override
+  String get activatedToast => 'Paid sales activated (sandbox).';
+
+  @override
+  String get demoActivation =>
+      'Identity checks, the fee, ticket payments and payouts run in a sandbox. No money moves.';
+
+  @override
+  String get orgProfileTitle => 'Organizer profile';
+
+  @override
+  String get orgProfileSub => 'Contact & payout';
+
+  @override
+  String get identityOk => 'Identity verified';
+
+  @override
+  String get identityNo => 'Identity not verified';
+
+  @override
+  String get payoutOk => 'Payout verified';
+
+  @override
+  String get payoutNo => 'Payout not verified';
+
+  @override
+  String get organization => 'Organization';
+
+  @override
+  String get orgName => 'Organization name';
+
+  @override
+  String get descriptionLabel => 'Description';
+
+  @override
+  String get contactEmail => 'Contact email';
+
+  @override
+  String get contactPhone => 'Contact phone';
+
+  @override
+  String get website => 'Website';
+
+  @override
+  String get payoutSection => 'Payout account · sandbox';
+
+  @override
+  String get bank => 'Bank';
+
+  @override
+  String get accountNumber => 'Account number';
+
+  @override
+  String get accountHolder => 'Account holder';
+
+  @override
+  String get demoPayout =>
+      'Payout details are used for a simulated payout only. No real transfers.';
+
+  @override
+  String get saveProfile => 'Save profile';
+
+  @override
+  String get profileSaved => 'Profile saved.';
+
+  @override
+  String get issued => 'Issued';
+
+  @override
+  String get available => 'Available';
+
+  @override
+  String get refundedVoid => 'Refunded / void';
+
+  @override
+  String get noTicketTypes => 'No ticket types yet';
+
+  @override
+  String get noTicketTypesHint =>
+      'Add at least one free or paid ticket type before publishing.';
+
+  @override
+  String get ttHidden => 'Hidden';
+
+  @override
+  String get ttSoldOut => 'Sold out';
+
+  @override
+  String get ttOnSale => 'On sale';
+
+  @override
+  String get ttNotOnSale => 'Not on sale';
+
+  @override
+  String get priceLabel => 'Price';
+
+  @override
+  String get maxPerOrder => 'Max per order';
+
+  @override
+  String get salesWindow => 'Sales';
+
+  @override
+  String get salesNow => 'now';
+
+  @override
+  String get salesUntilEvent => 'event';
+
+  @override
+  String get actHide => 'Hide';
+
+  @override
+  String get hiddenToast => 'Hidden from sale. Sold tickets stay valid.';
+
+  @override
+  String get ttAdded => 'Ticket type added.';
+
+  @override
+  String get savedToast => 'Saved.';
+
+  @override
+  String get addTicketType => 'Add a ticket type';
+
+  @override
+  String get newTicketType => 'New ticket type';
+
+  @override
+  String get editTicketType => 'Edit ticket type';
+
+  @override
+  String get nameLabel => 'Name';
+
+  @override
+  String get freeTicket => 'Free ticket';
+
+  @override
+  String get priceKzt => 'Price, ₸';
+
+  @override
+  String get quantityLabel => 'Quantity';
+
+  @override
+  String get salesStartOpt => 'Sales start (optional)';
+
+  @override
+  String get salesEndOpt => 'Sales end (optional)';
+
+  @override
+  String get paidNeedsActivation =>
+      'Paid tickets can be sold only after paid sales are activated for this event.';
+
+  @override
+  String get pickDateTime => 'Pick date and time';
+
+  @override
+  String get campaignQrTitle => 'Campaign QR — not a ticket';
+
+  @override
+  String get codeLabel => 'Code';
+
+  @override
+  String get linkLabel => 'Link';
+
+  @override
+  String campaignQrNote(String code) {
+    return 'Opens the event page with $code pre-applied. The link carries the code, never a price — the server validates it. The scanner refuses it at the gate.';
+  }
+
+  @override
+  String get shareLink => 'Share link';
+
+  @override
+  String get copyCode => 'Copy code';
+
+  @override
+  String get codeCopied => 'Code copied.';
+
+  @override
+  String get noCampaigns => 'No campaigns yet';
+
+  @override
+  String get noCampaignsHint =>
+      'A campaign gives a discount through a promo code and a trackable Campaign QR.';
+
+  @override
+  String get campLive => 'Live';
+
+  @override
+  String get campNotLive => 'Not live';
+
+  @override
+  String get campDisabled => 'Disabled';
+
+  @override
+  String get codeHidden => 'Not returned by the server';
+
+  @override
+  String get discountLabel => 'Discount';
+
+  @override
+  String percentOff(String value) {
+    return '$value% off';
+  }
+
+  @override
+  String amountOff(String value) {
+    return '$value off';
+  }
+
+  @override
+  String get usedLabel => 'Used';
+
+  @override
+  String get validLabel => 'Valid';
+
+  @override
+  String get validOpen => 'open';
+
+  @override
+  String get qrAndLink => 'QR & link';
+
+  @override
+  String get actDisable => 'Disable';
+
+  @override
+  String get campaignDisabled => 'Campaign disabled.';
+
+  @override
+  String get campaignsNote =>
+      'Redemption limits are enforced on the server. Codes of campaigns created on other devices are not returned by the API.';
+
+  @override
+  String get createCampaign => 'Create campaign';
+
+  @override
+  String get newCampaign => 'New campaign';
+
+  @override
+  String get discPercent => 'Percentage';
+
+  @override
+  String get discFixed => 'Fixed ₸';
+
+  @override
+  String get discountPct => 'Discount, %';
+
+  @override
+  String get discountKzt => 'Discount, ₸';
+
+  @override
+  String get maxRedemptions => 'Max redemptions';
+
+  @override
+  String get validFrom => 'Valid from';
+
+  @override
+  String get validTo => 'Valid to';
+
+  @override
+  String get createAndQr => 'Create and get QR';
+
+  @override
+  String get staffIntro =>
+      'People you add can sign into the scanner app and see this event only. They never see revenue, orders or your other events.';
+
+  @override
+  String get nobodyAssigned => 'Nobody is assigned yet.';
+
+  @override
+  String userNo(String id) {
+    return 'user #$id';
+  }
+
+  @override
+  String get actRemove => 'Remove';
+
+  @override
+  String get staffRemoved => 'Removed from this event.';
+
+  @override
+  String get addEventAdmin => 'Add an event admin';
+
+  @override
+  String get userId => 'User ID';
+
+  @override
+  String get actAdd => 'Add';
+
+  @override
+  String get staffAdded => 'Added. They can sign into the scanner now.';
+
+  @override
+  String get staffIdNote =>
+      'The API assigns staff by user ID only — adding by email is not available yet. The person needs an EVENT_ADMIN account.';
+
+  @override
+  String get gateActivity => 'Live gate activity';
+
+  @override
+  String get auditTrailNote =>
+      'Entries cannot be edited or deleted. Platform admins can read the same trail.';
+
+  @override
+  String get noHistory => 'No entries yet.';
+
+  @override
+  String allN(int count) {
+    return 'All · $count';
+  }
+
+  @override
+  String get absentHolders => 'Absent holders';
+
+  @override
+  String get ofCapacity => 'of capacity';
+
+  @override
+  String get createEventTitle => 'Create event';
+
+  @override
+  String get editEventTitle => 'Edit event';
+
+  @override
+  String get draftHint => 'Draft — nothing is public until you publish';
+
+  @override
+  String get basics => 'Basics';
+
+  @override
+  String get eventTitleLabel => 'Event title';
+
+  @override
+  String get categoryLabel => 'Category';
+
+  @override
+  String get categoryHint => 'Music, Tech, Sport, Theatre';
+
+  @override
+  String get visibilityLabel => 'Visibility';
+
+  @override
+  String get venueSection => 'Venue';
+
+  @override
+  String get venueLabel => 'Venue';
+
+  @override
+  String get addressLabel => 'Address';
+
+  @override
+  String get cityLabel => 'City';
+
+  @override
+  String get dateSection => 'Date & registration';
+
+  @override
+  String get startsLabel => 'Starts';
+
+  @override
+  String get endsLabel => 'Ends';
+
+  @override
+  String get regOpens => 'Registration opens';
+
+  @override
+  String get regCloses => 'Registration closes';
+
+  @override
+  String get capacityLabel => 'Capacity';
+
+  @override
+  String get seatingImage => 'Seating & image';
+
+  @override
+  String get assignedSeating => 'Assigned seating';
+
+  @override
+  String get assignedSeatingHint =>
+      'Attendees pick seats on a map at checkout.';
+
+  @override
+  String get coverUrl => 'Cover image URL (optional)';
+
+  @override
+  String get coverNote =>
+      'Image upload is not available in this build — paste a link to a hosted image.';
+
+  @override
+  String get saveAndContinue => 'Save and continue';
+
+  @override
+  String get saveChanges => 'Save changes';
+
+  @override
+  String get draftSaved => 'Draft saved. Add ticket types next.';
+
+  @override
+  String get changesSaved => 'Changes saved.';
 }

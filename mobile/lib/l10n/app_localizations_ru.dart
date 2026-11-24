@@ -910,4 +910,976 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get organizerProfile => 'Профиль организатора и выплаты';
+
+  @override
+  String get evDraft => 'Черновик';
+
+  @override
+  String get evPublished => 'Опубликовано';
+
+  @override
+  String get evCancelled => 'Отменено';
+
+  @override
+  String get evCompleted => 'Завершено';
+
+  @override
+  String get evLive => 'Идёт сейчас';
+
+  @override
+  String get visPublic => 'Публичное';
+
+  @override
+  String get visUnlisted => 'По ссылке';
+
+  @override
+  String get visPrivate => 'Приватное';
+
+  @override
+  String get orderPending => 'Ожидает оплаты';
+
+  @override
+  String get orderPaid => 'Оплачен';
+
+  @override
+  String get orderCancelled => 'Отменён';
+
+  @override
+  String get orderRefunded => 'Возвращён';
+
+  @override
+  String get caseOpen => 'Открыто';
+
+  @override
+  String get caseInProgress => 'В работе';
+
+  @override
+  String get caseWaiting => 'Ждём ответа';
+
+  @override
+  String get caseResolved => 'Решено';
+
+  @override
+  String get catTicketDelivery => 'Доставка билета';
+
+  @override
+  String get catPayment => 'Оплата';
+
+  @override
+  String get catRefund => 'Возврат';
+
+  @override
+  String get catSeating => 'Места';
+
+  @override
+  String get catEventInfo => 'Информация о событии';
+
+  @override
+  String get catCheckIn => 'Вход';
+
+  @override
+  String get catAccount => 'Аккаунт';
+
+  @override
+  String get catActivation => 'Активация продаж';
+
+  @override
+  String get catTechnical => 'Техническая проблема';
+
+  @override
+  String get auditEventChanges => 'Изменения события';
+
+  @override
+  String get auditRefunds => 'Возвраты';
+
+  @override
+  String get auditCampaigns => 'Промо';
+
+  @override
+  String get auditCheckIns => 'Входы';
+
+  @override
+  String get auditSupport => 'Поддержка';
+
+  @override
+  String seatLabel(String section, String row, String number) {
+    return 'Сектор $section · ряд $row · место $number';
+  }
+
+  @override
+  String get secOverview => 'Обзор';
+
+  @override
+  String get secTickets => 'Билеты';
+
+  @override
+  String get secSeating => 'Схема зала';
+
+  @override
+  String get secOrders => 'Заказы';
+
+  @override
+  String get secPromo => 'Промо';
+
+  @override
+  String get secStaff => 'Персонал';
+
+  @override
+  String get secSales => 'Продажи';
+
+  @override
+  String get secHistory => 'История';
+
+  @override
+  String get secCheckIn => 'Вход';
+
+  @override
+  String get eventActions => 'Действия с событием';
+
+  @override
+  String get actEdit => 'Редактировать';
+
+  @override
+  String get actDuplicate => 'Дублировать';
+
+  @override
+  String get actPublish => 'Опубликовать';
+
+  @override
+  String get actUnpublish => 'Снять с публикации';
+
+  @override
+  String get actCancelEvent => 'Отменить событие';
+
+  @override
+  String get cancelEventTitle => 'Отменить событие?';
+
+  @override
+  String get cancelEventBody =>
+      'Продажи остановятся, все билеты станут недействительными, участники получат уведомление. Записи останутся в истории.';
+
+  @override
+  String get publishedToast => 'Опубликовано — регистрация открыта.';
+
+  @override
+  String get unpublishedToast => 'Снято с публикации — снова черновик.';
+
+  @override
+  String get cancelledToast => 'Событие отменено.';
+
+  @override
+  String get duplicatedToast =>
+      'Создан черновик-копия без заказов, билетов и входов.';
+
+  @override
+  String get salesNotActive =>
+      'Платные продажи не активированы — покупатели не могут купить платные билеты';
+
+  @override
+  String get actActivate => 'Активировать';
+
+  @override
+  String get kpiSold => 'Продано';
+
+  @override
+  String get kpiGross => 'Валовая выручка';
+
+  @override
+  String get kpiNet => 'Чистая выручка';
+
+  @override
+  String get kpiAttendance => 'Явка';
+
+  @override
+  String get kpiOrders => 'Заказов';
+
+  @override
+  String get kpiDiscounts => 'Скидки';
+
+  @override
+  String get kpiRefunds => 'Возвраты';
+
+  @override
+  String get kpiRemaining => 'Осталось';
+
+  @override
+  String get salesByType => 'Продажи по типам билетов';
+
+  @override
+  String get promoEffect => 'Эффективность промокодов';
+
+  @override
+  String redeemedOf(String used, String max) {
+    return '$used из $max';
+  }
+
+  @override
+  String redeemed(int count) {
+    return '$count исп.';
+  }
+
+  @override
+  String get salesOverTime => 'Продажи по дням';
+
+  @override
+  String get noOrdersYet => 'Заказов пока нет.';
+
+  @override
+  String get eventFallback => 'Событие';
+
+  @override
+  String get createEvent => 'Создать событие';
+
+  @override
+  String get firstEventTitle => 'Создайте первое событие';
+
+  @override
+  String get firstEventBody =>
+      'Создание событий и бесплатные билеты ничего не стоят. Платные продажи активируются для каждого события отдельно.';
+
+  @override
+  String filterAllN(int count) {
+    return 'Все $count';
+  }
+
+  @override
+  String filterDraftsN(int count) {
+    return 'Черновики $count';
+  }
+
+  @override
+  String filterPublishedN(int count) {
+    return 'Опубликованные $count';
+  }
+
+  @override
+  String filterLiveN(int count) {
+    return 'Идут $count';
+  }
+
+  @override
+  String filterPastN(int count) {
+    return 'Прошедшие $count';
+  }
+
+  @override
+  String filterCancelledN(int count) {
+    return 'Отменённые $count';
+  }
+
+  @override
+  String get searchByTitle => 'Поиск по названию';
+
+  @override
+  String soldOf(String sold, String total) {
+    return 'Продано $sold / $total';
+  }
+
+  @override
+  String get nothingFound => 'Ничего не найдено';
+
+  @override
+  String get noNotifications => 'Уведомлений пока нет';
+
+  @override
+  String get noNotificationsHint =>
+      'Здесь появятся заказы, возвраты и ответы поддержки.';
+
+  @override
+  String get demoPayments =>
+      'Демо-версия: оплата идёт через тестовую систему, деньги не списываются, карты не сохраняются.';
+
+  @override
+  String get ordersSearchHint => 'Покупатель или № заказа';
+
+  @override
+  String get filtersTitle => 'Фильтр';
+
+  @override
+  String get attAll => 'Все';
+
+  @override
+  String get attCheckedIn => 'Вошли';
+
+  @override
+  String get attNotArrived => 'Не пришли';
+
+  @override
+  String get attRefunded => 'Возвраты и отмены';
+
+  @override
+  String get attCampaign => 'С промокодом';
+
+  @override
+  String get exportCsv => 'Выгрузить CSV';
+
+  @override
+  String orderNo(String id) {
+    return '№$id';
+  }
+
+  @override
+  String get noOrder => 'Без заказа';
+
+  @override
+  String get refundMoney => 'Вернуть деньги';
+
+  @override
+  String refundTitle(String id) {
+    return 'Возврат по заказу №$id';
+  }
+
+  @override
+  String get buyer => 'Покупатель';
+
+  @override
+  String get positions => 'Позиции';
+
+  @override
+  String get toRefund => 'К возврату';
+
+  @override
+  String get reasonStar => 'Причина *';
+
+  @override
+  String get refundReasonHint =>
+      'Например: покупатель не сможет посетить событие';
+
+  @override
+  String refundConfirm(String amount) {
+    return 'Вернуть $amount';
+  }
+
+  @override
+  String get refundedToast => 'Деньги возвращены. Покупатель получит письмо.';
+
+  @override
+  String refundUsedWarning(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count билета уже прошли вход',
+      many: '$count билетов уже прошли вход',
+      few: '$count билета уже прошли вход',
+      one: '$count билет уже прошёл вход',
+    );
+    return '$_temp0. Возврат не отменяет вход.';
+  }
+
+  @override
+  String get refundNote =>
+      'Билеты сразу станут недействительными, места вернутся в продажу.';
+
+  @override
+  String get orderTitle => 'Заказ';
+
+  @override
+  String get statusLabel => 'Статус';
+
+  @override
+  String discountCode(String code) {
+    return 'Скидка $code';
+  }
+
+  @override
+  String get paidLabel => 'Оплачено';
+
+  @override
+  String get placedLabel => 'Оформлен';
+
+  @override
+  String usedOfTotal(String used, String total) {
+    return '$used из $total';
+  }
+
+  @override
+  String get noOrdersMatch => 'Нет заказов по запросу';
+
+  @override
+  String get orderNotFound => 'Заказ не найден';
+
+  @override
+  String get errOrderNotFound => 'Заказ не найден.';
+
+  @override
+  String get errOrderNoEvent => 'У заказа нет события.';
+
+  @override
+  String get errRowInvalid =>
+      'У каждого ряда должна быть подпись и хотя бы одно место.';
+
+  @override
+  String errSeatsOverTickets(String name, int seats, int quantity) {
+    return 'В схеме $seats мест «$name», а доступно $quantity билетов — увеличьте количество';
+  }
+
+  @override
+  String seatPreview(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count места',
+      many: '$count мест',
+      few: '$count места',
+      one: '$count место',
+    );
+    return 'Превью · $_temp0';
+  }
+
+  @override
+  String get fullScreen => 'На весь экран';
+
+  @override
+  String get stage => 'СЦЕНА';
+
+  @override
+  String get sectionsTitle => 'Секции';
+
+  @override
+  String rowsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ряда',
+      many: '$count рядов',
+      few: '$count ряда',
+      one: '$count ряд',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String seatsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count места',
+      many: '$count мест',
+      few: '$count места',
+      one: '$count место',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get modeQuick => 'Быстро';
+
+  @override
+  String get modeManual => 'Вручную';
+
+  @override
+  String get sectionName => 'Название секции';
+
+  @override
+  String get rowsLabel => 'Рядов';
+
+  @override
+  String get seatsPerRowLabel => 'Мест в ряду';
+
+  @override
+  String get rowLabel => 'Ряд';
+
+  @override
+  String get seatsLabel => 'Мест';
+
+  @override
+  String get addRow => 'Добавить ряд';
+
+  @override
+  String get addSection => 'Добавить секцию';
+
+  @override
+  String get saveMap => 'Сохранить схему';
+
+  @override
+  String get deleteMap => 'Удалить схему';
+
+  @override
+  String get deleteMapTitle => 'Удалить схему зала?';
+
+  @override
+  String get deleteMapBody =>
+      'Места пропадут, и покупатели не смогут их выбирать.';
+
+  @override
+  String get mapSaved => 'Схема сохранена.';
+
+  @override
+  String get mapDeleted => 'Схема удалена.';
+
+  @override
+  String get mapSoldLocked => 'Места уже проданы — схему нельзя удалить.';
+
+  @override
+  String get noSeatMapYet =>
+      'Схемы пока нет. Добавьте секцию — каждая продаётся по цене своего типа билета.';
+
+  @override
+  String get needTicketTypeFirst =>
+      'Сначала добавьте тип билета — секции продаются по его цене.';
+
+  @override
+  String get ticketTypeLabel => 'Тип билета';
+
+  @override
+  String get removeSection => 'Удалить секцию';
+
+  @override
+  String sectionDefault(String name) {
+    return 'Сектор $name';
+  }
+
+  @override
+  String get actionDelete => 'Удалить';
+
+  @override
+  String get activationTitle => 'Активация платных продаж';
+
+  @override
+  String activationProgress(int done, int total) {
+    return 'Выполнено $done из $total условий. Пока продажи не активированы, доступны только бесплатные билеты.';
+  }
+
+  @override
+  String get chkPaidType => 'Есть платный тип билета';
+
+  @override
+  String get chkPaidTypeMissing => 'Добавьте тип билета с ценой больше нуля';
+
+  @override
+  String get chkIdentity => 'Личность подтверждена';
+
+  @override
+  String get chkIdentityMissing => 'Тестовая проверка в профиле организатора';
+
+  @override
+  String get chkPayout => 'Реквизиты для выплат подтверждены';
+
+  @override
+  String get chkPayoutMissing => 'Укажите банк и номер счёта';
+
+  @override
+  String get chkFee => 'Комиссия оплачена';
+
+  @override
+  String get chkFeeMissing =>
+      'Разовая комиссия за это событие — спишется при активации (тест)';
+
+  @override
+  String get doneLabel => 'Готово';
+
+  @override
+  String get fixLink => 'Исправить →';
+
+  @override
+  String get termsAccept =>
+      'Принимаю условия платных продаж: возвраты, чарджбэки, сроки выплат';
+
+  @override
+  String get activateButton => 'Активировать платные продажи';
+
+  @override
+  String get activatedTitle => 'Продажи активированы';
+
+  @override
+  String get activatedBody => 'Покупатели могут приобретать платные билеты';
+
+  @override
+  String get activatedToast => 'Платные продажи активированы (тест).';
+
+  @override
+  String get demoActivation =>
+      'Проверка личности, комиссия, оплаты и выплаты идут через тестовую систему. Деньги не списываются.';
+
+  @override
+  String get orgProfileTitle => 'Профиль организатора';
+
+  @override
+  String get orgProfileSub => 'Контакты и выплаты';
+
+  @override
+  String get identityOk => 'Личность подтверждена';
+
+  @override
+  String get identityNo => 'Личность не подтверждена';
+
+  @override
+  String get payoutOk => 'Выплаты подтверждены';
+
+  @override
+  String get payoutNo => 'Выплаты не подтверждены';
+
+  @override
+  String get organization => 'Организация';
+
+  @override
+  String get orgName => 'Название организации';
+
+  @override
+  String get descriptionLabel => 'Описание';
+
+  @override
+  String get contactEmail => 'Email для связи';
+
+  @override
+  String get contactPhone => 'Телефон для связи';
+
+  @override
+  String get website => 'Сайт';
+
+  @override
+  String get payoutSection => 'Счёт для выплат · тест';
+
+  @override
+  String get bank => 'Банк';
+
+  @override
+  String get accountNumber => 'Номер счёта';
+
+  @override
+  String get accountHolder => 'Владелец счёта';
+
+  @override
+  String get demoPayout =>
+      'Реквизиты используются только для тестовой выплаты. Реальных переводов нет.';
+
+  @override
+  String get saveProfile => 'Сохранить профиль';
+
+  @override
+  String get profileSaved => 'Профиль сохранён.';
+
+  @override
+  String get issued => 'Выдано';
+
+  @override
+  String get available => 'Доступно';
+
+  @override
+  String get refundedVoid => 'Возвраты / аннул.';
+
+  @override
+  String get noTicketTypes => 'Типов билетов пока нет';
+
+  @override
+  String get noTicketTypesHint =>
+      'Добавьте хотя бы один бесплатный или платный тип перед публикацией.';
+
+  @override
+  String get ttHidden => 'Скрыт';
+
+  @override
+  String get ttSoldOut => 'Распродан';
+
+  @override
+  String get ttOnSale => 'В продаже';
+
+  @override
+  String get ttNotOnSale => 'Не продаётся';
+
+  @override
+  String get priceLabel => 'Цена';
+
+  @override
+  String get maxPerOrder => 'Макс. в заказе';
+
+  @override
+  String get salesWindow => 'Продажи';
+
+  @override
+  String get salesNow => 'сейчас';
+
+  @override
+  String get salesUntilEvent => 'до события';
+
+  @override
+  String get actHide => 'Скрыть';
+
+  @override
+  String get hiddenToast => 'Тип снят с продажи. Проданные билеты действуют.';
+
+  @override
+  String get ttAdded => 'Тип билета добавлен.';
+
+  @override
+  String get savedToast => 'Сохранено.';
+
+  @override
+  String get addTicketType => 'Добавить тип билета';
+
+  @override
+  String get newTicketType => 'Новый тип билета';
+
+  @override
+  String get editTicketType => 'Изменить тип билета';
+
+  @override
+  String get nameLabel => 'Название';
+
+  @override
+  String get freeTicket => 'Бесплатный билет';
+
+  @override
+  String get priceKzt => 'Цена, ₸';
+
+  @override
+  String get quantityLabel => 'Количество';
+
+  @override
+  String get salesStartOpt => 'Начало продаж (необязательно)';
+
+  @override
+  String get salesEndOpt => 'Конец продаж (необязательно)';
+
+  @override
+  String get paidNeedsActivation =>
+      'Платные билеты продаются только после активации продаж для этого события.';
+
+  @override
+  String get pickDateTime => 'Выберите дату и время';
+
+  @override
+  String get campaignQrTitle => 'QR кампании — это не билет';
+
+  @override
+  String get codeLabel => 'Код';
+
+  @override
+  String get linkLabel => 'Ссылка';
+
+  @override
+  String campaignQrNote(String code) {
+    return 'Открывает страницу события с уже применённым $code. В ссылке только код, без цены — его проверяет сервер. Сканер на входе такой QR не принимает.';
+  }
+
+  @override
+  String get shareLink => 'Поделиться ссылкой';
+
+  @override
+  String get copyCode => 'Скопировать код';
+
+  @override
+  String get codeCopied => 'Код скопирован.';
+
+  @override
+  String get noCampaigns => 'Кампаний пока нет';
+
+  @override
+  String get noCampaignsHint =>
+      'Кампания даёт скидку по промокоду и отслеживаемому QR.';
+
+  @override
+  String get campLive => 'Активна';
+
+  @override
+  String get campNotLive => 'Не активна';
+
+  @override
+  String get campDisabled => 'Отключена';
+
+  @override
+  String get codeHidden => 'Сервер не вернул код';
+
+  @override
+  String get discountLabel => 'Скидка';
+
+  @override
+  String percentOff(String value) {
+    return '−$value%';
+  }
+
+  @override
+  String amountOff(String value) {
+    return '−$value';
+  }
+
+  @override
+  String get usedLabel => 'Использовано';
+
+  @override
+  String get validLabel => 'Действует';
+
+  @override
+  String get validOpen => 'без срока';
+
+  @override
+  String get qrAndLink => 'QR и ссылка';
+
+  @override
+  String get actDisable => 'Отключить';
+
+  @override
+  String get campaignDisabled => 'Кампания отключена.';
+
+  @override
+  String get campaignsNote =>
+      'Лимит использований проверяет сервер. Коды кампаний, созданных на других устройствах, API не возвращает.';
+
+  @override
+  String get createCampaign => 'Создать кампанию';
+
+  @override
+  String get newCampaign => 'Новая кампания';
+
+  @override
+  String get discPercent => 'Процент';
+
+  @override
+  String get discFixed => 'Сумма ₸';
+
+  @override
+  String get discountPct => 'Скидка, %';
+
+  @override
+  String get discountKzt => 'Скидка, ₸';
+
+  @override
+  String get maxRedemptions => 'Лимит использований';
+
+  @override
+  String get validFrom => 'Действует с';
+
+  @override
+  String get validTo => 'Действует до';
+
+  @override
+  String get createAndQr => 'Создать и получить QR';
+
+  @override
+  String get staffIntro =>
+      'Добавленные контролёры входят в приложение-сканер и видят только это событие — без выручки, заказов и других событий.';
+
+  @override
+  String get nobodyAssigned => 'Пока никто не назначен.';
+
+  @override
+  String userNo(String id) {
+    return 'польз. №$id';
+  }
+
+  @override
+  String get actRemove => 'Убрать';
+
+  @override
+  String get staffRemoved => 'Убран из этого события.';
+
+  @override
+  String get addEventAdmin => 'Добавить контролёра';
+
+  @override
+  String get userId => 'ID пользователя';
+
+  @override
+  String get actAdd => 'Добавить';
+
+  @override
+  String get staffAdded => 'Добавлен. Можно входить в сканер.';
+
+  @override
+  String get staffIdNote =>
+      'API назначает персонал только по ID пользователя, по email — пока нет. Нужен аккаунт EVENT_ADMIN.';
+
+  @override
+  String get gateActivity => 'Активность на входе';
+
+  @override
+  String get auditTrailNote =>
+      'Записи нельзя изменить или удалить. Администраторы платформы видят тот же журнал.';
+
+  @override
+  String get noHistory => 'Записей пока нет.';
+
+  @override
+  String allN(int count) {
+    return 'Все · $count';
+  }
+
+  @override
+  String get absentHolders => 'Не пришли';
+
+  @override
+  String get ofCapacity => 'от вместимости';
+
+  @override
+  String get createEventTitle => 'Новое событие';
+
+  @override
+  String get editEventTitle => 'Редактирование';
+
+  @override
+  String get draftHint => 'Черновик — ничего не видно публично до публикации';
+
+  @override
+  String get basics => 'Основное';
+
+  @override
+  String get eventTitleLabel => 'Название события';
+
+  @override
+  String get categoryLabel => 'Категория';
+
+  @override
+  String get categoryHint => 'Музыка, IT, Спорт, Театр';
+
+  @override
+  String get visibilityLabel => 'Видимость';
+
+  @override
+  String get venueSection => 'Площадка';
+
+  @override
+  String get venueLabel => 'Место проведения';
+
+  @override
+  String get addressLabel => 'Адрес';
+
+  @override
+  String get cityLabel => 'Город';
+
+  @override
+  String get dateSection => 'Дата и регистрация';
+
+  @override
+  String get startsLabel => 'Начало';
+
+  @override
+  String get endsLabel => 'Окончание';
+
+  @override
+  String get regOpens => 'Регистрация открывается';
+
+  @override
+  String get regCloses => 'Регистрация закрывается';
+
+  @override
+  String get capacityLabel => 'Вместимость';
+
+  @override
+  String get seatingImage => 'Места и обложка';
+
+  @override
+  String get assignedSeating => 'Места по схеме зала';
+
+  @override
+  String get assignedSeatingHint =>
+      'Покупатели выбирают места на схеме при оформлении.';
+
+  @override
+  String get coverUrl => 'Ссылка на обложку (необязательно)';
+
+  @override
+  String get coverNote =>
+      'Загрузка картинок в этой версии недоступна — вставьте ссылку на изображение.';
+
+  @override
+  String get saveAndContinue => 'Сохранить и продолжить';
+
+  @override
+  String get saveChanges => 'Сохранить изменения';
+
+  @override
+  String get draftSaved => 'Черновик сохранён. Добавьте типы билетов.';
+
+  @override
+  String get changesSaved => 'Изменения сохранены.';
 }

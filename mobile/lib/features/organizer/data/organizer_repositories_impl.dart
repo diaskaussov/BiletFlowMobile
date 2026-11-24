@@ -103,8 +103,12 @@ class OrganizerEventsRepositoryImpl implements OrganizerEventsRepository {
               {
                 'name': s.name.trim(),
                 'ticketTypeId': s.ticketTypeId,
-                'rowCount': s.rows,
-                'seatsPerRow': s.seatsPerRow,
+                if (s.isManual)
+                  'rows': [for (final r in s.manualRows) {'label': r.label.trim(), 'seats': r.seats}]
+                else ...{
+                  'rowCount': s.rows,
+                  'seatsPerRow': s.seatsPerRow,
+                },
               },
           ],
         };

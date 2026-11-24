@@ -90,6 +90,18 @@ class AppPalette extends ThemeExtension<AppPalette> {
 
   /// Фон камеры — всегда тёмный, в обеих темах.
   static const camera = Color(0xFF14141F);
+
+  /// Цвета типов билетов на схемах и графиках (VIP золотой, Standard синий…).
+  static const series = [
+    Color(0xFFD4A017),
+    Color(0xFF2563EB),
+    Color(0xFF16A34A),
+    Color(0xFFDB2777),
+    Color(0xFF0891B2),
+    Color(0xFF9A9AB0),
+  ];
+
+  static Color seriesAt(int i) => series[i % series.length];
   static const onStrong = Color(0xFFFFFFFF);
 
   static const light = AppPalette(

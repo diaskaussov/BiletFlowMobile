@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../core/di/injection.dart';
 import '../features/account/account_page.dart';
+import '../features/notifications/presentation/notifications_page.dart';
 import '../features/organizer/presentation/campaigns_staff_pages.dart';
 import '../features/organizer/presentation/dashboard_page.dart';
 import '../features/organizer/presentation/event_editor_page.dart';
@@ -15,6 +16,7 @@ import '../features/support/domain/support_domain.dart' show GetOrganizerInbox;
 import '../features/support/presentation/support_pages.dart';
 import '../shared/domain/entities/support.dart';
 import 'attendee_routes.dart';
+import 'role_tab_bar.dart';
 import 'routes.dart';
 
 int _id(GoRouterState s, [String key = 'id']) => int.tryParse(s.pathParameters[key] ?? '') ?? -1;
@@ -37,7 +39,7 @@ GoRoute organizerRoutes() => GoRoute(
         GoRoute(
           path: 'e/:id',
           builder: (_, s) => ChangeNotifierProvider(
-            create: (_) => EventHubViewModel(eventId: _id(s), get: sl(), change: sl())..load(),
+            create: (_) => EventHubViewModel(eventId: _id(s), get: sl(), sales: sl())..load(),
             child: const EventHubPage(),
           ),
           routes: [
@@ -72,7 +74,7 @@ GoRoute organizerRoutes() => GoRoute(
             GoRoute(
               path: 'attendees',
               builder: (_, s) => ChangeNotifierProvider(
-                create: (_) => EventAttendeesViewModel(eventId: _id(s), get: sl())..load(),
+                create: (_) => EventAttendeesViewModel(eventId: _id(s), get: sl(), refund: sl())..load(),
                 child: const EventAttendeesPage(),
               ),
             ),
@@ -91,7 +93,7 @@ GoRoute organizerRoutes() => GoRoute(
             GoRoute(
               path: 'analytics',
               builder: (_, s) => ChangeNotifierProvider(
-                create: (_) => AnalyticsViewModel(eventId: _id(s), event: sl(), sales: sl(), overview: sl())..load(),
+                create: (_) => AnalyticsViewModel(eventId: _id(s), event: sl(), overview: sl())..load(),
                 child: const AnalyticsPage(),
               ),
             ),
@@ -130,6 +132,13 @@ GoRoute organizerRoutes() => GoRoute(
             CaseCategory.payment,
             CaseCategory.technical,
           ]),
+        ),
+        GoRoute(
+          path: 'notifications',
+          builder: (_, _) => ChangeNotifierProvider(
+            create: (_) => NotificationsViewModel(sl(), sl())..load(),
+            child: const NotificationsPage(tabs: RoleTabs.organizer),
+          ),
         ),
         GoRoute(
           path: 'profile',

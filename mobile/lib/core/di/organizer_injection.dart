@@ -1,3 +1,4 @@
+import '../../features/organizer/presentation/managed_event_controller.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../features/organizer/data/organizer_repositories_impl.dart';
@@ -28,5 +29,6 @@ void configureOrganizerDependencies(GetIt sl) {
     ..registerLazySingleton(() => GetSalesOverTime(sl()))
     ..registerLazySingleton(() => ManageCampaigns(sl()))
     ..registerLazySingleton(() => ManageStaff(sl()))
-    ..registerLazySingleton(() => GetOrganizerInbox(sl(), sl<GetManagedEvent>().ids));
+    ..registerLazySingleton(() => GetOrganizerInbox(sl(), sl<GetManagedEvent>().ids))
+    ..registerLazySingleton(() => ManagedEventController(get: sl(), change: sl()));
 }

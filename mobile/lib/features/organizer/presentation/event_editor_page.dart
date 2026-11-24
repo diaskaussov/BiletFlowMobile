@@ -4,12 +4,15 @@ import 'package:provider/provider.dart';
 
 import '../../../app/routes.dart';
 import '../../../core/error/result.dart';
+import '../../../core/presentation/l10n.dart';
 import '../../../core/presentation/loadable.dart';
+import '../../../core/presentation/status_text.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/buttons.dart';
 import '../../../core/widgets/commerce_widgets.dart';
+import '../../../core/widgets/data_blocks.dart';
 import '../../../core/widgets/form_widgets.dart';
 import '../../../core/widgets/labeled_text_field.dart';
 import '../../../core/widgets/loadable_view.dart';
@@ -72,6 +75,8 @@ class _EventEditorPageState extends State<EventEditorPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
+    final c = context.colors;
     final vm = context.watch<EventEditorViewModel>();
     final isNew = vm.eventId == null;
     return Scaffold(
@@ -79,8 +84,8 @@ class _EventEditorPageState extends State<EventEditorPage> {
         child: Column(
           children: [
             ScreenHeader(
-              title: isNew ? 'Create event' : 'Edit event',
-              subtitle: isNew ? 'Draft — nothing is public until you publish' : vm.data?.title,
+              title: isNew ? l.createEventTitle : (vm.data?.title ?? l.editEventTitle),
+              subtitle: isNew ? l.draftHint : l.editEventTitle,
               onBack: () => context.pop(),
             ),
             Expanded(
@@ -88,124 +93,123 @@ class _EventEditorPageState extends State<EventEditorPage> {
                 state: vm,
                 refreshable: false,
                 builder: (context, d) => ListView(
-                  padding: const EdgeInsets.fromLTRB(AppSpacing.sideLight, 20, AppSpacing.sideLight, 24),
+                  padding: const EdgeInsets.fromLTRB(AppSpacing.side, 8, AppSpacing.side, 24),
                   children: [
-                    const SectionLabel('Basics'),
+                    SectionLabel(l.basics),
                     const SizedBox(height: 10),
                     LabeledTextField(
-                      label: 'Event title',
+                      label: l.eventTitleLabel,
                       controller: _field('title', d.title),
                       onChanged: (v) => vm.update((x) => x.copyWith(title: v)),
                     ),
                     const SizedBox(height: 14),
                     LabeledTextField(
-                      label: 'Description',
+                      label: l.descriptionLabel,
                       controller: _field('description', d.description),
                       maxLines: 4,
                       onChanged: (v) => vm.update((x) => x.copyWith(description: v)),
                     ),
                     const SizedBox(height: 14),
                     LabeledTextField(
-                      label: 'Category',
-                      hintText: 'Music, Tech, Student, Sport, Theatre',
+                      label: l.categoryLabel,
+                      hintText: l.categoryHint,
                       controller: _field('category', d.category),
                       onChanged: (v) => vm.update((x) => x.copyWith(category: v)),
                     ),
                     const SizedBox(height: 14),
-                    Text('Visibility', style: AppText.meta.copyWith(color: context.colors.textMuted)),
+                    Text(l.visibilityLabel, style: AppText.label.copyWith(color: c.textMuted)),
                     const SizedBox(height: 6),
                     ChoiceChips<EventVisibility>(
                       options: EventVisibility.values,
                       selected: d.visibility,
-                      label: (v) => v.label,
+                      label: (v) => v.text(l),
                       onSelected: (v) => vm.update((x) => x.copyWith(visibility: v)),
                     ),
                     const SizedBox(height: AppSpacing.section),
-                    const SectionLabel('Venue'),
+                    SectionLabel(l.venueSection),
                     const SizedBox(height: 10),
                     LabeledTextField(
-                      label: 'Venue',
+                      label: l.venueLabel,
                       controller: _field('venue', d.venueName),
                       onChanged: (v) => vm.update((x) => x.copyWith(venueName: v)),
                     ),
                     const SizedBox(height: 14),
                     LabeledTextField(
-                      label: 'Address',
+                      label: l.addressLabel,
                       controller: _field('address', d.venueAddress),
                       onChanged: (v) => vm.update((x) => x.copyWith(venueAddress: v)),
                     ),
                     const SizedBox(height: 14),
                     LabeledTextField(
-                      label: 'City',
+                      label: l.cityLabel,
                       controller: _field('city', d.city),
                       onChanged: (v) => vm.update((x) => x.copyWith(city: v)),
                     ),
                     const SizedBox(height: AppSpacing.section),
-                    const SectionLabel('Date & registration'),
+                    SectionLabel(l.dateSection),
                     const SizedBox(height: 10),
-                    DateTimeField(label: 'Starts', value: d.startsAt, onChanged: (t) => vm.update((x) => x.copyWith(startsAt: t))),
+                    DateTimeField(label: l.startsLabel, value: d.startsAt, onChanged: (t) => vm.update((x) => x.copyWith(startsAt: t))),
                     const SizedBox(height: 14),
-                    DateTimeField(label: 'Ends', value: d.endsAt, onChanged: (t) => vm.update((x) => x.copyWith(endsAt: t))),
+                    DateTimeField(label: l.endsLabel, value: d.endsAt, onChanged: (t) => vm.update((x) => x.copyWith(endsAt: t))),
                     const SizedBox(height: 14),
                     DateTimeField(
-                      label: 'Registration opens',
+                      label: l.regOpens,
                       value: d.registrationOpensAt,
                       onChanged: (t) => vm.update((x) => x.copyWith(registrationOpensAt: t)),
                     ),
                     const SizedBox(height: 14),
                     DateTimeField(
-                      label: 'Registration closes',
+                      label: l.regCloses,
                       value: d.registrationClosesAt,
                       onChanged: (t) => vm.update((x) => x.copyWith(registrationClosesAt: t)),
                     ),
                     const SizedBox(height: 14),
                     LabeledTextField(
-                      label: 'Capacity',
+                      label: l.capacityLabel,
                       controller: _field('capacity', d.capacity?.toString() ?? ''),
                       keyboardType: TextInputType.number,
                       onChanged: (v) => vm.update((x) => x.copyWith(capacity: () => int.tryParse(v))),
                     ),
                     const SizedBox(height: AppSpacing.section),
-                    const SectionLabel('Seating & image'),
+                    SectionLabel(l.seatingImage),
                     LabeledSwitch(
-                      label: 'Assigned seating',
-                      hint: 'Attendees pick seats on a map at checkout (§4.3.1).',
+                      label: l.assignedSeating,
+                      hint: l.assignedSeatingHint,
                       value: d.assignedSeating,
                       onChanged: (v) => vm.update((x) => x.copyWith(assignedSeating: v)),
                     ),
                     LabeledTextField(
-                      label: 'Cover image URL (optional)',
+                      label: l.coverUrl,
                       hintText: 'https://…',
                       keyboardType: TextInputType.url,
                       controller: _field('image', d.imageUrl),
                       onChanged: (v) => vm.update((x) => x.copyWith(imageUrl: v)),
                     ),
                     const SizedBox(height: 6),
-                    Text('Image upload is not available in this build — paste a link to a hosted image.',
-                        style: AppText.finePrint.copyWith(color: context.colors.textMuted)),
+                    Text(l.coverNote, style: AppText.finePrint.copyWith(color: c.textMuted)),
                   ],
                 ),
               ),
             ),
             if (vm.data != null)
               Padding(
-                padding: const EdgeInsets.fromLTRB(AppSpacing.sideLight, 8, AppSpacing.sideLight, AppSpacing.bottomClearance),
+                padding: const EdgeInsets.fromLTRB(AppSpacing.side, 8, AppSpacing.side, 16),
                 child: Column(
                   children: [
                     if (vm.error != null) ...[
-                      Text(vm.error!.text(context), style: AppText.bodySecondary.copyWith(color: context.colors.text)),
+                      InfoBanner(text: vm.error!.text(context), tone: Tone.danger),
                       const SizedBox(height: 8),
                     ],
                     PrimaryButton(
-                      label: isNew ? 'Save and continue' : 'Save changes',
+                      label: isNew ? l.saveAndContinue : l.saveChanges,
                       isLoading: vm.isBusy,
                       onPressed: () async {
                         FocusScope.of(context).unfocus();
                         final saved = await vm.save();
                         if (saved == null || !context.mounted) return;
-                        showMessage(context, isNew ? 'Draft saved. Add ticket types next.' : 'Changes saved.');
+                        showMessage(context, isNew ? l.draftSaved : l.changesSaved);
                         if (isNew) {
-                          context.pushReplacement(Routes.manageEvent(saved.id));
+                          context.pushReplacement(Routes.ticketTypes(saved.id));
                         } else {
                           context.pop(true);
                         }

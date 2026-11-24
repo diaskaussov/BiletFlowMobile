@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/di/injection.dart';
 import '../../../core/error/failure.dart';
 import '../../../core/presentation/failure_text.dart';
 import '../../../core/error/result.dart';
+import '../../../core/presentation/l10n.dart';
 import '../../../core/presentation/loadable.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_spacing.dart';
@@ -15,11 +17,12 @@ import '../../../core/widgets/data_blocks.dart';
 import '../../../core/widgets/form_widgets.dart';
 import '../../../core/widgets/labeled_text_field.dart';
 import '../../../core/widgets/loadable_view.dart';
-import '../../../core/widgets/screen_header.dart';
 import '../../../core/widgets/state_views.dart';
 import '../../../shared/domain/entities/commerce.dart';
 import '../domain/organizer_events_domain.dart';
 import '../domain/organizer_operations_domain.dart';
+import 'event_shell.dart';
+import 'managed_event_controller.dart';
 
 class TicketTypesData {
   const TicketTypesData({required this.types, this.overview});
@@ -46,130 +49,137 @@ class TicketTypesViewModel extends Loadable<TicketTypesData> {
   Future<Failure?> hide(TicketTypeInfo t) => run(() => _manage.hide(t), reload: true);
 }
 
-/// O3 · Ticket types & inventory (§4.3)
+/// Билеты события: типы, остатки, вход по типу (§4.3).
 class TicketTypesPage extends StatelessWidget {
   const TicketTypesPage({super.key});
 
   Future<void> _edit(BuildContext context, TicketTypesViewModel vm, [TicketTypeInfo? t]) async {
+    final l = context.l10n;
     final draft = await showModalBottomSheet<TicketTypeDraft>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: context.colors.bg,
-      builder: (_) => _TicketTypeSheet(initial: t == null ? const TicketTypeDraft() : TicketTypeDraft.from(t)),
+      builder: (_) => _TicketTypeSheet(initial: t == null ? const TicketTypeDraft() : TicketTypeDraft.from(t), alreadySold: t?.sold ?? 0),
     );
     if (draft == null) return;
     final f = await vm.save(draft, existing: t);
-    if (context.mounted) reportResult(context, f, success: t == null ? 'Ticket type added.' : 'Saved.');
+    if (f == null) sl<ManagedEventController>().ensure(vm.eventId, force: true);
+    if (context.mounted) reportResult(context, f, success: t == null ? l.ttAdded : l.savedToast);
   }
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
+    final c = context.colors;
     final vm = context.watch<TicketTypesViewModel>();
-    return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            ScreenHeader(title: 'Ticket types', subtitle: 'Inventory', onBack: () => context.pop()),
-            Expanded(
-              child: LoadableView<TicketTypesData>(
-                state: vm,
-                builder: (context, d) {
-                  final now = DateTime.now();
-                  final issued = d.types.fold<int>(0, (s, t) => s + t.sold);
-                  final available = d.types.where((t) => !t.hidden).fold<int>(0, (s, t) => s + t.remaining);
-                  final o = d.overview;
-                  return ListView(
-                    padding: const EdgeInsets.fromLTRB(AppSpacing.sideLight, 18, AppSpacing.sideLight, 24),
+    return EventShell(
+      eventId: vm.eventId,
+      section: EventSection.tickets,
+      footer: Padding(
+        padding: const EdgeInsets.fromLTRB(AppSpacing.side, 8, AppSpacing.side, 8),
+        child: PrimaryButton(label: l.addTicketType, icon: LucideIcons.plus, isLoading: vm.isBusy, onPressed: () => _edit(context, vm)),
+      ),
+      body: LoadableView<TicketTypesData>(
+        state: vm,
+        builder: (context, d) {
+          final now = DateTime.now();
+          final issued = d.types.fold<int>(0, (s, t) => s + t.sold);
+          final available = d.types.where((t) => !t.hidden).fold<int>(0, (s, t) => s + t.remaining);
+          final o = d.overview;
+          return ListView(
+            padding: sectionPadding,
+            children: [
+              StatQuad(cells: [
+                (Fmt.count(issued), l.issued),
+                (Fmt.count(available), l.available),
+                (o == null ? '—' : Fmt.count(o.checkedIn), l.attCheckedIn),
+                (o == null ? '—' : Fmt.count(o.refunded + o.cancelled), l.refundedVoid),
+              ]),
+              const SizedBox(height: 16),
+              if (d.types.isEmpty)
+                MessageView(icon: LucideIcons.ticketPlus, title: l.noTicketTypes, message: l.noTicketTypesHint),
+              for (final (i, t) in d.types.indexed) ...[
+                AppCard(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      StatQuad(cells: [
-                        (Fmt.count(issued), 'Issued'),
-                        (Fmt.count(available), 'Available'),
-                        (o == null ? '—' : Fmt.count(o.checkedIn), 'Checked in'),
-                        (o == null ? '—' : Fmt.count(o.refunded + o.cancelled), 'Refunded / void'),
+                      Row(children: [
+                        Container(width: 10, height: 10, decoration: BoxDecoration(color: AppPalette.seriesAt(i), shape: BoxShape.circle)),
+                        const SizedBox(width: 8),
+                        Expanded(child: Text(t.name, style: AppText.listTitle.copyWith(color: c.text, fontWeight: FontWeight.w700))),
+                        Text(Fmt.money(t.price), style: AppText.bodyStrong.copyWith(color: c.text, fontWeight: FontWeight.w700)),
                       ]),
-                      const SizedBox(height: AppSpacing.block),
-                      if (d.types.isEmpty)
-                        const MessageView(
-                          icon: Icons.confirmation_number_outlined,
-                          title: 'No ticket types yet',
-                          message: 'Add at least one free or paid ticket type before publishing.',
-                        ),
-                      for (final t in d.types)
-                        Container(
-                          margin: const EdgeInsets.only(bottom: 12),
-                          padding: const EdgeInsets.all(14),
-                          decoration: BoxDecoration(color: context.colors.surface, border: Border.all(color: context.colors.border)),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(children: [
-                                Expanded(child: Text(t.name, style: AppText.listTitle.copyWith(color: context.colors.text))),
-                                TagLabel(
-                                  t.hidden
-                                      ? 'Hidden'
-                                      : t.isSoldOut
-                                          ? 'Sold out'
-                                          : t.isOnSale(now)
-                                              ? 'On sale'
-                                              : 'Not on sale',
-                                  filled: t.isOnSale(now),
-                                ),
-                              ]),
-                              if (t.description != null && t.description!.isNotEmpty)
-                                Text(t.description!, style: AppText.meta.copyWith(color: context.colors.textMuted)),
-                              const SizedBox(height: 10),
-                              DetailGrid(rows: [
-                                ('Price', Fmt.money(t.price)),
-                                ('Sold', '${Fmt.count(t.sold)} / ${Fmt.count(t.quantity)}'),
-                                if (t.maxPerOrder != null) ('Max per order', '${t.maxPerOrder}'),
-                                if (t.salesStart != null || t.salesEnd != null)
-                                  ('Sales', '${t.salesStart == null ? 'now' : Fmt.shortDateTime(t.salesStart!)} — '
-                                      '${t.salesEnd == null ? 'event' : Fmt.shortDateTime(t.salesEnd!)}'),
-                                if (o != null)
-                                  for (final x in o.byTicketType.where((x) => x.name == t.name))
-                                    ('Checked in', '${x.checkedIn} / ${x.registered}'),
-                              ]),
-                              const SizedBox(height: 10),
-                              ProgressStrip(value: t.quantity == 0 ? 0 : t.sold / t.quantity),
-                              const SizedBox(height: 10),
-                              Row(children: [
-                                Expanded(child: SecondaryButton(label: 'Edit', onPressed: () => _edit(context, vm, t))),
-                                if (!t.hidden) ...[
-                                  const SizedBox(width: 10),
-                                  Expanded(
-                                    child: SecondaryButton(
-                                      label: 'Hide',
-                                      onPressed: () async {
-                                        final f = await vm.hide(t);
-                                        if (context.mounted) reportResult(context, f, success: 'Hidden from sale. Sold tickets stay valid.');
-                                      },
-                                    ),
-                                  ),
-                                ],
-                              ]),
-                            ],
+                      if (t.description != null && t.description!.isNotEmpty) ...[
+                        const SizedBox(height: 4),
+                        Text(t.description!, style: AppText.meta.copyWith(color: c.textMuted)),
+                      ],
+                      const SizedBox(height: 8),
+                      TagLabel(
+                        t.hidden
+                            ? l.ttHidden
+                            : t.isSoldOut
+                                ? l.ttSoldOut
+                                : t.isOnSale(now)
+                                    ? l.ttOnSale
+                                    : l.ttNotOnSale,
+                        tone: t.hidden
+                            ? Tone.neutral
+                            : t.isSoldOut
+                                ? Tone.danger
+                                : t.isOnSale(now)
+                                    ? Tone.success
+                                    : Tone.warning,
+                      ),
+                      const SizedBox(height: 12),
+                      Row(children: [
+                        Expanded(child: Text(l.soldOf(Fmt.count(t.sold), Fmt.count(t.quantity)), style: AppText.meta.copyWith(color: c.textMuted, fontWeight: FontWeight.w500))),
+                        if (o != null)
+                          for (final x in o.byTicketType.where((x) => x.name == t.name))
+                            Text('${l.attCheckedIn} ${x.checkedIn} / ${x.registered}', style: AppText.meta.copyWith(color: c.textMuted)),
+                      ]),
+                      const SizedBox(height: 6),
+                      ProgressStrip(value: t.quantity == 0 ? 0 : t.sold / t.quantity, color: AppPalette.seriesAt(i)),
+                      const SizedBox(height: 10),
+                      DetailGrid(rows: [
+                        if (t.maxPerOrder != null) (l.maxPerOrder, '${t.maxPerOrder}'),
+                        if (t.salesStart != null || t.salesEnd != null)
+                          (l.salesWindow, '${t.salesStart == null ? l.salesNow : Fmt.shortDateTime(t.salesStart!)} — '
+                              '${t.salesEnd == null ? l.salesUntilEvent : Fmt.shortDateTime(t.salesEnd!)}'),
+                      ]),
+                      Row(children: [
+                        Expanded(child: SecondaryButton(label: l.actEdit, icon: LucideIcons.pencil, compact: true, onPressed: () => _edit(context, vm, t))),
+                        if (!t.hidden) ...[
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: SecondaryButton(
+                              label: l.actHide,
+                              icon: LucideIcons.eyeOff,
+                              compact: true,
+                              onPressed: () async {
+                                final f = await vm.hide(t);
+                                if (context.mounted) reportResult(context, f, success: l.hiddenToast);
+                              },
+                            ),
                           ),
-                        ),
+                        ],
+                      ]),
                     ],
-                  );
-                },
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.sideLight, 8, AppSpacing.sideLight, AppSpacing.bottomClearance),
-              child: PrimaryButton(label: 'Add a ticket type', isLoading: vm.isBusy, onPressed: () => _edit(context, vm)),
-            ),
-          ],
-        ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+              ],
+            ],
+          );
+        },
       ),
     );
   }
 }
 
 class _TicketTypeSheet extends StatefulWidget {
-  const _TicketTypeSheet({required this.initial});
+  const _TicketTypeSheet({required this.initial, required this.alreadySold});
 
   final TicketTypeDraft initial;
+  final int alreadySold;
 
   @override
   State<_TicketTypeSheet> createState() => _TicketTypeSheetState();
@@ -183,7 +193,7 @@ class _TicketTypeSheetState extends State<_TicketTypeSheet> {
   late final _max = TextEditingController(text: widget.initial.maxPerOrder?.toString() ?? '');
   late DateTime? _start = widget.initial.salesStart;
   late DateTime? _end = widget.initial.salesEnd;
-  late bool _free = widget.initial.price == 0;
+  late bool _free = widget.initial.name.isNotEmpty && widget.initial.price == 0;
   String? _error;
 
   @override
@@ -198,13 +208,13 @@ class _TicketTypeSheetState extends State<_TicketTypeSheet> {
     final d = TicketTypeDraft(
       name: _name.text,
       description: _description.text,
-      price: _free ? 0 : double.tryParse(_price.text.replaceAll(' ', '')) ?? -1,
+      price: _free ? 0 : double.tryParse(_price.text.replaceAll(RegExp(r'\s'), '')) ?? -1,
       quantity: int.tryParse(_quantity.text) ?? 0,
       maxPerOrder: int.tryParse(_max.text),
       salesStart: _start,
       salesEnd: _end,
     );
-    final problem = d.validate();
+    final problem = d.validate(alreadySold: widget.alreadySold);
     if (problem != null) {
       setState(() => _error = problem.toFailure().text(context));
       return;
@@ -214,45 +224,45 @@ class _TicketTypeSheetState extends State<_TicketTypeSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
+    final c = context.colors;
     return Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
       child: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(AppSpacing.sheetInset, 20, AppSpacing.sheetInset, 12),
+          padding: const EdgeInsets.fromLTRB(AppSpacing.side, 0, AppSpacing.side, 16),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SectionLabel(widget.initial.name.isEmpty ? 'New ticket type' : 'Edit ticket type', color: context.colors.primary),
-              const SizedBox(height: 14),
-              LabeledTextField(label: 'Name', controller: _name, hintText: 'General Admission'),
+              Text(widget.initial.name.isEmpty ? l.newTicketType : l.editTicketType, style: AppText.headerTitle.copyWith(color: c.text, fontSize: 20)),
+              const SizedBox(height: 16),
+              LabeledTextField(label: l.nameLabel, controller: _name, hintText: 'General Admission'),
               const SizedBox(height: 12),
-              LabeledTextField(label: 'Description', controller: _description, hintText: 'Standing, floor level'),
-              LabeledSwitch(label: 'Free ticket', value: _free, onChanged: (v) => setState(() => _free = v)),
-              if (!_free)
-                LabeledTextField(label: 'Price, ₸', controller: _price, keyboardType: TextInputType.number),
+              LabeledTextField(label: l.descriptionLabel, controller: _description),
+              const SizedBox(height: 4),
+              LabeledSwitch(label: l.freeTicket, value: _free, onChanged: (v) => setState(() => _free = v)),
+              if (!_free) LabeledTextField(label: l.priceKzt, controller: _price, keyboardType: TextInputType.number),
               const SizedBox(height: 12),
               Row(children: [
-                Expanded(child: LabeledTextField(label: 'Quantity', controller: _quantity, keyboardType: TextInputType.number)),
+                Expanded(child: LabeledTextField(label: l.quantityLabel, controller: _quantity, keyboardType: TextInputType.number)),
                 const SizedBox(width: 10),
-                Expanded(child: LabeledTextField(label: 'Max per order', controller: _max, keyboardType: TextInputType.number)),
+                Expanded(child: LabeledTextField(label: l.maxPerOrder, controller: _max, keyboardType: TextInputType.number)),
               ]),
               const SizedBox(height: 12),
-              DateTimeField(label: 'Sales start (optional)', value: _start, onChanged: (t) => setState(() => _start = t)),
+              DateTimeField(label: l.salesStartOpt, value: _start, onChanged: (t) => setState(() => _start = t)),
               const SizedBox(height: 12),
-              DateTimeField(label: 'Sales end (optional)', value: _end, onChanged: (t) => setState(() => _end = t)),
-              if (!_free)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: Text('Paid tickets can be sold only after paid sales are activated for this event.',
-                      style: AppText.finePrint.copyWith(color: context.colors.textMuted)),
-                ),
+              DateTimeField(label: l.salesEndOpt, value: _end, onChanged: (t) => setState(() => _end = t)),
+              if (!_free) ...[
+                const SizedBox(height: 8),
+                Text(l.paidNeedsActivation, style: AppText.finePrint.copyWith(color: c.textMuted)),
+              ],
               if (_error != null) ...[
-                const SizedBox(height: 10),
-                Text(_error!, style: AppText.bodySecondary.copyWith(color: context.colors.text)),
+                const SizedBox(height: 12),
+                InfoBanner(text: _error!, tone: Tone.danger),
               ],
               const SizedBox(height: 16),
-              PrimaryButton(label: 'Save', onPressed: _submit),
+              PrimaryButton(label: l.actionSave, onPressed: _submit),
             ],
           ),
         ),

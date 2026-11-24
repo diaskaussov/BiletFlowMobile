@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import '../presentation/l10n.dart';
 import '../theme/app_palette.dart';
 import '../theme/app_spacing.dart';
 import '../theme/app_text_styles.dart';
@@ -231,7 +232,6 @@ class DemoNotice extends StatelessWidget {
   Widget build(BuildContext context) => InfoBanner(
         tone: Tone.warning,
         icon: LucideIcons.flaskConical,
-        text: text ??
-            'Demonstration build: payments run in a sandbox. No money moves and no card is stored.',
+        text: text ?? context.l10n.demoPayments,
       );
 }

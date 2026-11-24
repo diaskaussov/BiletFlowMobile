@@ -160,16 +160,80 @@ class TicketTypeDraft {
 }
 
 /// Секция схемы зала (§4.3.1): ряды × мест, привязанные к типу билета.
+/// Ряд, заданный вручную (M-B5 «Вручную»): своя подпись и число мест.
+class RowDraft {
+  const RowDraft({required this.label, required this.seats});
+
+  final String label;
+  final int seats;
+}
+
+/// Секция схемы зала: либо «быстро» (rows × seatsPerRow), либо список рядов.
 class SectionDraft {
-  const SectionDraft({required this.name, required this.ticketTypeId, required this.rows, required this.seatsPerRow});
+  const SectionDraft({
+    required this.name,
+    required this.ticketTypeId,
+    this.rows = 0,
+    this.seatsPerRow = 0,
+    this.manualRows = const [],
+  });
 
   final String name;
   final int ticketTypeId;
   final int rows;
   final int seatsPerRow;
+  final List<RowDraft> manualRows;
 
-  int get seats => rows * seatsPerRow;
+  bool get isManual => manualRows.isNotEmpty;
+
+  int get rowCount => isManual ? manualRows.length : rows;
+
+  int get seats => isManual ? manualRows.fold(0, (s, r) => s + r.seats) : rows * seatsPerRow;
+
+  /// Мест в каждом ряду — для превью.
+  List<int> get rowSeats => isManual ? [for (final r in manualRows) r.seats] : List.filled(rows < 0 ? 0 : rows, seatsPerRow);
+
+  SectionDraft copyWith({String? name, int? ticketTypeId, int? rows, int? seatsPerRow, List<RowDraft>? manualRows}) => SectionDraft(
+        name: name ?? this.name,
+        ticketTypeId: ticketTypeId ?? this.ticketTypeId,
+        rows: rows ?? this.rows,
+        seatsPerRow: seatsPerRow ?? this.seatsPerRow,
+        manualRows: manualRows ?? this.manualRows,
+      );
+
+  /// Восстанавливает секции из мест, уже сохранённых на сервере.
+  static List<SectionDraft> fromSeats(List<SeatInfo> seats) {
+    final bySection = <String, List<SeatInfo>>{};
+    for (final s in seats) {
+      bySection.putIfAbsent(s.section, () => []).add(s);
+    }
+    return [
+      for (final MapEntry(key: name, value: list) in bySection.entries)
+        () {
+          final byRow = <String, int>{};
+          for (final s in list) {
+            byRow[s.row] = (byRow[s.row] ?? 0) + 1;
+          }
+          final counts = byRow.values.toSet();
+          final type = list.map((s) => s.ticketTypeId).whereType<int>().firstOrNull ?? 0;
+          return counts.length == 1
+              ? SectionDraft(name: name, ticketTypeId: type, rows: byRow.length, seatsPerRow: counts.first)
+              : SectionDraft(
+                  name: name,
+                  ticketTypeId: type,
+                  manualRows: [for (final e in byRow.entries) RowDraft(label: e.key, seats: e.value)],
+                );
+        }(),
+    ];
+  }
 }
+
+/// Типы, у которых мест в схеме больше, чем билетов (баннер M-B5).
+List<({String name, int seats, int quantity})> seatOverflow(List<SectionDraft> sections, List<TicketTypeInfo> types) => [
+      for (final t in types)
+        if (sections.where((s) => s.ticketTypeId == t.id).fold<int>(0, (a, s) => a + s.seats) case final seats when seats > t.quantity)
+          (name: t.name, seats: seats, quantity: t.quantity),
+    ];
 
 /// Статусная группа O1.
 enum DashboardGroup { active, upcoming, draft, completed, cancelled }
@@ -325,7 +389,7 @@ class ManageSeatMap {
 
   Future<Result<List<SeatInfo>>> load(int eventId) => _repo.seats(eventId);
 
-  Future<Result<List<SeatInfo>>> save(int eventId, List<SectionDraft> sections) async {
+  Future<Result<List<SeatInfo>>> save(int eventId, List<SectionDraft> sections, {List<TicketTypeInfo> types = const []}) async {
     if (sections.isEmpty) return const Err(ValidationFailure('Add at least one section.', code: 'sectionsEmpty'));
     final names = <String>{};
     for (final s in sections) {
@@ -333,9 +397,22 @@ class ManageSeatMap {
       if (!names.add(s.name.trim().toUpperCase())) {
         return Err(ValidationFailure('Section "${s.name}" is listed twice.', code: 'sectionTwice', args: {'name': s.name}));
       }
-      if (s.rows < 1 || s.seatsPerRow < 1) {
+      if (s.isManual) {
+        if (s.manualRows.any((r) => r.label.trim().isEmpty || r.seats < 1)) {
+          return const Err(ValidationFailure('Every row needs a label and at least one seat.', code: 'rowInvalid'));
+        }
+      } else if (s.rows < 1 || s.seatsPerRow < 1) {
         return const Err(ValidationFailure('Rows and seats per row must be at least 1.', code: 'rowsMin'));
       }
+    }
+    final over = seatOverflow(sections, types);
+    if (over.isNotEmpty) {
+      final o = over.first;
+      return Err(ValidationFailure(
+        'The map has ${o.seats} "${o.name}" seats but only ${o.quantity} tickets.',
+        code: 'seatsOverTickets',
+        args: {'name': o.name, 'seats': o.seats, 'quantity': o.quantity},
+      ));
     }
     return _repo.setSeatMap(eventId, sections);
   }

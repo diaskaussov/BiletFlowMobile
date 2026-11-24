@@ -51,7 +51,7 @@ class OrderViewModel extends Loadable<OrderDetails> {
 
   Future<Result<EventInfo>> event() {
     final id = data?.order.eventId;
-    if (id == null) return Future.value(const Err(ValidationFailure('This order has no event.')));
+    if (id == null) return Future.value(const Err(ValidationFailure('This order has no event.', code: 'orderNoEvent')));
     return _event(id);
   }
 }

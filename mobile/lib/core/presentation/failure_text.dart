@@ -9,6 +9,10 @@ String failureText(BuildContext context, Failure f) {
   final l = AppLocalizations.of(context);
   return switch (f.code) {
     'network' => l.errNetwork,
+    'orderNotFound' => l.errOrderNotFound,
+    'rowInvalid' => l.errRowInvalid,
+    'seatsOverTickets' => l.errSeatsOverTickets('${f.args['name'] ?? ''}', (f.args['seats'] as int?) ?? 0, (f.args['quantity'] as int?) ?? 0),
+    'orderNoEvent' => l.errOrderNoEvent,
     'sessionExpired' => l.errSessionExpired,
     'forbidden' => l.errForbidden,
     'unexpectedResponse' => l.errUnexpectedResponse,

@@ -464,5 +464,505 @@
   "demoBuild": "Демо-версия: все платежи ненастоящие, деньги не списываются.",
   "account": "Аккаунт",
   "notifications": "Уведомления",
-  "organizerProfile": "Профиль организатора и выплаты"
+  "organizerProfile": "Профиль организатора и выплаты",
+  "evDraft": "Черновик",
+  "evPublished": "Опубликовано",
+  "evCancelled": "Отменено",
+  "evCompleted": "Завершено",
+  "evLive": "Идёт сейчас",
+  "visPublic": "Публичное",
+  "visUnlisted": "По ссылке",
+  "visPrivate": "Приватное",
+  "orderPending": "Ожидает оплаты",
+  "orderPaid": "Оплачен",
+  "orderCancelled": "Отменён",
+  "orderRefunded": "Возвращён",
+  "caseOpen": "Открыто",
+  "caseInProgress": "В работе",
+  "caseWaiting": "Ждём ответа",
+  "caseResolved": "Решено",
+  "catTicketDelivery": "Доставка билета",
+  "catPayment": "Оплата",
+  "catRefund": "Возврат",
+  "catSeating": "Места",
+  "catEventInfo": "Информация о событии",
+  "catCheckIn": "Вход",
+  "catAccount": "Аккаунт",
+  "catActivation": "Активация продаж",
+  "catTechnical": "Техническая проблема",
+  "auditEventChanges": "Изменения события",
+  "auditRefunds": "Возвраты",
+  "auditCampaigns": "Промо",
+  "auditCheckIns": "Входы",
+  "auditSupport": "Поддержка",
+  "seatLabel": "Сектор {section} · ряд {row} · место {number}",
+  "@seatLabel": {
+    "placeholders": {
+      "section": {
+        "type": "String"
+      },
+      "row": {
+        "type": "String"
+      },
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "secOverview": "Обзор",
+  "secTickets": "Билеты",
+  "secSeating": "Схема зала",
+  "secOrders": "Заказы",
+  "secPromo": "Промо",
+  "secStaff": "Персонал",
+  "secSales": "Продажи",
+  "secHistory": "История",
+  "secCheckIn": "Вход",
+  "eventActions": "Действия с событием",
+  "actEdit": "Редактировать",
+  "actDuplicate": "Дублировать",
+  "actPublish": "Опубликовать",
+  "actUnpublish": "Снять с публикации",
+  "actCancelEvent": "Отменить событие",
+  "cancelEventTitle": "Отменить событие?",
+  "cancelEventBody": "Продажи остановятся, все билеты станут недействительными, участники получат уведомление. Записи останутся в истории.",
+  "publishedToast": "Опубликовано — регистрация открыта.",
+  "unpublishedToast": "Снято с публикации — снова черновик.",
+  "cancelledToast": "Событие отменено.",
+  "duplicatedToast": "Создан черновик-копия без заказов, билетов и входов.",
+  "salesNotActive": "Платные продажи не активированы — покупатели не могут купить платные билеты",
+  "actActivate": "Активировать",
+  "kpiSold": "Продано",
+  "kpiGross": "Валовая выручка",
+  "kpiNet": "Чистая выручка",
+  "kpiAttendance": "Явка",
+  "kpiOrders": "Заказов",
+  "kpiDiscounts": "Скидки",
+  "kpiRefunds": "Возвраты",
+  "kpiRemaining": "Осталось",
+  "salesByType": "Продажи по типам билетов",
+  "promoEffect": "Эффективность промокодов",
+  "redeemedOf": "{used} из {max}",
+  "@redeemedOf": {
+    "placeholders": {
+      "used": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "redeemed": "{count} исп.",
+  "@redeemed": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "salesOverTime": "Продажи по дням",
+  "noOrdersYet": "Заказов пока нет.",
+  "eventFallback": "Событие",
+  "createEvent": "Создать событие",
+  "firstEventTitle": "Создайте первое событие",
+  "firstEventBody": "Создание событий и бесплатные билеты ничего не стоят. Платные продажи активируются для каждого события отдельно.",
+  "filterAllN": "Все {count}",
+  "@filterAllN": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "filterDraftsN": "Черновики {count}",
+  "@filterDraftsN": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "filterPublishedN": "Опубликованные {count}",
+  "@filterPublishedN": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "filterLiveN": "Идут {count}",
+  "@filterLiveN": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "filterPastN": "Прошедшие {count}",
+  "@filterPastN": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "filterCancelledN": "Отменённые {count}",
+  "@filterCancelledN": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "searchByTitle": "Поиск по названию",
+  "soldOf": "Продано {sold} / {total}",
+  "@soldOf": {
+    "placeholders": {
+      "sold": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "nothingFound": "Ничего не найдено",
+  "noNotifications": "Уведомлений пока нет",
+  "noNotificationsHint": "Здесь появятся заказы, возвраты и ответы поддержки.",
+  "demoPayments": "Демо-версия: оплата идёт через тестовую систему, деньги не списываются, карты не сохраняются.",
+  "ordersSearchHint": "Покупатель или № заказа",
+  "filtersTitle": "Фильтр",
+  "attAll": "Все",
+  "attCheckedIn": "Вошли",
+  "attNotArrived": "Не пришли",
+  "attRefunded": "Возвраты и отмены",
+  "attCampaign": "С промокодом",
+  "exportCsv": "Выгрузить CSV",
+  "orderNo": "№{id}",
+  "@orderNo": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "noOrder": "Без заказа",
+  "refundMoney": "Вернуть деньги",
+  "refundTitle": "Возврат по заказу №{id}",
+  "@refundTitle": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "buyer": "Покупатель",
+  "positions": "Позиции",
+  "toRefund": "К возврату",
+  "reasonStar": "Причина *",
+  "refundReasonHint": "Например: покупатель не сможет посетить событие",
+  "refundConfirm": "Вернуть {amount}",
+  "@refundConfirm": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "refundedToast": "Деньги возвращены. Покупатель получит письмо.",
+  "refundUsedWarning": "{count, plural, one{{count} билет уже прошёл вход} few{{count} билета уже прошли вход} many{{count} билетов уже прошли вход} other{{count} билета уже прошли вход}}. Возврат не отменяет вход.",
+  "@refundUsedWarning": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "refundNote": "Билеты сразу станут недействительными, места вернутся в продажу.",
+  "orderTitle": "Заказ",
+  "statusLabel": "Статус",
+  "discountCode": "Скидка {code}",
+  "@discountCode": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "paidLabel": "Оплачено",
+  "placedLabel": "Оформлен",
+  "usedOfTotal": "{used} из {total}",
+  "@usedOfTotal": {
+    "placeholders": {
+      "used": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "noOrdersMatch": "Нет заказов по запросу",
+  "orderNotFound": "Заказ не найден",
+  "errOrderNotFound": "Заказ не найден.",
+  "errOrderNoEvent": "У заказа нет события.",
+  "errRowInvalid": "У каждого ряда должна быть подпись и хотя бы одно место.",
+  "errSeatsOverTickets": "В схеме {seats} мест «{name}», а доступно {quantity} билетов — увеличьте количество",
+  "@errSeatsOverTickets": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "seats": {
+        "type": "int"
+      },
+      "quantity": {
+        "type": "int"
+      }
+    }
+  },
+  "seatPreview": "Превью · {count, plural, one{{count} место} few{{count} места} many{{count} мест} other{{count} места}}",
+  "@seatPreview": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "fullScreen": "На весь экран",
+  "stage": "СЦЕНА",
+  "sectionsTitle": "Секции",
+  "rowsCount": "{count, plural, one{{count} ряд} few{{count} ряда} many{{count} рядов} other{{count} ряда}}",
+  "@rowsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "seatsCount": "{count, plural, one{{count} место} few{{count} места} many{{count} мест} other{{count} места}}",
+  "@seatsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "modeQuick": "Быстро",
+  "modeManual": "Вручную",
+  "sectionName": "Название секции",
+  "rowsLabel": "Рядов",
+  "seatsPerRowLabel": "Мест в ряду",
+  "rowLabel": "Ряд",
+  "seatsLabel": "Мест",
+  "addRow": "Добавить ряд",
+  "addSection": "Добавить секцию",
+  "saveMap": "Сохранить схему",
+  "deleteMap": "Удалить схему",
+  "deleteMapTitle": "Удалить схему зала?",
+  "deleteMapBody": "Места пропадут, и покупатели не смогут их выбирать.",
+  "mapSaved": "Схема сохранена.",
+  "mapDeleted": "Схема удалена.",
+  "mapSoldLocked": "Места уже проданы — схему нельзя удалить.",
+  "noSeatMapYet": "Схемы пока нет. Добавьте секцию — каждая продаётся по цене своего типа билета.",
+  "needTicketTypeFirst": "Сначала добавьте тип билета — секции продаются по его цене.",
+  "ticketTypeLabel": "Тип билета",
+  "removeSection": "Удалить секцию",
+  "sectionDefault": "Сектор {name}",
+  "@sectionDefault": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "actionDelete": "Удалить",
+  "activationTitle": "Активация платных продаж",
+  "activationProgress": "Выполнено {done} из {total} условий. Пока продажи не активированы, доступны только бесплатные билеты.",
+  "@activationProgress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "chkPaidType": "Есть платный тип билета",
+  "chkPaidTypeMissing": "Добавьте тип билета с ценой больше нуля",
+  "chkIdentity": "Личность подтверждена",
+  "chkIdentityMissing": "Тестовая проверка в профиле организатора",
+  "chkPayout": "Реквизиты для выплат подтверждены",
+  "chkPayoutMissing": "Укажите банк и номер счёта",
+  "chkFee": "Комиссия оплачена",
+  "chkFeeMissing": "Разовая комиссия за это событие — спишется при активации (тест)",
+  "doneLabel": "Готово",
+  "fixLink": "Исправить →",
+  "termsAccept": "Принимаю условия платных продаж: возвраты, чарджбэки, сроки выплат",
+  "activateButton": "Активировать платные продажи",
+  "activatedTitle": "Продажи активированы",
+  "activatedBody": "Покупатели могут приобретать платные билеты",
+  "activatedToast": "Платные продажи активированы (тест).",
+  "demoActivation": "Проверка личности, комиссия, оплаты и выплаты идут через тестовую систему. Деньги не списываются.",
+  "orgProfileTitle": "Профиль организатора",
+  "orgProfileSub": "Контакты и выплаты",
+  "identityOk": "Личность подтверждена",
+  "identityNo": "Личность не подтверждена",
+  "payoutOk": "Выплаты подтверждены",
+  "payoutNo": "Выплаты не подтверждены",
+  "organization": "Организация",
+  "orgName": "Название организации",
+  "descriptionLabel": "Описание",
+  "contactEmail": "Email для связи",
+  "contactPhone": "Телефон для связи",
+  "website": "Сайт",
+  "payoutSection": "Счёт для выплат · тест",
+  "bank": "Банк",
+  "accountNumber": "Номер счёта",
+  "accountHolder": "Владелец счёта",
+  "demoPayout": "Реквизиты используются только для тестовой выплаты. Реальных переводов нет.",
+  "saveProfile": "Сохранить профиль",
+  "profileSaved": "Профиль сохранён.",
+  "issued": "Выдано",
+  "available": "Доступно",
+  "refundedVoid": "Возвраты / аннул.",
+  "noTicketTypes": "Типов билетов пока нет",
+  "noTicketTypesHint": "Добавьте хотя бы один бесплатный или платный тип перед публикацией.",
+  "ttHidden": "Скрыт",
+  "ttSoldOut": "Распродан",
+  "ttOnSale": "В продаже",
+  "ttNotOnSale": "Не продаётся",
+  "priceLabel": "Цена",
+  "maxPerOrder": "Макс. в заказе",
+  "salesWindow": "Продажи",
+  "salesNow": "сейчас",
+  "salesUntilEvent": "до события",
+  "actHide": "Скрыть",
+  "hiddenToast": "Тип снят с продажи. Проданные билеты действуют.",
+  "ttAdded": "Тип билета добавлен.",
+  "savedToast": "Сохранено.",
+  "addTicketType": "Добавить тип билета",
+  "newTicketType": "Новый тип билета",
+  "editTicketType": "Изменить тип билета",
+  "nameLabel": "Название",
+  "freeTicket": "Бесплатный билет",
+  "priceKzt": "Цена, ₸",
+  "quantityLabel": "Количество",
+  "salesStartOpt": "Начало продаж (необязательно)",
+  "salesEndOpt": "Конец продаж (необязательно)",
+  "paidNeedsActivation": "Платные билеты продаются только после активации продаж для этого события.",
+  "pickDateTime": "Выберите дату и время",
+  "campaignQrTitle": "QR кампании — это не билет",
+  "codeLabel": "Код",
+  "linkLabel": "Ссылка",
+  "campaignQrNote": "Открывает страницу события с уже применённым {code}. В ссылке только код, без цены — его проверяет сервер. Сканер на входе такой QR не принимает.",
+  "@campaignQrNote": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "shareLink": "Поделиться ссылкой",
+  "copyCode": "Скопировать код",
+  "codeCopied": "Код скопирован.",
+  "noCampaigns": "Кампаний пока нет",
+  "noCampaignsHint": "Кампания даёт скидку по промокоду и отслеживаемому QR.",
+  "campLive": "Активна",
+  "campNotLive": "Не активна",
+  "campDisabled": "Отключена",
+  "codeHidden": "Сервер не вернул код",
+  "discountLabel": "Скидка",
+  "percentOff": "−{value}%",
+  "@percentOff": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "amountOff": "−{value}",
+  "@amountOff": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "usedLabel": "Использовано",
+  "validLabel": "Действует",
+  "validOpen": "без срока",
+  "qrAndLink": "QR и ссылка",
+  "actDisable": "Отключить",
+  "campaignDisabled": "Кампания отключена.",
+  "campaignsNote": "Лимит использований проверяет сервер. Коды кампаний, созданных на других устройствах, API не возвращает.",
+  "createCampaign": "Создать кампанию",
+  "newCampaign": "Новая кампания",
+  "discPercent": "Процент",
+  "discFixed": "Сумма ₸",
+  "discountPct": "Скидка, %",
+  "discountKzt": "Скидка, ₸",
+  "maxRedemptions": "Лимит использований",
+  "validFrom": "Действует с",
+  "validTo": "Действует до",
+  "createAndQr": "Создать и получить QR",
+  "staffIntro": "Добавленные контролёры входят в приложение-сканер и видят только это событие — без выручки, заказов и других событий.",
+  "nobodyAssigned": "Пока никто не назначен.",
+  "userNo": "польз. №{id}",
+  "@userNo": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "actRemove": "Убрать",
+  "staffRemoved": "Убран из этого события.",
+  "addEventAdmin": "Добавить контролёра",
+  "userId": "ID пользователя",
+  "actAdd": "Добавить",
+  "staffAdded": "Добавлен. Можно входить в сканер.",
+  "staffIdNote": "API назначает персонал только по ID пользователя, по email — пока нет. Нужен аккаунт EVENT_ADMIN.",
+  "gateActivity": "Активность на входе",
+  "auditTrailNote": "Записи нельзя изменить или удалить. Администраторы платформы видят тот же журнал.",
+  "noHistory": "Записей пока нет.",
+  "allN": "Все · {count}",
+  "@allN": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "absentHolders": "Не пришли",
+  "ofCapacity": "от вместимости",
+  "createEventTitle": "Новое событие",
+  "editEventTitle": "Редактирование",
+  "draftHint": "Черновик — ничего не видно публично до публикации",
+  "basics": "Основное",
+  "eventTitleLabel": "Название события",
+  "categoryLabel": "Категория",
+  "categoryHint": "Музыка, IT, Спорт, Театр",
+  "visibilityLabel": "Видимость",
+  "venueSection": "Площадка",
+  "venueLabel": "Место проведения",
+  "addressLabel": "Адрес",
+  "cityLabel": "Город",
+  "dateSection": "Дата и регистрация",
+  "startsLabel": "Начало",
+  "endsLabel": "Окончание",
+  "regOpens": "Регистрация открывается",
+  "regCloses": "Регистрация закрывается",
+  "capacityLabel": "Вместимость",
+  "seatingImage": "Места и обложка",
+  "assignedSeating": "Места по схеме зала",
+  "assignedSeatingHint": "Покупатели выбирают места на схеме при оформлении.",
+  "coverUrl": "Ссылка на обложку (необязательно)",
+  "coverNote": "Загрузка картинок в этой версии недоступна — вставьте ссылку на изображение.",
+  "saveAndContinue": "Сохранить и продолжить",
+  "saveChanges": "Сохранить изменения",
+  "draftSaved": "Черновик сохранён. Добавьте типы билетов.",
+  "changesSaved": "Изменения сохранены."
 }

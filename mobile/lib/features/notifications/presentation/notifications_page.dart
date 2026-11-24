@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 
+import '../../../app/role_tab_bar.dart';
+import '../../../app/routes.dart';
 import '../../../core/error/result.dart';
+import '../../../core/presentation/l10n.dart';
 import '../../../core/presentation/loadable.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/formatters.dart';
+import '../../../core/widgets/data_blocks.dart';
 import '../../../core/widgets/loadable_view.dart';
 import '../../../core/widgets/screen_header.dart';
 import '../../../core/widgets/state_views.dart';
@@ -33,72 +38,78 @@ class NotificationsViewModel extends Loadable<List<NotificationInfo>> {
   }
 }
 
+/// Уведомления: вкладка организатора или экран из профиля участника.
 class NotificationsPage extends StatelessWidget {
-  const NotificationsPage({super.key});
+  const NotificationsPage({super.key, this.tabs});
+
+  /// Если задано — экран открыт как вкладка с плавающей навигацией.
+  final List<RoleTab>? tabs;
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
+    final c = context.colors;
     final vm = context.watch<NotificationsViewModel>();
+    final body = LoadableView<List<NotificationInfo>>(
+      state: vm,
+      isEmpty: (d) => d.isEmpty,
+      empty: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.side),
+          child: MessageView(icon: LucideIcons.bellOff, title: l.noNotifications, message: l.noNotificationsHint),
+        ),
+      ),
+      builder: (context, list) => ListView.separated(
+        padding: const EdgeInsets.fromLTRB(AppSpacing.side, 8, AppSpacing.side, 24),
+        itemCount: list.length,
+        separatorBuilder: (_, _) => const SizedBox(height: 10),
+        itemBuilder: (context, i) {
+          final n = list[i];
+          return AppCard(
+            onTap: () => vm.open(n),
+            color: n.read ? null : c.primaryTint,
+            borderColor: n.read ? null : c.primary.withValues(alpha: 0.3),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(color: n.read ? c.neutralSoft : c.primarySoft, shape: BoxShape.circle),
+                  child: Icon(LucideIcons.bell, size: 18, color: n.read ? c.textMuted : c.primary),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(n.title, style: AppText.cardTitle.copyWith(color: c.text)),
+                      const SizedBox(height: 2),
+                      Text(n.message, style: AppText.bodySecondary.copyWith(color: c.textMuted)),
+                      if (n.createdAt != null) ...[
+                        const SizedBox(height: 4),
+                        Text(Fmt.ago(n.createdAt!), style: AppText.caption.copyWith(color: c.textMuted)),
+                      ],
+                    ],
+                  ),
+                ),
+                if (!n.read) Container(width: 8, height: 8, margin: const EdgeInsets.only(top: 6), decoration: BoxDecoration(color: c.primary, shape: BoxShape.circle)),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+    final t = tabs;
+    if (t != null) {
+      return RoleScaffold(tabs: t, current: Routes.organizerNotifications, title: l.notifications, body: body);
+    }
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
-            ScreenHeader(title: 'Notifications', onBack: () => context.pop()),
-            Expanded(
-              child: LoadableView<List<NotificationInfo>>(
-                state: vm,
-                isEmpty: (d) => d.isEmpty,
-                empty: const Padding(
-                  padding: EdgeInsets.all(AppSpacing.sideList),
-                  child: MessageView(
-                    icon: Icons.notifications_none,
-                    title: 'Nothing new',
-                    message: 'Order confirmations, refunds and support replies appear here.',
-                  ),
-                ),
-                builder: (context, list) => ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sideList),
-                  itemCount: list.length,
-                  itemBuilder: (context, i) {
-                    final n = list[i];
-                    return InkWell(
-                      onTap: () => vm.open(n),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        decoration: BoxDecoration(
-                          border: Border(bottom: BorderSide(color: context.colors.border)),
-                        ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(top: 6, right: 10),
-                              child: Container(
-                                width: 8,
-                                height: 8,
-                                color: n.read ? Colors.transparent : context.colors.primary,
-                              ),
-                            ),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(n.title, style: AppText.listTitle.copyWith(color: context.colors.text, fontSize: 16)),
-                                  const SizedBox(height: 2),
-                                  Text(n.message, style: AppText.bodySecondary.copyWith(color: context.colors.textMuted)),
-                                  if (n.createdAt != null)
-                                    Text(Fmt.shortDateTime(n.createdAt!), style: AppText.meta.copyWith(color: context.colors.textMuted)),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ),
+            ScreenHeader(title: l.notifications, onBack: () => context.pop()),
+            Expanded(child: body),
           ],
         ),
       ),
