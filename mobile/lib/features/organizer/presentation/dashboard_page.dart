@@ -184,7 +184,6 @@ class _EventRow extends StatelessWidget {
       title: e.title,
       subtitle: [
         if (row.group == DashboardGroup.draft && !e.paidSalesActivated) 'Draft',
-        if (e.paidSalesActivated) 'Paid sales active',
         'Sold $sold',
         if (a != null && a.grossRevenue > 0) Fmt.moneyShort(a.grossRevenue),
       ].join(' · '),

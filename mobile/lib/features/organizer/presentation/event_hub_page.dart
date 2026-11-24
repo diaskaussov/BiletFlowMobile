@@ -117,11 +117,6 @@ class EventHubPage extends StatelessWidget {
                         TagLabel(e.status.label, filled: e.status == EventStatus.published),
                         TagLabel(e.visibility.label),
                         if (e.assignedSeating) TagLabel('Assigned seating', onTap: () => open(Routes.seating(id))),
-                        TagLabel(
-                          e.paidSalesActivated ? 'Paid sales active' : 'Free only',
-                          filled: e.paidSalesActivated,
-                          onTap: () => open(Routes.activation(id)),
-                        ),
                       ]),
                       const SizedBox(height: 12),
                       DetailGrid(rows: [
