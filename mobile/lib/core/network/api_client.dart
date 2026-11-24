@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 
 import 'api_exception.dart';
 import 'api_logger.dart';
+import 'jwt.dart';
 
 /// Обёртка над Dio: базовый адрес, Bearer-токен, единый формат ошибок
 /// бэкенда `{ "error": "...", "timestamp": "..." }`.
@@ -84,7 +85,12 @@ class ApiClient {
     } on DioException catch (e) {
       final status = e.response?.statusCode;
       if (status != null) lastResponseAt.value = DateTime.now();
-      if (status == 401 && _token != null) onUnauthorized?.call();
+      final token = _token;
+      // 401 — токен отвергнут; 403 с истёкшим токеном — то же самое,
+      // так отвечает этот бэкенд.
+      if (token != null && (status == 401 || (status == 403 && isJwtExpired(token)))) {
+        onUnauthorized?.call();
+      }
       throw ApiException(
         _messageFrom(e),
         statusCode: status,
