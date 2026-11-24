@@ -8,7 +8,6 @@ abstract final class Routes {
 
   // — сотрудник на входе (EVENT_ADMIN), экраны A–C —
   static const events = '/events';
-  static String eventSummary(int id) => '/events/$id';
   static const scanner = '/scan';
   static const result = '/scan/result';
   static const search = '/search';

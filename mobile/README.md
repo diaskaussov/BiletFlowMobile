@@ -5,14 +5,22 @@ for the account's role:
 
 | Role | Screens | Source design |
 |---|---|---|
-| Attendee | W1–W9: events, event page, promo codes and Campaign QR, seat map, checkout (sandbox), tickets with QR / PDF / print / calendar, orders, support | `BiletFlow Web App Screens.html` |
-| Organizer | O1–O10: dashboard, create / edit / publish events, ticket types, seating, paid-sales activation, attendees & refunds, analytics, campaigns with QR, timeline, check-in staff, support inbox | `BiletFlow Web App Screens.html` |
-| Event admin | A1–A6, B1–B10, C1–C4: assigned events, QR scanner and verdicts, manual check-in, reversal | `BiletFlow Mobile Screens.html` |
-| Platform admin | P1–P2: work queues, events and moderation, users, orders | `BiletFlow Web App Screens.html` |
+| Attendee | W1–W9: events, event page, promo codes and Campaign QR, seat map, checkout (sandbox), tickets with QR / PDF / print / calendar, orders, support | design system of `TicketTon.pen` |
+| Organizer | M-B1–M-B8: my events, event screen with section chips (overview, tickets, seat map, orders with refund sheet, promo, staff, sales activation, history, check-in), notifications, support inbox | `TicketTon.pen` |
+| Event admin | A1–A9: sign in, my events, scanner, full-screen results, guests, guest record, reversal, statistics, offline, settings | `TicketTon.pen` |
+| Platform admin | queues, events and moderation, users (M-B13), orders | `TicketTon.pen` |
 
-Web designs are adapted to the phone with the tokens from `BiletFlow Mobile Spec.dc.html`
-(Barlow / Barlow Condensed, `#5980a6`, square corners). Attendees and organizers can
-register in the app; event staff are assigned by organizers.
+Design: Inter, primary `#6D4AFF`, Lucide icons, rounded cards and a floating tab bar;
+light and dark themes (system by default). Colors live in `AppPalette`
+(`context.colors`), never in widgets. Attendees and organizers can register in the app;
+event staff are assigned by organizers.
+
+## Languages
+
+Russian (default), Kazakh and English — strings in `lib/l10n/app_{ru,kk,en}.arb`,
+generated with `flutter gen-l10n`. Language and theme are switched in Profile / Settings
+and remembered on the device. Domain errors carry a `code`; `failureText()` turns it into
+the current language.
 
 ## Run
 
@@ -116,7 +124,7 @@ the demo data used during development.
 
 ## Not done yet
 
-- Russian and Kazakh localization (planned last).
+- Kazakh texts were written without a native-speaker review.
 - Deep links for Campaign QR (`https://biletflow.kz/events/{id}?promo=`) — attendees scan
   campaign codes from the Events tab instead.
 - Gate name is stored on the device (Settings → Assigned gate); the API has no gates.
