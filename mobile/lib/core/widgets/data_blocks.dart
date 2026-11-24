@@ -108,24 +108,53 @@ class ProgressStrip extends StatelessWidget {
 
 /// Метка «IN 19:43» и похожие (.tag).
 class TagLabel extends StatelessWidget {
-  const TagLabel(this.text, {super.key, this.filled = false});
+  const TagLabel(this.text, {super.key, this.filled = false, this.onTap});
 
   final String text;
   final bool filled;
 
+  /// Метка-ссылка: открывает раздел, к которому относится. Получает
+  /// шеврон, чтобы было видно, что на неё можно нажать.
+  final VoidCallback? onTap;
+
   @override
   Widget build(BuildContext context) {
+    final tag = _tag();
+    if (onTap == null) return tag;
+    return Semantics(
+      button: true,
+      child: InkWell(
+        onTap: onTap,
+        // Зона нажатия 44 pt по высоте, рисуется только метка (§04).
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 44),
+          child: Align(widthFactor: 1, child: tag),
+        ),
+      ),
+    );
+  }
+
+  Widget _tag() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
       decoration: BoxDecoration(
         color: filled ? AppColors.accent100 : null,
         border: Border.all(color: filled ? AppColors.accent300 : AppColors.divider),
       ),
-      child: Text(
-        text.toUpperCase(),
-        style: AppText.tag.copyWith(
-          color: filled ? AppColors.accent800 : AppColors.neutral700,
-        ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            text.toUpperCase(),
+            style: AppText.tag.copyWith(
+              color: filled ? AppColors.accent800 : AppColors.neutral700,
+            ),
+          ),
+          if (onTap != null) ...[
+            const SizedBox(width: 2),
+            Icon(Icons.chevron_right, size: 12, color: filled ? AppColors.accent800 : AppColors.neutral700),
+          ],
+        ],
       ),
     );
   }
