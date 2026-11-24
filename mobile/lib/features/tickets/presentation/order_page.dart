@@ -2,13 +2,16 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 
 import '../../../app/routes.dart';
 import '../../../core/error/failure.dart';
 import '../../../core/error/result.dart';
 import '../../../core/platform/document_actions.dart';
+import '../../../core/presentation/l10n.dart';
 import '../../../core/presentation/loadable.dart';
+import '../../../core/presentation/status_text.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -72,24 +75,21 @@ class OrderPage extends StatelessWidget {
   }
 
   Future<void> _cancel(BuildContext context, OrderViewModel vm) async {
+    final l = context.l10n;
     final ok = await showDialog<bool>(
       context: context,
-      builder: (c) => AlertDialog(
-        title: Text('Cancel this order?', style: AppText.headerTitle.copyWith(color: context.colors.text)),
-        content: Text(
-          'All tickets in the order become invalid and will be refused at the gate. '
-          'Refunds follow the organizer\'s policy.',
-          style: AppText.body.copyWith(color: context.colors.textMuted),
-        ),
+      builder: (d) => AlertDialog(
+        title: Text(l.cancelOrderTitle),
+        content: Text(l.cancelOrderBody),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('KEEP')),
-          TextButton(onPressed: () => Navigator.pop(c, true), child: const Text('CANCEL ORDER')),
+          TextButton(onPressed: () => Navigator.pop(d, false), child: Text(l.actionKeep)),
+          TextButton(onPressed: () => Navigator.pop(d, true), child: Text(l.cancelOrder, style: TextStyle(color: d.colors.danger))),
         ],
       ),
     );
     if (ok != true) return;
     final f = await vm.cancel();
-    if (context.mounted) reportResult(context, f, success: 'Order cancelled.');
+    if (context.mounted) reportResult(context, f, success: l.orderCancelledToast);
   }
 
   Future<void> _calendar(BuildContext context, OrderViewModel vm) async {
@@ -105,14 +105,16 @@ class OrderPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
+    final c = context.colors;
     final vm = context.watch<OrderViewModel>();
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
             ScreenHeader(
-              title: vm.data?.order.number ?? 'Order',
               subtitle: vm.data?.order.eventTitle,
+              title: vm.data == null ? l.orderTitle : l.orderNo('${vm.data!.order.id}'),
               onBack: () => context.canPop() ? context.pop() : context.go(Routes.myTickets),
             ),
             Expanded(
@@ -121,91 +123,93 @@ class OrderPage extends StatelessWidget {
                 builder: (context, d) {
                   final o = d.order;
                   final issued = d.tickets.length;
+                  final done = o.status == OrderStatus.completed;
                   return ListView(
-                    padding: const EdgeInsets.fromLTRB(AppSpacing.sideLight, 22, AppSpacing.sideLight, 24),
+                    padding: const EdgeInsets.fromLTRB(AppSpacing.side, 8, AppSpacing.side, 24),
                     children: [
-                      Text(
-                        o.status == OrderStatus.completed
-                            ? (issued == 1 ? 'Your ticket is ready' : '$issued tickets are yours')
-                            : o.status.label,
-                        style: AppText.screenTitle.copyWith(color: context.colors.text),
-                      ),
-                      if (o.attendeeEmail != null)
-                        Text('Confirmation sent to ${o.attendeeEmail}', style: AppText.meta.copyWith(color: context.colors.textMuted)),
-                      const SizedBox(height: 16),
-                      Row(children: [
-                        Expanded(
-                          child: SecondaryButton(
-                            label: 'Add to calendar',
-                            onPressed: () => _calendar(context, vm),
+                      AppCard(
+                        color: done ? c.successSoft : null,
+                        borderColor: done ? Colors.transparent : null,
+                        child: Row(children: [
+                          Icon(done ? LucideIcons.circleCheckBig : LucideIcons.receipt, size: 28, color: done ? c.successText : c.textMuted),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  done ? (issued == 1 ? l.ticketReady : l.ticketsReady(issued)) : o.status.text(l),
+                                  style: AppText.headerTitle.copyWith(color: done ? c.successText : c.text),
+                                ),
+                                if (o.attendeeEmail != null)
+                                  Text(l.confirmationSent(o.attendeeEmail!), style: AppText.meta.copyWith(color: done ? c.successText : c.textMuted)),
+                              ],
+                            ),
                           ),
-                        ),
-                      ]),
+                        ]),
+                      ),
+                      const SizedBox(height: 12),
+                      SecondaryButton(label: l.addToCalendar, icon: LucideIcons.calendarPlus, compact: true, onPressed: () => _calendar(context, vm)),
                       const SizedBox(height: AppSpacing.section),
-                      const SectionLabel('Your tickets'),
-                      const SizedBox(height: 8),
-                      if (d.tickets.isEmpty)
-                        Text('Tickets are issued after payment is confirmed.',
-                            style: AppText.bodySecondary.copyWith(color: context.colors.textMuted)),
-                      for (final t in d.tickets)
-                        Container(
-                          margin: const EdgeInsets.only(bottom: 12),
-                          padding: const EdgeInsets.all(14),
-                          decoration: BoxDecoration(color: context.colors.surface, border: Border.all(color: context.colors.border)),
+                      SectionLabel(l.yourTickets),
+                      const SizedBox(height: 10),
+                      if (d.tickets.isEmpty) Text(l.ticketsAfterPayment, style: AppText.bodySecondary.copyWith(color: c.textMuted)),
+                      for (final t in d.tickets) ...[
+                        AppCard(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(children: [
                                 Expanded(
-                                  child: Text(t.attendeeName ?? o.attendeeName ?? 'Attendee',
-                                      style: AppText.listTitle.copyWith(color: context.colors.text)),
+                                  child: Text(t.attendeeName ?? o.attendeeName ?? l.attendeeLabel,
+                                      style: AppText.listTitle.copyWith(color: c.text, fontWeight: FontWeight.w700)),
                                 ),
-                                TagLabel(t.status.label, filled: t.status == TicketStatus.valid),
+                                TagLabel(t.status.text(l), tone: t.status.tone),
                               ]),
-                              const SizedBox(height: 8),
-                              DetailGrid(rows: [
-                                if (t.ticketTypeName != null) ('Type', t.ticketTypeName!),
-                                if (t.seat != null) ('Seat', t.seat!),
-                                ('Ticket ID', t.displayId),
-                              ]),
+                              const SizedBox(height: 4),
+                              Text([?t.ticketTypeName, ?t.seat, t.displayId].join(' · '), style: AppText.meta.copyWith(color: c.textMuted)),
                               const SizedBox(height: 12),
                               Row(children: [
-                                Expanded(child: SecondaryButton(label: 'Show QR', onPressed: () => context.push(Routes.ticket(t.id)))),
+                                Expanded(
+                                  child: PrimaryButton(label: l.showQr, icon: LucideIcons.qrCode, onPressed: () => context.push(Routes.ticket(t.id))),
+                                ),
                                 const SizedBox(width: 10),
-                                Expanded(child: SecondaryButton(label: 'PDF', onPressed: () => _sharePdf(context, vm, t))),
+                                SizedBox(
+                                  width: 100,
+                                  child: SecondaryButton(label: 'PDF', icon: LucideIcons.download, onPressed: () => _sharePdf(context, vm, t)),
+                                ),
                               ]),
                             ],
                           ),
                         ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Show the QR on your phone or on paper. Each ticket admits one person once — '
-                        'a printed copy and the screen copy are the same ticket, not two.',
-                        style: AppText.finePrint.copyWith(color: context.colors.textMuted),
-                      ),
+                        const SizedBox(height: 10),
+                      ],
+                      Text(l.showQrNote, style: AppText.finePrint.copyWith(color: c.textMuted)),
                       const SizedBox(height: AppSpacing.section),
-                      const SectionLabel('Order'),
-                      const SizedBox(height: 8),
-                      DetailGrid(rows: [
-                        ('Status', o.status.label),
-                        for (final i in o.items)
-                          ('${i.quantity} × ${i.ticketTypeName}', Fmt.money(i.subtotal)),
-                        if (o.discount > 0) ('Discount${o.promoCode == null ? '' : ' ${o.promoCode}'}', '− ${Fmt.money(o.discount, freeWord: false)}'),
-                        ('Total', Fmt.money(o.total)),
-                        if (o.total > 0) ('Method', 'Sandbox payment'),
-                        if (o.createdAt != null) ('Placed', Fmt.shortDateTime(o.createdAt!)),
-                      ]),
+                      SectionLabel(l.orderTitle),
+                      const SizedBox(height: 10),
+                      AppCard(
+                        child: DetailGrid(rows: [
+                          (l.statusLabel, o.status.text(l)),
+                          for (final i in o.items) ('${i.quantity} × ${i.ticketTypeName}', Fmt.money(i.subtotal)),
+                          if (o.discount > 0) (l.discountCode(o.promoCode ?? ''), '− ${Fmt.money(o.discount, freeWord: false)}'),
+                          (l.totalLabel, Fmt.money(o.total)),
+                          if (o.total > 0) (l.methodLabel, l.sandboxPayment),
+                          if (o.createdAt != null) (l.placedLabel, Fmt.shortDateTime(o.createdAt!)),
+                        ]),
+                      ),
                       const SizedBox(height: AppSpacing.block),
-                      if (o.status == OrderStatus.completed || o.status == OrderStatus.pending)
-                        GhostButton(label: 'Cancel order', onPressed: vm.isBusy ? null : () => _cancel(context, vm)),
                       GhostButton(
-                        label: 'Get help with this order',
+                        label: l.helpWithOrder,
+                        icon: LucideIcons.lifeBuoy,
                         onPressed: () => context.push(
                           '${Routes.newSupportCase(Routes.attendeeSupport)}?orderId=${o.id}'
                           '${o.eventId == null ? '' : '&eventId=${o.eventId}'}'
-                          '&about=${Uri.encodeQueryComponent(o.number)}',
+                          '&about=${Uri.encodeQueryComponent(l.orderNo('${o.id}'))}',
                         ),
                       ),
+                      if (o.status == OrderStatus.completed || o.status == OrderStatus.pending)
+                        GhostButton(label: l.cancelOrder, color: c.danger, onPressed: vm.isBusy ? null : () => _cancel(context, vm)),
                     ],
                   );
                 },

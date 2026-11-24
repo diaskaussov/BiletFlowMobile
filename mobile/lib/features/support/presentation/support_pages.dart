@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 
 import '../../../app/role_tab_bar.dart';
 import '../../../app/routes.dart';
 import '../../../core/error/failure.dart';
 import '../../../core/error/result.dart';
+import '../../../core/presentation/l10n.dart';
 import '../../../core/presentation/loadable.dart';
+import '../../../core/presentation/status_text.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -43,7 +46,7 @@ class SupportListViewModel extends Loadable<List<SupportCaseInfo>> {
       };
 }
 
-/// Список обращений (W8 «Support cases» для участника, входящие организатора).
+/// Список обращений: участнику — его обращения, организатору — входящие.
 class SupportListPage extends StatelessWidget {
   const SupportListPage({super.key, required this.base});
 
@@ -51,31 +54,40 @@ class SupportListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
+    final c = context.colors;
     final vm = context.watch<SupportListViewModel>();
     final role = context.watch<SessionController>().session?.role ?? UserRole.unknown;
     final all = vm.data ?? const <SupportCaseInfo>[];
-    final open = all.where((c) => c.status != CaseStatus.resolved).length;
+    final open = all.where((x) => x.status != CaseStatus.resolved).length;
     return RoleScaffold(
       tabs: RoleTabs.of(role),
       current: base,
-      title: role == UserRole.organizer ? 'Support inbox' : 'Support',
-      action: IconButton(
-        tooltip: 'New case',
-        onPressed: () async {
-          await context.push(Routes.newSupportCase(base));
-          vm.load();
-        },
-        icon: Icon(Icons.add, color: context.colors.text),
+      title: role == UserRole.organizer ? l.supportInbox : l.navSupport,
+      action: Material(
+        color: c.primary,
+        shape: const CircleBorder(),
+        child: InkWell(
+          customBorder: const CircleBorder(),
+          onTap: () async {
+            await context.push(Routes.newSupportCase(base));
+            vm.load();
+          },
+          child: Tooltip(
+            message: l.newCase,
+            child: SizedBox.square(dimension: 44, child: Icon(LucideIcons.plus, size: 20, color: c.onPrimary)),
+          ),
+        ),
       ),
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.only(top: 6),
-            child: UnderlineTabs(
-              labels: ['Open · $open', 'Resolved · ${all.length - open}'],
-              current: vm.tab,
-              onSelect: vm.setTab,
-            ),
+            padding: const EdgeInsets.fromLTRB(AppSpacing.side, 4, AppSpacing.side, 12),
+            child: Row(children: [
+              FilterChipPill(label: l.openN(open), active: vm.tab == 0, onTap: () => vm.setTab(0)),
+              const SizedBox(width: 8),
+              FilterChipPill(label: l.resolvedN(all.length - open), active: vm.tab == 1, onTap: () => vm.setTab(1)),
+            ]),
           ),
           Expanded(
             child: LoadableView<List<SupportCaseInfo>>(
@@ -84,38 +96,55 @@ class SupportListPage extends StatelessWidget {
                 final list = vm.visible;
                 if (list.isEmpty) {
                   return ListView(
-                    padding: const EdgeInsets.all(AppSpacing.sideList),
+                    padding: const EdgeInsets.all(AppSpacing.side),
                     children: [
                       MessageView(
-                        icon: Icons.support_agent,
-                        title: vm.tab == 0 ? 'No open cases' : 'Nothing resolved yet',
-                        message: role == UserRole.organizer
-                            ? 'Questions from attendees of your events and your own requests to the platform appear here.'
-                            : 'Open a case from an event, an order or with the + button. Replies arrive here and by email.',
+                        icon: LucideIcons.lifeBuoy,
+                        title: vm.tab == 0 ? l.noOpenCases : l.noResolvedCases,
+                        message: role == UserRole.organizer ? l.supportEmptyOrganizer : l.supportEmptyAttendee,
                       ),
                     ],
                   );
                 }
-                return ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sideList),
-                  itemCount: list.length,
-                  itemBuilder: (context, i) {
-                    final c = list[i];
-                    return ListRow(
-                      overline: '${c.number} · ${c.category.label.toUpperCase()}',
-                      title: c.subject,
-                      subtitle: [
-                        if (role == UserRole.organizer && c.requesterName != null) c.requesterName!,
-                        ?c.eventTitle,
-                        if (c.updatedAt != null) Fmt.ago(c.updatedAt!),
-                      ].join(' · '),
-                      trailing: TagLabel(c.status.label, filled: c.status != CaseStatus.resolved),
-                      onTap: () async {
-                        await context.push(Routes.supportCase(base, c.id), extra: c);
-                        vm.load();
-                      },
-                    );
-                  },
+                return RefreshIndicator(
+                  onRefresh: vm.load,
+                  child: ListView.separated(
+                    padding: const EdgeInsets.fromLTRB(AppSpacing.side, 0, AppSpacing.side, 24),
+                    itemCount: list.length,
+                    separatorBuilder: (_, _) => const SizedBox(height: 10),
+                    itemBuilder: (context, i) {
+                      final k = list[i];
+                      return AppCard(
+                        onTap: () async {
+                          await context.push(Routes.supportCase(base, k.id), extra: k);
+                          vm.load();
+                        },
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(children: [
+                              Expanded(
+                                child: Text('${k.number} · ${k.category.text(l)}',
+                                    style: AppText.meta.copyWith(color: c.textMuted, fontWeight: FontWeight.w600)),
+                              ),
+                              TagLabel(k.status.text(l), tone: k.status.tone),
+                            ]),
+                            const SizedBox(height: 8),
+                            Text(k.subject, style: AppText.listTitle.copyWith(color: c.text, fontWeight: FontWeight.w700)),
+                            const SizedBox(height: 4),
+                            Text(
+                              [
+                                if (role == UserRole.organizer && k.requesterName != null) k.requesterName!,
+                                ?k.eventTitle,
+                                if (k.updatedAt != null) Fmt.ago(k.updatedAt!),
+                              ].join(' · '),
+                              style: AppText.meta.copyWith(color: c.textMuted),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
                 );
               },
             ),
@@ -221,70 +250,67 @@ class _NewCasePageState extends State<NewCasePage> {
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
+    final c = context.colors;
     final vm = context.watch<NewCaseViewModel>();
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
-            ScreenHeader(title: 'New support case', subtitle: vm.about, onBack: () => context.pop()),
+            ScreenHeader(subtitle: vm.about, title: l.newCase, onBack: () => context.pop()),
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.fromLTRB(AppSpacing.sideLight, 20, AppSpacing.sideLight, 20),
+                padding: const EdgeInsets.fromLTRB(AppSpacing.side, 8, AppSpacing.side, 20),
                 children: [
                   if (vm.needsPicker) ...[
-                    const SectionLabel('Event'),
+                    SectionLabel(l.eventLabel),
                     const SizedBox(height: 8),
                     if (vm.choices == null)
                       const LinearProgressIndicator(minHeight: 2)
                     else if (vm.choices!.isEmpty)
-                      Text(
-                        'Support cases go to the organizer of an event. Register for or buy a ticket first, '
-                        'then open the case from that event or order.',
-                        style: AppText.bodySecondary.copyWith(color: context.colors.text),
-                      )
+                      InfoBanner(text: l.noCaseContext, tone: Tone.info)
                     else
                       ChoiceChips<CaseContext?>(
                         options: vm.choices!,
                         selected: vm.selected,
-                        label: (c) => c?.eventTitle ?? '',
-                        onSelected: (c) => vm.select(c!),
+                        label: (x) => x?.eventTitle ?? '',
+                        onSelected: (x) => vm.select(x!),
                       ),
-                    const SizedBox(height: 18),
+                    const SizedBox(height: 20),
                   ],
-                  const SectionLabel('Category'),
+                  SectionLabel(l.categoryLabel),
                   const SizedBox(height: 8),
                   ChoiceChips<CaseCategory>(
                     options: widget.categories,
                     selected: vm.category,
-                    label: (c) => c.label,
+                    label: (x) => x.text(l),
                     onSelected: vm.setCategory,
                   ),
-                  const SizedBox(height: 18),
-                  LabeledTextField(label: 'Subject', controller: _subject, hintText: 'Second ticket did not arrive'),
+                  const SizedBox(height: 20),
+                  LabeledTextField(label: l.subjectLabel, controller: _subject, hintText: l.subjectHint),
                   const SizedBox(height: 14),
-                  LabeledTextField(label: 'Message', controller: _message, maxLines: 6),
-                  const SizedBox(height: 14),
-                  if (vm.eventId != null || vm.orderId != null)
-                    Text(
-                      'The ${vm.orderId != null ? 'order' : 'event'} is attached automatically, so support sees the context.',
-                      style: AppText.finePrint.copyWith(color: context.colors.textMuted),
-                    ),
-                  if (vm.error != null) ...[
+                  LabeledTextField(label: l.messageLabel, controller: _message, maxLines: 6),
+                  if (vm.eventId != null || vm.orderId != null) ...[
                     const SizedBox(height: 10),
-                    Text(vm.error!.text(context), style: AppText.bodySecondary.copyWith(color: context.colors.text)),
+                    Text(vm.orderId != null ? l.orderAttached : l.eventAttached, style: AppText.finePrint.copyWith(color: c.textMuted)),
+                  ],
+                  if (vm.error != null) ...[
+                    const SizedBox(height: 12),
+                    InfoBanner(text: vm.error!.text(context), tone: Tone.danger),
                   ],
                 ],
               ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.sideLight, 8, AppSpacing.sideLight, AppSpacing.bottomClearance),
+              padding: const EdgeInsets.fromLTRB(AppSpacing.side, 8, AppSpacing.side, 16),
               child: PrimaryButton(
-                label: 'Send',
+                label: l.actionSend,
+                icon: LucideIcons.send,
                 isLoading: vm.busy,
                 onPressed: () async {
                   final created = await vm.submit(_subject.text, _message.text);
                   if (created != null && context.mounted) {
-                    showMessage(context, 'Case ${created.number} opened.');
+                    showMessage(context, l.caseOpened(created.number));
                     context.pop(created);
                   }
                 },
@@ -337,7 +363,7 @@ class SupportThreadViewModel extends Loadable<List<SupportMessageInfo>> {
       });
 }
 
-/// W9 · Support case thread
+/// W9 · Переписка по обращению.
 class SupportThreadPage extends StatefulWidget {
   const SupportThreadPage({super.key});
 
@@ -356,6 +382,8 @@ class _SupportThreadPageState extends State<SupportThreadPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
+    final colors = context.colors;
     final vm = context.watch<SupportThreadViewModel>();
     final session = context.watch<SessionController>().session;
     final c = vm.info;
@@ -364,50 +392,53 @@ class _SupportThreadPageState extends State<SupportThreadPage> {
       body: SafeArea(
         child: Column(
           children: [
-            ScreenHeader(
-              title: c?.subject ?? 'Case',
-              subtitle: c == null ? null : '${c.number} · ${c.status.label}',
-              onBack: () => context.pop(),
-            ),
+            ScreenHeader(subtitle: c?.number, title: c?.subject ?? l.caseFallback, onBack: () => context.pop()),
             Expanded(
               child: LoadableView<List<SupportMessageInfo>>(
                 state: vm,
                 builder: (context, messages) => ListView(
-                  padding: const EdgeInsets.fromLTRB(AppSpacing.sideLight, 16, AppSpacing.sideLight, 16),
+                  padding: const EdgeInsets.fromLTRB(AppSpacing.side, 8, AppSpacing.side, 16),
                   children: [
                     if (c != null) ...[
-                      DetailGrid(rows: [
-                        ('Category', c.category.label),
-                        if (c.eventTitle != null) ('Event', c.eventTitle!),
-                        if (c.orderId != null) ('Order', 'ORD-${c.orderId.toString().padLeft(4, '0')}'),
-                        if (c.requesterName != null) ('Opened by', c.requesterName!),
-                        if (c.assignedTo != null) ('Assigned', c.assignedTo!),
-                        if (c.createdAt != null) ('Opened', Fmt.shortDateTime(c.createdAt!)),
-                      ]),
-                      const SizedBox(height: 14),
-                      if (isOrganizer)
+                      AppCard(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            TagLabel(c.status.text(l), tone: c.status.tone),
+                            const SizedBox(height: 10),
+                            DetailGrid(rows: [
+                              (l.categoryLabel, c.category.text(l)),
+                              if (c.eventTitle != null) (l.eventLabel, c.eventTitle!),
+                              if (c.orderId != null) (l.orderTitle, l.orderNo('${c.orderId}')),
+                              if (c.requesterName != null) (l.openedBy, c.requesterName!),
+                              if (c.assignedTo != null) (l.assignedLabel, c.assignedTo!),
+                              if (c.createdAt != null) (l.openedLabel, Fmt.shortDateTime(c.createdAt!)),
+                            ]),
+                          ],
+                        ),
+                      ),
+                      if (isOrganizer) ...[
+                        const SizedBox(height: 12),
                         ChoiceChips<CaseStatus>(
                           options: CaseStatus.values,
                           selected: c.status,
-                          label: (s) => s.label,
+                          label: (s) => s.text(l),
                           onSelected: (s) async {
                             final f = await vm.setStatus(s);
                             if (context.mounted) reportResult(context, f);
                           },
                         ),
-                      const Divider(height: 28),
+                      ],
+                      const SizedBox(height: 20),
                     ],
-                    if (messages.isEmpty)
-                      Text('No messages yet.', style: AppText.bodySecondary.copyWith(color: context.colors.textMuted)),
+                    if (messages.isEmpty) Text(l.noMessages, style: AppText.bodySecondary.copyWith(color: colors.textMuted)),
                     for (final m in messages) _Bubble(message: m, mine: m.senderId == session?.userId),
                     const SizedBox(height: 8),
-                    Text(
-                      'Replies arrive by email and in your account. Messages are asynchronous — nobody has to be online.',
-                      style: AppText.finePrint.copyWith(color: context.colors.textMuted),
-                    ),
+                    Text(l.repliesNote, textAlign: TextAlign.center, style: AppText.finePrint.copyWith(color: colors.textMuted)),
                     if (!isOrganizer && c != null && c.status != CaseStatus.resolved)
                       GhostButton(
-                        label: 'Mark as resolved',
+                        label: l.markResolved,
+                        icon: LucideIcons.circleCheck,
                         onPressed: () async {
                           final f = await vm.setStatus(CaseStatus.resolved);
                           if (context.mounted) reportResult(context, f);
@@ -418,23 +449,34 @@ class _SupportThreadPageState extends State<SupportThreadPage> {
               ),
             ),
             Container(
-              decoration: BoxDecoration(border: Border(top: BorderSide(color: context.colors.border))),
-              padding: const EdgeInsets.fromLTRB(AppSpacing.sideLight, 10, AppSpacing.sideLight, AppSpacing.bottomClearance),
+              decoration: BoxDecoration(color: colors.surface, border: Border(top: BorderSide(color: colors.border))),
+              padding: const EdgeInsets.fromLTRB(AppSpacing.side, 10, AppSpacing.side, 12),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Expanded(child: LabeledTextField(controller: _reply, hintText: 'Write a reply…', maxLines: 3)),
+                  Expanded(child: LabeledTextField(controller: _reply, compact: true, hintText: l.replyHint, maxLines: 3)),
                   const SizedBox(width: 8),
-                  SizedBox(
-                    width: 84,
-                    child: PrimaryButton(
-                      label: 'Send',
-                      isLoading: vm.isBusy,
-                      onPressed: () async {
-                        final f = await vm.send(_reply.text);
-                        if (f == null) _reply.clear();
-                        if (context.mounted) reportResult(context, f);
-                      },
+                  Material(
+                    color: colors.primary,
+                    shape: const CircleBorder(),
+                    child: InkWell(
+                      customBorder: const CircleBorder(),
+                      onTap: vm.isBusy
+                          ? null
+                          : () async {
+                              final f = await vm.send(_reply.text);
+                              if (f == null) _reply.clear();
+                              if (context.mounted) reportResult(context, f);
+                            },
+                      child: Tooltip(
+                        message: l.actionSend,
+                        child: SizedBox.square(
+                          dimension: 48,
+                          child: vm.isBusy
+                              ? Padding(padding: const EdgeInsets.all(14), child: CircularProgressIndicator(strokeWidth: 2, color: colors.onPrimary))
+                              : Icon(LucideIcons.send, size: 20, color: colors.onPrimary),
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -455,25 +497,35 @@ class _Bubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
+    final c = context.colors;
     final m = message;
-    return Container(
-      margin: EdgeInsets.only(bottom: 12, left: mine ? 40 : 0, right: mine ? 0 : 40),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: mine ? context.colors.primaryTint : context.colors.surface,
-        border: Border.all(color: mine ? context.colors.primarySoft : context.colors.border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            '${mine ? 'YOU' : m.senderName.toUpperCase()}'
-            '${m.createdAt == null ? '' : ' · ${Fmt.shortDateTime(m.createdAt!).toUpperCase()}'}',
-            style: AppText.fieldLabel.copyWith(color: context.colors.textMuted),
+    return Align(
+      alignment: mine ? Alignment.centerRight : Alignment.centerLeft,
+      child: Container(
+        margin: EdgeInsets.only(bottom: 10, left: mine ? 48 : 0, right: mine ? 0 : 48),
+        padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
+        decoration: BoxDecoration(
+          color: mine ? c.primary : c.surface,
+          border: mine ? null : Border.all(color: c.border),
+          borderRadius: BorderRadius.only(
+            topLeft: const Radius.circular(18),
+            topRight: const Radius.circular(18),
+            bottomLeft: Radius.circular(mine ? 18 : 6),
+            bottomRight: Radius.circular(mine ? 6 : 18),
           ),
-          const SizedBox(height: 4),
-          Text(m.text, style: AppText.body.copyWith(color: context.colors.text)),
-        ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              [mine ? l.you : m.senderName, if (m.createdAt != null) Fmt.shortDateTime(m.createdAt!)].join(' · '),
+              style: AppText.caption.copyWith(color: mine ? c.onPrimary.withValues(alpha: 0.8) : c.textMuted),
+            ),
+            const SizedBox(height: 4),
+            Text(m.text, style: AppText.body.copyWith(color: mine ? c.onPrimary : c.text)),
+          ],
+        ),
       ),
     );
   }

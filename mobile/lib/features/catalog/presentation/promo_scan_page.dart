@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 import '../../../app/routes.dart';
+import '../../../core/presentation/l10n.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -36,7 +37,7 @@ class _PromoScanPageState extends State<PromoScanPage> {
     if (raw == null) return;
     final link = parseCampaignLink(raw);
     if (link.eventId == null) {
-      showMessage(context, 'This QR is not a BiletFlow campaign link.');
+      showMessage(context, context.l10n.notCampaignQr);
       return;
     }
     _handled = true;
@@ -58,8 +59,8 @@ class _PromoScanPageState extends State<PromoScanPage> {
                 padding: const EdgeInsets.all(40),
                 child: Text(
                   error.errorCode == MobileScannerErrorCode.permissionDenied
-                      ? 'Camera access is off. Turn it on in Settings to scan campaign codes.'
-                      : 'Camera is unavailable.',
+                      ? context.l10n.cameraOffCampaign
+                      : context.l10n.cameraUnavailable,
                   textAlign: TextAlign.center,
                   style: AppText.bodySecondary.copyWith(color: AppPalette.onStrong),
                 ),
@@ -75,7 +76,7 @@ class _PromoScanPageState extends State<PromoScanPage> {
                     children: [
                       BackBox(onPressed: () => context.pop(), onDark: true),
                       const SizedBox(width: 5),
-                      Text('Scan a campaign QR', style: AppText.headerTitle.copyWith(color: AppPalette.onStrong)),
+                      Text(context.l10n.scanCampaignQr, style: AppText.headerTitle.copyWith(color: AppPalette.onStrong)),
                     ],
                   ),
                 ),
@@ -90,8 +91,7 @@ class _PromoScanPageState extends State<PromoScanPage> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sideDark),
                   child: Text(
-                    'Point at a poster or flyer QR. The event opens with its discount applied after '
-                    'the server checks the code.',
+                    context.l10n.campaignScanHint,
                     textAlign: TextAlign.center,
                     style: AppText.meta.copyWith(color: AppPalette.onStrong.withValues(alpha: 0.7)),
                   ),

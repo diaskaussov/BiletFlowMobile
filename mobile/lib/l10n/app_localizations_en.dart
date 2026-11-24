@@ -565,7 +565,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get enterCodeTitle => 'Ticket code';
 
   @override
-  String get enterCodeHint => 'The code under the QR or from the email';
+  String get enterCodeHint => 'Enter a code';
 
   @override
   String get checkCode => 'Check';
@@ -1859,4 +1859,662 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get changesSaved => 'Changes saved.';
+
+  @override
+  String get adminBanner => 'Platform admin · internal staff only';
+
+  @override
+  String get roleUnknown => 'Unknown';
+
+  @override
+  String get roleBuyer => 'Buyer';
+
+  @override
+  String get roleGate => 'Gate staff';
+
+  @override
+  String get roleAdminShort => 'Admin';
+
+  @override
+  String get allRoles => 'All roles';
+
+  @override
+  String get workQueues => 'Work queues';
+
+  @override
+  String get unpaidOrders => 'Unpaid orders';
+
+  @override
+  String get paidSalesEvents => 'Paid-sales events';
+
+  @override
+  String get suspendedUsers => 'Suspended users';
+
+  @override
+  String get refundsQueue => 'Refunds';
+
+  @override
+  String platformTotals(int users, int events, int orders) {
+    return '$users users · $events events · $orders orders on the platform';
+  }
+
+  @override
+  String get unpaidOrdersHint =>
+      'Unpaid orders · payment failures and abandoned checkouts';
+
+  @override
+  String get noTicketsIssued => 'No tickets issued';
+
+  @override
+  String get paidSalesRecords => 'Paid sales active';
+
+  @override
+  String get allOrdersPayments => 'All orders & payments';
+
+  @override
+  String get notInBuild => 'Not available in this build';
+
+  @override
+  String get notInBuildBody =>
+      'Reported events, activation reviews, escalated support cases, report exports and activation fee settings need backend endpoints that do not exist yet.';
+
+  @override
+  String get nothingHere => 'Nothing here.';
+
+  @override
+  String get adminEventsSearch => 'Event, organizer or city';
+
+  @override
+  String get noDate => 'No date';
+
+  @override
+  String get paidSalesTag => 'Paid sales';
+
+  @override
+  String get suspendEventTitle => 'Suspend this event?';
+
+  @override
+  String get suspendEventBody =>
+      'New checkouts stop immediately. Issued tickets stay valid until voided.';
+
+  @override
+  String get actSuspend => 'Suspend';
+
+  @override
+  String get eventSuspendedToast => 'Event suspended and sales stopped.';
+
+  @override
+  String get moderation => 'Moderation';
+
+  @override
+  String get suspendedTag => 'Suspended';
+
+  @override
+  String get paidSalesActive => 'Paid sales active';
+
+  @override
+  String moderationSummary(String organizer, String sold, String collected) {
+    return '$organizer · $sold tickets sold · $collected collected';
+  }
+
+  @override
+  String get organizerFallback => 'Organizer';
+
+  @override
+  String get whenLabel => 'When';
+
+  @override
+  String get organizerRecord => 'Organizer record';
+
+  @override
+  String get accountLabel => 'Account';
+
+  @override
+  String get emailVerified => 'Email verified';
+
+  @override
+  String get yes => 'Yes';
+
+  @override
+  String get no => 'No';
+
+  @override
+  String get ordersOnEvent => 'Orders on this event';
+
+  @override
+  String get suspendingWill => 'Suspending will';
+
+  @override
+  String get suspendWill1 => 'Stop new checkouts for this event immediately.';
+
+  @override
+  String get suspendWill2 => 'Leave issued tickets valid until you void them.';
+
+  @override
+  String get suspendWill3 => 'Hold any payout to the organizer.';
+
+  @override
+  String get suspendWill4 => 'Write an entry into the event audit trail.';
+
+  @override
+  String get suspendReason => 'Reason recorded and sent to the organizer';
+
+  @override
+  String get suspendReasonNote =>
+      'The current API does not store the reason yet; keep it for your records.';
+
+  @override
+  String get suspendEventButton => 'Suspend event & sales';
+
+  @override
+  String get nameOrEmail => 'Name or email';
+
+  @override
+  String get userActive => 'Active';
+
+  @override
+  String get userBlocked => 'Blocked';
+
+  @override
+  String get actBlock => 'Block';
+
+  @override
+  String get actUnblock => 'Unblock';
+
+  @override
+  String blockTitle(String name) {
+    return 'Block $name?';
+  }
+
+  @override
+  String unblockTitle(String name) {
+    return 'Unblock $name?';
+  }
+
+  @override
+  String get blockBody => 'They will not be able to sign in until unblocked.';
+
+  @override
+  String get unblockBody => 'They can sign in and use BiletFlow again.';
+
+  @override
+  String get userBlockedToast => 'User blocked.';
+
+  @override
+  String get userUnblockedToast => 'User unblocked.';
+
+  @override
+  String get staffTag => 'Staff';
+
+  @override
+  String get noCardData =>
+      'No card data is stored or shown. All payments are sandbox.';
+
+  @override
+  String get noUsersMatch => 'No users match';
+
+  @override
+  String get generalSection => 'General';
+
+  @override
+  String get demoFootnote =>
+      'All payments in this build are demonstration only — no money moves.';
+
+  @override
+  String get supportInbox => 'Support inbox';
+
+  @override
+  String get newCase => 'New case';
+
+  @override
+  String openN(int count) {
+    return 'Open $count';
+  }
+
+  @override
+  String resolvedN(int count) {
+    return 'Resolved $count';
+  }
+
+  @override
+  String get noOpenCases => 'No open cases';
+
+  @override
+  String get noResolvedCases => 'Nothing resolved yet';
+
+  @override
+  String get supportEmptyOrganizer =>
+      'Questions from attendees of your events and your own requests to the platform appear here.';
+
+  @override
+  String get supportEmptyAttendee =>
+      'Open a case from an event, an order or with the + button. Replies arrive here and by email.';
+
+  @override
+  String get eventLabel => 'Event';
+
+  @override
+  String get noCaseContext =>
+      'Support cases go to the organizer of an event. Register for or buy a ticket first, then open the case from that event or order.';
+
+  @override
+  String get subjectLabel => 'Subject';
+
+  @override
+  String get subjectHint => 'Second ticket did not arrive';
+
+  @override
+  String get messageLabel => 'Message';
+
+  @override
+  String get orderAttached =>
+      'The order is attached automatically, so support sees the context.';
+
+  @override
+  String get eventAttached =>
+      'The event is attached automatically, so support sees the context.';
+
+  @override
+  String caseOpened(String number) {
+    return 'Case $number opened.';
+  }
+
+  @override
+  String get caseFallback => 'Case';
+
+  @override
+  String get openedBy => 'Opened by';
+
+  @override
+  String get assignedLabel => 'Assigned';
+
+  @override
+  String get openedLabel => 'Opened';
+
+  @override
+  String get noMessages => 'No messages yet.';
+
+  @override
+  String get repliesNote =>
+      'Replies arrive by email and in your account — nobody has to be online.';
+
+  @override
+  String get markResolved => 'Mark as resolved';
+
+  @override
+  String get replyHint => 'Write a reply…';
+
+  @override
+  String get scanCampaignQr => 'Scan a campaign QR';
+
+  @override
+  String upcomingN(int count) {
+    return '$count upcoming';
+  }
+
+  @override
+  String get catalogSearch => 'Search events, venues, organizers';
+
+  @override
+  String filtersN(int count) {
+    return 'Filters · $count';
+  }
+
+  @override
+  String get filters => 'Filters';
+
+  @override
+  String get noUpcoming => 'No upcoming events';
+
+  @override
+  String get noUpcomingHint =>
+      'Published public events appear here as soon as organizers open registration.';
+
+  @override
+  String get nothingMatches => 'Nothing matches';
+
+  @override
+  String get nothingMatchesHint => 'Try another city, date or price.';
+
+  @override
+  String get clearFilters => 'Clear filters';
+
+  @override
+  String get soldOut => 'Sold out';
+
+  @override
+  String fromPrice(String price) {
+    return 'from $price';
+  }
+
+  @override
+  String get seatedTag => 'Seated';
+
+  @override
+  String get registrationTag => 'Registration';
+
+  @override
+  String get cityFilter => 'City';
+
+  @override
+  String get anyOption => 'Any';
+
+  @override
+  String get whenFilter => 'When';
+
+  @override
+  String get anyTime => 'Any time';
+
+  @override
+  String get thisWeekend => 'This weekend';
+
+  @override
+  String get next30 => 'Next 30 days';
+
+  @override
+  String get priceFilter => 'Price';
+
+  @override
+  String get anyPrice => 'Any price';
+
+  @override
+  String get freeOnly => 'Free only';
+
+  @override
+  String get under5000 => 'Under 5 000 ₸';
+
+  @override
+  String get showEvents => 'Show events';
+
+  @override
+  String get addToCalendar => 'Add to calendar';
+
+  @override
+  String get downloadIcs => 'Download .ics';
+
+  @override
+  String get calendarNote =>
+      'Includes venue address and time. If the organizer changes the time, the updated file replaces your entry.';
+
+  @override
+  String promoApplied(String code, String discount) {
+    return '$code applied: $discount';
+  }
+
+  @override
+  String get promoVerified =>
+      'Verified on the server. You will see the final total before paying.';
+
+  @override
+  String get dateLabel => 'Date';
+
+  @override
+  String get regClosesLabel => 'Registration closes';
+
+  @override
+  String get registrationClosed => 'Registration is closed for this event.';
+
+  @override
+  String get noTicketsOnSale => 'No tickets are on sale yet.';
+
+  @override
+  String get promoCodeLabel => 'Promo code';
+
+  @override
+  String get actApply => 'Apply';
+
+  @override
+  String get contactSupportEvent => 'Contact support';
+
+  @override
+  String maxPerOrderN(int count) {
+    return 'max $count per order';
+  }
+
+  @override
+  String leftN(String count) {
+    return '$count left';
+  }
+
+  @override
+  String get chooseSeats => 'Choose seats';
+
+  @override
+  String get continueCheckout => 'Continue to checkout';
+
+  @override
+  String get seatsHeldNote => 'Seats are held for 10 minutes at checkout.';
+
+  @override
+  String get notCampaignQr => 'This QR is not a BiletFlow campaign link.';
+
+  @override
+  String get cameraOffCampaign =>
+      'Camera access is off. Turn it on in Settings to scan campaign codes.';
+
+  @override
+  String get campaignScanHint =>
+      'Point at a poster or flyer QR. The event opens with its discount applied after the server checks the code.';
+
+  @override
+  String get checkoutTitle => 'Checkout';
+
+  @override
+  String get stepsSeats => 'Seats › Details & payment › Tickets';
+
+  @override
+  String get stepsNoSeats => 'Details & payment › Tickets';
+
+  @override
+  String get holdExpired => 'Seat hold expired — go back and choose again';
+
+  @override
+  String holdExpiresIn(String time) {
+    return 'Hold expires in $time';
+  }
+
+  @override
+  String get yourDetails => 'Your details';
+
+  @override
+  String get emailTickets => 'Email — tickets are sent here';
+
+  @override
+  String get paymentSection => 'Payment';
+
+  @override
+  String get payCard => 'Card · sandbox';
+
+  @override
+  String get payKaspi => 'Kaspi transfer · sandbox';
+
+  @override
+  String get orderSummary => 'Order summary';
+
+  @override
+  String get totalKzt => 'Total';
+
+  @override
+  String get serverRecalcs =>
+      'The server recalculates the discount; the charged total may differ slightly.';
+
+  @override
+  String get getFreeTickets => 'Get free tickets';
+
+  @override
+  String payAmount(String amount) {
+    return 'Pay $amount';
+  }
+
+  @override
+  String get freeConfirmedNote =>
+      'Free orders are confirmed immediately and tickets are issued at once.';
+
+  @override
+  String get paidConfirmedNote =>
+      'Tickets are issued only after the sandbox confirms payment.';
+
+  @override
+  String get chooseYourSeats => 'Choose your seats';
+
+  @override
+  String get noSeatMapBuyer => 'No seat map yet';
+
+  @override
+  String get noSeatMapBuyerHint =>
+      'The organizer has not published a seating layout for this event.';
+
+  @override
+  String get seatAvailable => 'Available';
+
+  @override
+  String get seatSelected => 'Selected';
+
+  @override
+  String get seatHeld => 'Held';
+
+  @override
+  String get seatSold => 'Sold';
+
+  @override
+  String get seatUnavailable => 'Unavailable';
+
+  @override
+  String pickedOf(int picked, int needed) {
+    return '$picked of $needed seats';
+  }
+
+  @override
+  String get seatsHeldContinue =>
+      'Seats are held for you for 10 minutes once you continue.';
+
+  @override
+  String get myTickets => 'My tickets';
+
+  @override
+  String tabUpcomingN(int count) {
+    return 'Upcoming $count';
+  }
+
+  @override
+  String tabPastN(int count) {
+    return 'Past $count';
+  }
+
+  @override
+  String tabRefundedN(int count) {
+    return 'Refunded $count';
+  }
+
+  @override
+  String get noUpcomingTickets => 'No upcoming tickets';
+
+  @override
+  String get noUpcomingTicketsHint =>
+      'Tickets you buy or register for appear here with their QR codes.';
+
+  @override
+  String get pastTicketsHint =>
+      'Tickets show up here after the event or after a refund.';
+
+  @override
+  String get browseEvents => 'Browse events';
+
+  @override
+  String get dateTba => 'Date TBA';
+
+  @override
+  String get viewTicket => 'View ticket';
+
+  @override
+  String get viewTickets => 'View tickets';
+
+  @override
+  String get admissionTicket => 'Admission ticket';
+
+  @override
+  String get admitsOne => 'Admits 1';
+
+  @override
+  String get attendeeLabel => 'Attendee';
+
+  @override
+  String get seatLabelShort => 'Seat';
+
+  @override
+  String get ticketIdLabel => 'Ticket ID';
+
+  @override
+  String get issuedLabel => 'Issued';
+
+  @override
+  String get qrKeepNote =>
+      'Keep the QR clean and unfolded. This ticket admits one person once; digital and printed copies share one identifier.';
+
+  @override
+  String get print => 'Print';
+
+  @override
+  String get downloadPdf => 'Download PDF';
+
+  @override
+  String get cancelOrderTitle => 'Cancel this order?';
+
+  @override
+  String get cancelOrderBody =>
+      'All tickets in the order become invalid and will be refused at the gate. Refunds follow the organizer\'s policy.';
+
+  @override
+  String get cancelOrder => 'Cancel order';
+
+  @override
+  String get orderCancelledToast => 'Order cancelled.';
+
+  @override
+  String get ticketReady => 'Your ticket is ready';
+
+  @override
+  String ticketsReady(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count tickets are yours',
+      one: '$count ticket is yours',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String confirmationSent(String email) {
+    return 'Confirmation sent to $email';
+  }
+
+  @override
+  String get yourTickets => 'Your tickets';
+
+  @override
+  String get ticketsAfterPayment =>
+      'Tickets are issued after payment is confirmed.';
+
+  @override
+  String get typeLabel => 'Type';
+
+  @override
+  String get showQr => 'Show QR';
+
+  @override
+  String get showQrNote =>
+      'Show the QR on your phone or on paper. Each ticket admits one person once.';
+
+  @override
+  String get totalLabel => 'Total';
+
+  @override
+  String get methodLabel => 'Method';
+
+  @override
+  String get sandboxPayment => 'Sandbox payment';
+
+  @override
+  String get helpWithOrder => 'Get help with this order';
 }

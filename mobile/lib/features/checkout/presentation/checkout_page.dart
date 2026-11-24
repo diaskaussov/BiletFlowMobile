@@ -2,10 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 
 import '../../../app/routes.dart';
 import '../../../core/error/result.dart';
+import '../../../core/presentation/l10n.dart';
+import '../../../core/presentation/status_text.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -77,7 +80,7 @@ class CheckoutViewModel extends ChangeNotifier with SafeNotifier {
   }
 }
 
-/// W5 · Checkout (§4.6, UC3)
+/// W5 · Оформление заказа (§4.6, UC3).
 class CheckoutPage extends StatefulWidget {
   const CheckoutPage({super.key});
 
@@ -115,6 +118,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
+    final c = context.colors;
     final vm = context.watch<CheckoutViewModel>();
     final cart = vm.cart;
     final left = vm.holdLeft;
@@ -128,96 +133,113 @@ class _CheckoutPageState extends State<CheckoutPage> {
           child: Column(
             children: [
               ScreenHeader(
-                title: 'Checkout',
-                subtitle: cart.needsSeats ? '1 Seats › 2 Details & payment › 3 Tickets' : '1 Details & payment › 2 Tickets',
+                subtitle: cart.needsSeats ? l.stepsSeats : l.stepsNoSeats,
+                title: l.checkoutTitle,
                 onBack: () => context.pop(),
               ),
               if (left != null)
-                Container(
-                  width: double.infinity,
-                  color: vm.holdExpired ? context.colors.text : context.colors.primaryTint,
-                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sideLight, vertical: 10),
-                  child: Text(
-                    vm.holdExpired ? 'SEAT HOLD EXPIRED — GO BACK AND CHOOSE AGAIN' : 'HOLD EXPIRES IN ${Fmt.countdown(left)}',
-                    style: AppText.statusStrip.copyWith(color: vm.holdExpired ? context.colors.surface : context.colors.primary),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(AppSpacing.side, 0, AppSpacing.side, 8),
+                  child: InfoBanner(
+                    icon: vm.holdExpired ? LucideIcons.timerOff : LucideIcons.timer,
+                    tone: vm.holdExpired ? Tone.danger : Tone.primary,
+                    text: vm.holdExpired ? l.holdExpired : l.holdExpiresIn(Fmt.countdown(left)),
                   ),
                 ),
               Expanded(
                 child: ListView(
-                  padding: const EdgeInsets.fromLTRB(AppSpacing.sideLight, 20, AppSpacing.sideLight, 20),
+                  padding: const EdgeInsets.fromLTRB(AppSpacing.side, 8, AppSpacing.side, 20),
                   children: [
-                    const SectionLabel('Your details'),
+                    AppCard(
+                      padding: const EdgeInsets.all(12),
+                      child: Row(children: [
+                        EventImage(url: cart.event.imageUrl, label: cart.event.title, height: 56, width: 56, radius: 12),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(cart.event.title, style: AppText.cardTitle.copyWith(color: c.text)),
+                              if (cart.event.startsAt != null)
+                                Text('${Fmt.dateTime(cart.event.startsAt!)} · ${cart.event.venueLine}',
+                                    style: AppText.meta.copyWith(color: c.textMuted)),
+                            ],
+                          ),
+                        ),
+                      ]),
+                    ),
+                    const SizedBox(height: AppSpacing.section),
+                    SectionLabel(l.yourDetails),
                     const SizedBox(height: 10),
                     Row(children: [
-                      Expanded(child: LabeledTextField(label: 'First name', controller: _first, textInputAction: TextInputAction.next)),
+                      Expanded(child: LabeledTextField(label: l.firstName, controller: _first, textInputAction: TextInputAction.next)),
                       const SizedBox(width: 10),
-                      Expanded(child: LabeledTextField(label: 'Last name', controller: _last, textInputAction: TextInputAction.next)),
+                      Expanded(child: LabeledTextField(label: l.lastName, controller: _last, textInputAction: TextInputAction.next)),
                     ]),
                     const SizedBox(height: 14),
-                    LabeledTextField(
-                      label: 'Email — tickets are sent here',
-                      controller: _email,
-                      keyboardType: TextInputType.emailAddress,
-                    ),
+                    LabeledTextField(label: l.emailTickets, controller: _email, keyboardType: TextInputType.emailAddress),
                     if (!cart.isFree) ...[
                       const SizedBox(height: AppSpacing.section),
-                      const SectionLabel('Payment'),
+                      SectionLabel(l.paymentSection),
                       const SizedBox(height: 10),
                       ChoiceChips<PaymentMethod>(
                         options: PaymentMethod.values,
                         selected: vm.method,
-                        label: (m) => m == PaymentMethod.card ? 'Card · sandbox' : 'Kaspi transfer · sandbox',
+                        label: (m) => m == PaymentMethod.card ? l.payCard : l.payKaspi,
                         onSelected: vm.setMethod,
                       ),
                       const SizedBox(height: 12),
                       const DemoNotice(),
                     ],
                     const SizedBox(height: AppSpacing.section),
-                    const SectionLabel('Order summary'),
-                    const SizedBox(height: 8),
-                    Text(cart.event.title, style: AppText.listTitle.copyWith(color: context.colors.text)),
-                    if (cart.event.startsAt != null)
-                      Text('${Fmt.dateTime(cart.event.startsAt!)} · ${cart.event.venueLine}',
-                          style: AppText.meta.copyWith(color: context.colors.textMuted)),
-                    const SizedBox(height: 12),
-                    DetailGrid(rows: [
-                      for (final (type, qty) in cart.lines) ...[
-                        ('$qty × ${type.name}', Fmt.money(type.price * qty)),
-                        for (final s in cart.seatsFor(type.id)) ('   ${s.label}', ''),
-                      ],
-                      if (cart.promo != null) ('Discount ${cart.promo!.code}', '− ${Fmt.money(cart.discount, freeWord: false)}'),
-                    ]),
-                    const Divider(height: 24),
-                    Row(children: [
-                      Text('TOTAL · KZT', style: AppText.sectionLabel.copyWith(color: context.colors.text)),
-                      const Spacer(),
-                      Text(Fmt.money(cart.total), style: AppText.statNumeral.copyWith(color: context.colors.text)),
-                    ]),
-                    if (cart.promo != null)
-                      Text('The server recalculates the discount; the charged total may differ slightly.',
-                          style: AppText.finePrint.copyWith(color: context.colors.textMuted)),
+                    SectionLabel(l.orderSummary),
+                    const SizedBox(height: 10),
+                    AppCard(
+                      child: Column(
+                        children: [
+                          DetailGrid(rows: [
+                            for (final (type, qty) in cart.lines) ...[
+                              ('$qty × ${type.name}', Fmt.money(type.price * qty)),
+                              for (final s in cart.seatsFor(type.id)) ('   ${s.text(l)}', ''),
+                            ],
+                            if (cart.promo != null) (l.discountCode(cart.promo!.code), '− ${Fmt.money(cart.discount, freeWord: false)}'),
+                          ]),
+                          Divider(height: 24, color: c.border),
+                          Row(children: [
+                            Text(l.totalKzt, style: AppText.sectionLabel.copyWith(color: c.text)),
+                            const Spacer(),
+                            Text(Fmt.money(cart.total), style: AppText.statNumeral.copyWith(color: c.text)),
+                          ]),
+                        ],
+                      ),
+                    ),
+                    if (cart.promo != null) ...[
+                      const SizedBox(height: 8),
+                      Text(l.serverRecalcs, style: AppText.finePrint.copyWith(color: c.textMuted)),
+                    ],
                   ],
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(AppSpacing.sideLight, 8, AppSpacing.sideLight, AppSpacing.bottomClearance),
+                padding: const EdgeInsets.fromLTRB(AppSpacing.side, 8, AppSpacing.side, 16),
                 child: Column(
                   children: [
                     if (vm.error != null) ...[
-                      Text(vm.error!.text(context), style: AppText.bodySecondary.copyWith(color: context.colors.text)),
-                      const SizedBox(height: 8),
+                      InfoBanner(text: vm.error!.text(context), tone: Tone.danger),
+                      const SizedBox(height: 10),
                     ],
                     PrimaryButton(
-                      label: cart.isFree ? 'Get free tickets' : 'Pay ${Fmt.money(cart.total)}',
+                      label: cart.isFree ? l.getFreeTickets : l.payAmount(Fmt.money(cart.total)),
+                      icon: cart.isFree ? LucideIcons.ticket : LucideIcons.creditCard,
+                      large: true,
                       isLoading: vm.isPaying,
                       onPressed: vm.holdExpired ? null : () => _pay(vm),
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 8),
                     Text(
-                      cart.isFree
-                          ? 'Free orders are confirmed immediately and tickets are issued at once.'
-                          : 'Tickets are issued only after the sandbox confirms payment.',
-                      style: AppText.finePrint.copyWith(color: context.colors.textMuted),
+                      cart.isFree ? l.freeConfirmedNote : l.paidConfirmedNote,
+                      textAlign: TextAlign.center,
+                      style: AppText.finePrint.copyWith(color: c.textMuted),
                     ),
                   ],
                 ),

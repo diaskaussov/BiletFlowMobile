@@ -1105,7 +1105,7 @@ abstract class AppLocalizations {
   /// No description provided for @enterCodeHint.
   ///
   /// In ru, this message translates to:
-  /// **'Код под QR-кодом или из письма'**
+  /// **'Введите код'**
   String get enterCodeHint;
 
   /// No description provided for @checkCode.
@@ -3399,6 +3399,1170 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Изменения сохранены.'**
   String get changesSaved;
+
+  /// No description provided for @adminBanner.
+  ///
+  /// In ru, this message translates to:
+  /// **'Админ платформы · только для персонала'**
+  String get adminBanner;
+
+  /// No description provided for @roleUnknown.
+  ///
+  /// In ru, this message translates to:
+  /// **'Неизвестно'**
+  String get roleUnknown;
+
+  /// No description provided for @roleBuyer.
+  ///
+  /// In ru, this message translates to:
+  /// **'Покупатель'**
+  String get roleBuyer;
+
+  /// No description provided for @roleGate.
+  ///
+  /// In ru, this message translates to:
+  /// **'Контролёр'**
+  String get roleGate;
+
+  /// No description provided for @roleAdminShort.
+  ///
+  /// In ru, this message translates to:
+  /// **'Админ'**
+  String get roleAdminShort;
+
+  /// No description provided for @allRoles.
+  ///
+  /// In ru, this message translates to:
+  /// **'Все роли'**
+  String get allRoles;
+
+  /// No description provided for @workQueues.
+  ///
+  /// In ru, this message translates to:
+  /// **'Очереди'**
+  String get workQueues;
+
+  /// No description provided for @unpaidOrders.
+  ///
+  /// In ru, this message translates to:
+  /// **'Неоплаченные заказы'**
+  String get unpaidOrders;
+
+  /// No description provided for @paidSalesEvents.
+  ///
+  /// In ru, this message translates to:
+  /// **'События с продажами'**
+  String get paidSalesEvents;
+
+  /// No description provided for @suspendedUsers.
+  ///
+  /// In ru, this message translates to:
+  /// **'Заблокированные'**
+  String get suspendedUsers;
+
+  /// No description provided for @refundsQueue.
+  ///
+  /// In ru, this message translates to:
+  /// **'Возвраты'**
+  String get refundsQueue;
+
+  /// No description provided for @platformTotals.
+  ///
+  /// In ru, this message translates to:
+  /// **'На платформе: пользователей {users}, событий {events}, заказов {orders}'**
+  String platformTotals(int users, int events, int orders);
+
+  /// No description provided for @unpaidOrdersHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Неоплаченные заказы · ошибки оплаты и брошенные корзины'**
+  String get unpaidOrdersHint;
+
+  /// No description provided for @noTicketsIssued.
+  ///
+  /// In ru, this message translates to:
+  /// **'Билеты не выданы'**
+  String get noTicketsIssued;
+
+  /// No description provided for @paidSalesRecords.
+  ///
+  /// In ru, this message translates to:
+  /// **'Активные платные продажи'**
+  String get paidSalesRecords;
+
+  /// No description provided for @allOrdersPayments.
+  ///
+  /// In ru, this message translates to:
+  /// **'Все заказы и платежи'**
+  String get allOrdersPayments;
+
+  /// No description provided for @notInBuild.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пока недоступно'**
+  String get notInBuild;
+
+  /// No description provided for @notInBuildBody.
+  ///
+  /// In ru, this message translates to:
+  /// **'Жалобы на события, проверка активаций, эскалации поддержки, выгрузка отчётов и настройка комиссии требуют эндпоинтов, которых в бэкенде пока нет.'**
+  String get notInBuildBody;
+
+  /// No description provided for @nothingHere.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пусто.'**
+  String get nothingHere;
+
+  /// No description provided for @adminEventsSearch.
+  ///
+  /// In ru, this message translates to:
+  /// **'Событие, организатор или город'**
+  String get adminEventsSearch;
+
+  /// No description provided for @noDate.
+  ///
+  /// In ru, this message translates to:
+  /// **'Без даты'**
+  String get noDate;
+
+  /// No description provided for @paidSalesTag.
+  ///
+  /// In ru, this message translates to:
+  /// **'Платные продажи'**
+  String get paidSalesTag;
+
+  /// No description provided for @suspendEventTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Приостановить событие?'**
+  String get suspendEventTitle;
+
+  /// No description provided for @suspendEventBody.
+  ///
+  /// In ru, this message translates to:
+  /// **'Новые покупки сразу остановятся. Выданные билеты действуют, пока их не аннулируют.'**
+  String get suspendEventBody;
+
+  /// No description provided for @actSuspend.
+  ///
+  /// In ru, this message translates to:
+  /// **'Приостановить'**
+  String get actSuspend;
+
+  /// No description provided for @eventSuspendedToast.
+  ///
+  /// In ru, this message translates to:
+  /// **'Событие приостановлено, продажи остановлены.'**
+  String get eventSuspendedToast;
+
+  /// No description provided for @moderation.
+  ///
+  /// In ru, this message translates to:
+  /// **'Модерация'**
+  String get moderation;
+
+  /// No description provided for @suspendedTag.
+  ///
+  /// In ru, this message translates to:
+  /// **'Приостановлено'**
+  String get suspendedTag;
+
+  /// No description provided for @paidSalesActive.
+  ///
+  /// In ru, this message translates to:
+  /// **'Платные продажи активны'**
+  String get paidSalesActive;
+
+  /// No description provided for @moderationSummary.
+  ///
+  /// In ru, this message translates to:
+  /// **'{organizer} · продано {sold} · собрано {collected}'**
+  String moderationSummary(String organizer, String sold, String collected);
+
+  /// No description provided for @organizerFallback.
+  ///
+  /// In ru, this message translates to:
+  /// **'Организатор'**
+  String get organizerFallback;
+
+  /// No description provided for @whenLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Когда'**
+  String get whenLabel;
+
+  /// No description provided for @organizerRecord.
+  ///
+  /// In ru, this message translates to:
+  /// **'Организатор'**
+  String get organizerRecord;
+
+  /// No description provided for @accountLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Аккаунт'**
+  String get accountLabel;
+
+  /// No description provided for @emailVerified.
+  ///
+  /// In ru, this message translates to:
+  /// **'Email подтверждён'**
+  String get emailVerified;
+
+  /// No description provided for @yes.
+  ///
+  /// In ru, this message translates to:
+  /// **'Да'**
+  String get yes;
+
+  /// No description provided for @no.
+  ///
+  /// In ru, this message translates to:
+  /// **'Нет'**
+  String get no;
+
+  /// No description provided for @ordersOnEvent.
+  ///
+  /// In ru, this message translates to:
+  /// **'Заказов на событии'**
+  String get ordersOnEvent;
+
+  /// No description provided for @suspendingWill.
+  ///
+  /// In ru, this message translates to:
+  /// **'Приостановка'**
+  String get suspendingWill;
+
+  /// No description provided for @suspendWill1.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сразу остановит новые покупки на событие.'**
+  String get suspendWill1;
+
+  /// No description provided for @suspendWill2.
+  ///
+  /// In ru, this message translates to:
+  /// **'Оставит выданные билеты действительными, пока вы их не аннулируете.'**
+  String get suspendWill2;
+
+  /// No description provided for @suspendWill3.
+  ///
+  /// In ru, this message translates to:
+  /// **'Задержит выплату организатору.'**
+  String get suspendWill3;
+
+  /// No description provided for @suspendWill4.
+  ///
+  /// In ru, this message translates to:
+  /// **'Запишет действие в журнал события.'**
+  String get suspendWill4;
+
+  /// No description provided for @suspendReason.
+  ///
+  /// In ru, this message translates to:
+  /// **'Причина — для организатора'**
+  String get suspendReason;
+
+  /// No description provided for @suspendReasonNote.
+  ///
+  /// In ru, this message translates to:
+  /// **'Текущий API причину пока не сохраняет — оставьте её себе.'**
+  String get suspendReasonNote;
+
+  /// No description provided for @suspendEventButton.
+  ///
+  /// In ru, this message translates to:
+  /// **'Приостановить событие и продажи'**
+  String get suspendEventButton;
+
+  /// No description provided for @nameOrEmail.
+  ///
+  /// In ru, this message translates to:
+  /// **'Имя или email'**
+  String get nameOrEmail;
+
+  /// No description provided for @userActive.
+  ///
+  /// In ru, this message translates to:
+  /// **'Активен'**
+  String get userActive;
+
+  /// No description provided for @userBlocked.
+  ///
+  /// In ru, this message translates to:
+  /// **'Заблокирован'**
+  String get userBlocked;
+
+  /// No description provided for @actBlock.
+  ///
+  /// In ru, this message translates to:
+  /// **'Заблокировать'**
+  String get actBlock;
+
+  /// No description provided for @actUnblock.
+  ///
+  /// In ru, this message translates to:
+  /// **'Разблокировать'**
+  String get actUnblock;
+
+  /// No description provided for @blockTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Заблокировать {name}?'**
+  String blockTitle(String name);
+
+  /// No description provided for @unblockTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Разблокировать {name}?'**
+  String unblockTitle(String name);
+
+  /// No description provided for @blockBody.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пользователь не сможет войти, пока его не разблокируют.'**
+  String get blockBody;
+
+  /// No description provided for @unblockBody.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пользователь снова сможет входить и пользоваться BiletFlow.'**
+  String get unblockBody;
+
+  /// No description provided for @userBlockedToast.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пользователь заблокирован.'**
+  String get userBlockedToast;
+
+  /// No description provided for @userUnblockedToast.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пользователь разблокирован.'**
+  String get userUnblockedToast;
+
+  /// No description provided for @staffTag.
+  ///
+  /// In ru, this message translates to:
+  /// **'Персонал'**
+  String get staffTag;
+
+  /// No description provided for @noCardData.
+  ///
+  /// In ru, this message translates to:
+  /// **'Данные карт не хранятся и не показываются. Все платежи — тестовые.'**
+  String get noCardData;
+
+  /// No description provided for @noUsersMatch.
+  ///
+  /// In ru, this message translates to:
+  /// **'Никого не нашли'**
+  String get noUsersMatch;
+
+  /// No description provided for @generalSection.
+  ///
+  /// In ru, this message translates to:
+  /// **'Общее'**
+  String get generalSection;
+
+  /// No description provided for @demoFootnote.
+  ///
+  /// In ru, this message translates to:
+  /// **'Все платежи в этой версии — демонстрационные, деньги не списываются.'**
+  String get demoFootnote;
+
+  /// No description provided for @supportInbox.
+  ///
+  /// In ru, this message translates to:
+  /// **'Поддержка'**
+  String get supportInbox;
+
+  /// No description provided for @newCase.
+  ///
+  /// In ru, this message translates to:
+  /// **'Новое обращение'**
+  String get newCase;
+
+  /// No description provided for @openN.
+  ///
+  /// In ru, this message translates to:
+  /// **'Открытые {count}'**
+  String openN(int count);
+
+  /// No description provided for @resolvedN.
+  ///
+  /// In ru, this message translates to:
+  /// **'Решённые {count}'**
+  String resolvedN(int count);
+
+  /// No description provided for @noOpenCases.
+  ///
+  /// In ru, this message translates to:
+  /// **'Открытых обращений нет'**
+  String get noOpenCases;
+
+  /// No description provided for @noResolvedCases.
+  ///
+  /// In ru, this message translates to:
+  /// **'Решённых пока нет'**
+  String get noResolvedCases;
+
+  /// No description provided for @supportEmptyOrganizer.
+  ///
+  /// In ru, this message translates to:
+  /// **'Здесь появятся вопросы участников ваших событий и ваши обращения к платформе.'**
+  String get supportEmptyOrganizer;
+
+  /// No description provided for @supportEmptyAttendee.
+  ///
+  /// In ru, this message translates to:
+  /// **'Создайте обращение из события, заказа или кнопкой +. Ответы придут сюда и на почту.'**
+  String get supportEmptyAttendee;
+
+  /// No description provided for @eventLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Событие'**
+  String get eventLabel;
+
+  /// No description provided for @noCaseContext.
+  ///
+  /// In ru, this message translates to:
+  /// **'Обращения уходят организатору события. Сначала зарегистрируйтесь или купите билет, затем напишите из события или заказа.'**
+  String get noCaseContext;
+
+  /// No description provided for @subjectLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Тема'**
+  String get subjectLabel;
+
+  /// No description provided for @subjectHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Не пришёл второй билет'**
+  String get subjectHint;
+
+  /// No description provided for @messageLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сообщение'**
+  String get messageLabel;
+
+  /// No description provided for @orderAttached.
+  ///
+  /// In ru, this message translates to:
+  /// **'Заказ прикреплён автоматически — поддержка увидит контекст.'**
+  String get orderAttached;
+
+  /// No description provided for @eventAttached.
+  ///
+  /// In ru, this message translates to:
+  /// **'Событие прикреплено автоматически — поддержка увидит контекст.'**
+  String get eventAttached;
+
+  /// No description provided for @caseOpened.
+  ///
+  /// In ru, this message translates to:
+  /// **'Обращение {number} создано.'**
+  String caseOpened(String number);
+
+  /// No description provided for @caseFallback.
+  ///
+  /// In ru, this message translates to:
+  /// **'Обращение'**
+  String get caseFallback;
+
+  /// No description provided for @openedBy.
+  ///
+  /// In ru, this message translates to:
+  /// **'Автор'**
+  String get openedBy;
+
+  /// No description provided for @assignedLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ответственный'**
+  String get assignedLabel;
+
+  /// No description provided for @openedLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Создано'**
+  String get openedLabel;
+
+  /// No description provided for @noMessages.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сообщений пока нет.'**
+  String get noMessages;
+
+  /// No description provided for @repliesNote.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ответы приходят на почту и в аккаунт — быть онлайн не обязательно.'**
+  String get repliesNote;
+
+  /// No description provided for @markResolved.
+  ///
+  /// In ru, this message translates to:
+  /// **'Отметить решённым'**
+  String get markResolved;
+
+  /// No description provided for @replyHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Написать ответ…'**
+  String get replyHint;
+
+  /// No description provided for @scanCampaignQr.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сканировать QR кампании'**
+  String get scanCampaignQr;
+
+  /// No description provided for @upcomingN.
+  ///
+  /// In ru, this message translates to:
+  /// **'{count, plural, one{{count} событие впереди} few{{count} события впереди} many{{count} событий впереди} other{{count} события впереди}}'**
+  String upcomingN(int count);
+
+  /// No description provided for @catalogSearch.
+  ///
+  /// In ru, this message translates to:
+  /// **'События, площадки, организаторы'**
+  String get catalogSearch;
+
+  /// No description provided for @filtersN.
+  ///
+  /// In ru, this message translates to:
+  /// **'Фильтры · {count}'**
+  String filtersN(int count);
+
+  /// No description provided for @filters.
+  ///
+  /// In ru, this message translates to:
+  /// **'Фильтры'**
+  String get filters;
+
+  /// No description provided for @noUpcoming.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пока нет событий'**
+  String get noUpcoming;
+
+  /// No description provided for @noUpcomingHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Опубликованные события появятся здесь, как только организаторы откроют регистрацию.'**
+  String get noUpcomingHint;
+
+  /// No description provided for @nothingMatches.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ничего не подошло'**
+  String get nothingMatches;
+
+  /// No description provided for @nothingMatchesHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Попробуйте другой город, дату или цену.'**
+  String get nothingMatchesHint;
+
+  /// No description provided for @clearFilters.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сбросить фильтры'**
+  String get clearFilters;
+
+  /// No description provided for @soldOut.
+  ///
+  /// In ru, this message translates to:
+  /// **'Распродано'**
+  String get soldOut;
+
+  /// No description provided for @fromPrice.
+  ///
+  /// In ru, this message translates to:
+  /// **'от {price}'**
+  String fromPrice(String price);
+
+  /// No description provided for @seatedTag.
+  ///
+  /// In ru, this message translates to:
+  /// **'С местами'**
+  String get seatedTag;
+
+  /// No description provided for @registrationTag.
+  ///
+  /// In ru, this message translates to:
+  /// **'Регистрация'**
+  String get registrationTag;
+
+  /// No description provided for @cityFilter.
+  ///
+  /// In ru, this message translates to:
+  /// **'Город'**
+  String get cityFilter;
+
+  /// No description provided for @anyOption.
+  ///
+  /// In ru, this message translates to:
+  /// **'Любой'**
+  String get anyOption;
+
+  /// No description provided for @whenFilter.
+  ///
+  /// In ru, this message translates to:
+  /// **'Когда'**
+  String get whenFilter;
+
+  /// No description provided for @anyTime.
+  ///
+  /// In ru, this message translates to:
+  /// **'Любое время'**
+  String get anyTime;
+
+  /// No description provided for @thisWeekend.
+  ///
+  /// In ru, this message translates to:
+  /// **'В выходные'**
+  String get thisWeekend;
+
+  /// No description provided for @next30.
+  ///
+  /// In ru, this message translates to:
+  /// **'30 дней'**
+  String get next30;
+
+  /// No description provided for @priceFilter.
+  ///
+  /// In ru, this message translates to:
+  /// **'Цена'**
+  String get priceFilter;
+
+  /// No description provided for @anyPrice.
+  ///
+  /// In ru, this message translates to:
+  /// **'Любая цена'**
+  String get anyPrice;
+
+  /// No description provided for @freeOnly.
+  ///
+  /// In ru, this message translates to:
+  /// **'Только бесплатные'**
+  String get freeOnly;
+
+  /// No description provided for @under5000.
+  ///
+  /// In ru, this message translates to:
+  /// **'До 5 000 ₸'**
+  String get under5000;
+
+  /// No description provided for @showEvents.
+  ///
+  /// In ru, this message translates to:
+  /// **'Показать события'**
+  String get showEvents;
+
+  /// No description provided for @addToCalendar.
+  ///
+  /// In ru, this message translates to:
+  /// **'Добавить в календарь'**
+  String get addToCalendar;
+
+  /// No description provided for @downloadIcs.
+  ///
+  /// In ru, this message translates to:
+  /// **'Скачать .ics'**
+  String get downloadIcs;
+
+  /// No description provided for @calendarNote.
+  ///
+  /// In ru, this message translates to:
+  /// **'Включает адрес площадки и время. Если организатор изменит время, обновлённый файл заменит запись.'**
+  String get calendarNote;
+
+  /// No description provided for @promoApplied.
+  ///
+  /// In ru, this message translates to:
+  /// **'Промокод {code}: {discount}'**
+  String promoApplied(String code, String discount);
+
+  /// No description provided for @promoVerified.
+  ///
+  /// In ru, this message translates to:
+  /// **'Проверен сервером. Итоговую сумму увидите перед оплатой.'**
+  String get promoVerified;
+
+  /// No description provided for @dateLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Дата'**
+  String get dateLabel;
+
+  /// No description provided for @regClosesLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Регистрация до'**
+  String get regClosesLabel;
+
+  /// No description provided for @registrationClosed.
+  ///
+  /// In ru, this message translates to:
+  /// **'Регистрация на событие закрыта.'**
+  String get registrationClosed;
+
+  /// No description provided for @noTicketsOnSale.
+  ///
+  /// In ru, this message translates to:
+  /// **'Билеты пока не продаются.'**
+  String get noTicketsOnSale;
+
+  /// No description provided for @promoCodeLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Промокод'**
+  String get promoCodeLabel;
+
+  /// No description provided for @actApply.
+  ///
+  /// In ru, this message translates to:
+  /// **'Применить'**
+  String get actApply;
+
+  /// No description provided for @contactSupportEvent.
+  ///
+  /// In ru, this message translates to:
+  /// **'Написать в поддержку'**
+  String get contactSupportEvent;
+
+  /// No description provided for @maxPerOrderN.
+  ///
+  /// In ru, this message translates to:
+  /// **'не больше {count} в заказе'**
+  String maxPerOrderN(int count);
+
+  /// No description provided for @leftN.
+  ///
+  /// In ru, this message translates to:
+  /// **'осталось {count}'**
+  String leftN(String count);
+
+  /// No description provided for @chooseSeats.
+  ///
+  /// In ru, this message translates to:
+  /// **'Выбрать места'**
+  String get chooseSeats;
+
+  /// No description provided for @continueCheckout.
+  ///
+  /// In ru, this message translates to:
+  /// **'Перейти к оформлению'**
+  String get continueCheckout;
+
+  /// No description provided for @seatsHeldNote.
+  ///
+  /// In ru, this message translates to:
+  /// **'Места держатся 10 минут при оформлении.'**
+  String get seatsHeldNote;
+
+  /// No description provided for @notCampaignQr.
+  ///
+  /// In ru, this message translates to:
+  /// **'Это не QR кампании BiletFlow.'**
+  String get notCampaignQr;
+
+  /// No description provided for @cameraOffCampaign.
+  ///
+  /// In ru, this message translates to:
+  /// **'Доступ к камере выключен. Включите его в настройках, чтобы сканировать коды.'**
+  String get cameraOffCampaign;
+
+  /// No description provided for @campaignScanHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Наведите на QR с афиши или флаера. Событие откроется со скидкой после проверки кода сервером.'**
+  String get campaignScanHint;
+
+  /// No description provided for @checkoutTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Оформление'**
+  String get checkoutTitle;
+
+  /// No description provided for @stepsSeats.
+  ///
+  /// In ru, this message translates to:
+  /// **'Места › Данные и оплата › Билеты'**
+  String get stepsSeats;
+
+  /// No description provided for @stepsNoSeats.
+  ///
+  /// In ru, this message translates to:
+  /// **'Данные и оплата › Билеты'**
+  String get stepsNoSeats;
+
+  /// No description provided for @holdExpired.
+  ///
+  /// In ru, this message translates to:
+  /// **'Бронь мест истекла — вернитесь и выберите снова'**
+  String get holdExpired;
+
+  /// No description provided for @holdExpiresIn.
+  ///
+  /// In ru, this message translates to:
+  /// **'Места держатся ещё {time}'**
+  String holdExpiresIn(String time);
+
+  /// No description provided for @yourDetails.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ваши данные'**
+  String get yourDetails;
+
+  /// No description provided for @emailTickets.
+  ///
+  /// In ru, this message translates to:
+  /// **'Email — сюда придут билеты'**
+  String get emailTickets;
+
+  /// No description provided for @paymentSection.
+  ///
+  /// In ru, this message translates to:
+  /// **'Оплата'**
+  String get paymentSection;
+
+  /// No description provided for @payCard.
+  ///
+  /// In ru, this message translates to:
+  /// **'Карта · тест'**
+  String get payCard;
+
+  /// No description provided for @payKaspi.
+  ///
+  /// In ru, this message translates to:
+  /// **'Kaspi перевод · тест'**
+  String get payKaspi;
+
+  /// No description provided for @orderSummary.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ваш заказ'**
+  String get orderSummary;
+
+  /// No description provided for @totalKzt.
+  ///
+  /// In ru, this message translates to:
+  /// **'Итого'**
+  String get totalKzt;
+
+  /// No description provided for @serverRecalcs.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сервер пересчитает скидку — итог может немного отличаться.'**
+  String get serverRecalcs;
+
+  /// No description provided for @getFreeTickets.
+  ///
+  /// In ru, this message translates to:
+  /// **'Получить бесплатные билеты'**
+  String get getFreeTickets;
+
+  /// No description provided for @payAmount.
+  ///
+  /// In ru, this message translates to:
+  /// **'Оплатить {amount}'**
+  String payAmount(String amount);
+
+  /// No description provided for @freeConfirmedNote.
+  ///
+  /// In ru, this message translates to:
+  /// **'Бесплатные заказы подтверждаются сразу, билеты выдаются мгновенно.'**
+  String get freeConfirmedNote;
+
+  /// No description provided for @paidConfirmedNote.
+  ///
+  /// In ru, this message translates to:
+  /// **'Билеты выдаются только после подтверждения оплаты тестовой системой.'**
+  String get paidConfirmedNote;
+
+  /// No description provided for @chooseYourSeats.
+  ///
+  /// In ru, this message translates to:
+  /// **'Выбор мест'**
+  String get chooseYourSeats;
+
+  /// No description provided for @noSeatMapBuyer.
+  ///
+  /// In ru, this message translates to:
+  /// **'Схемы зала пока нет'**
+  String get noSeatMapBuyer;
+
+  /// No description provided for @noSeatMapBuyerHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Организатор ещё не опубликовал схему мест для этого события.'**
+  String get noSeatMapBuyerHint;
+
+  /// No description provided for @seatAvailable.
+  ///
+  /// In ru, this message translates to:
+  /// **'Свободно'**
+  String get seatAvailable;
+
+  /// No description provided for @seatSelected.
+  ///
+  /// In ru, this message translates to:
+  /// **'Выбрано'**
+  String get seatSelected;
+
+  /// No description provided for @seatHeld.
+  ///
+  /// In ru, this message translates to:
+  /// **'Бронь'**
+  String get seatHeld;
+
+  /// No description provided for @seatSold.
+  ///
+  /// In ru, this message translates to:
+  /// **'Продано'**
+  String get seatSold;
+
+  /// No description provided for @seatUnavailable.
+  ///
+  /// In ru, this message translates to:
+  /// **'Недоступно'**
+  String get seatUnavailable;
+
+  /// No description provided for @pickedOf.
+  ///
+  /// In ru, this message translates to:
+  /// **'Выбрано {picked} из {needed}'**
+  String pickedOf(int picked, int needed);
+
+  /// No description provided for @seatsHeldContinue.
+  ///
+  /// In ru, this message translates to:
+  /// **'После продолжения места держатся за вами 10 минут.'**
+  String get seatsHeldContinue;
+
+  /// No description provided for @myTickets.
+  ///
+  /// In ru, this message translates to:
+  /// **'Мои билеты'**
+  String get myTickets;
+
+  /// No description provided for @tabUpcomingN.
+  ///
+  /// In ru, this message translates to:
+  /// **'Предстоящие {count}'**
+  String tabUpcomingN(int count);
+
+  /// No description provided for @tabPastN.
+  ///
+  /// In ru, this message translates to:
+  /// **'Прошедшие {count}'**
+  String tabPastN(int count);
+
+  /// No description provided for @tabRefundedN.
+  ///
+  /// In ru, this message translates to:
+  /// **'Возвраты {count}'**
+  String tabRefundedN(int count);
+
+  /// No description provided for @noUpcomingTickets.
+  ///
+  /// In ru, this message translates to:
+  /// **'Предстоящих билетов нет'**
+  String get noUpcomingTickets;
+
+  /// No description provided for @noUpcomingTicketsHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Купленные билеты и регистрации появятся здесь с QR-кодами.'**
+  String get noUpcomingTicketsHint;
+
+  /// No description provided for @pastTicketsHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Билеты попадают сюда после события или возврата.'**
+  String get pastTicketsHint;
+
+  /// No description provided for @browseEvents.
+  ///
+  /// In ru, this message translates to:
+  /// **'Смотреть события'**
+  String get browseEvents;
+
+  /// No description provided for @dateTba.
+  ///
+  /// In ru, this message translates to:
+  /// **'Дата уточняется'**
+  String get dateTba;
+
+  /// No description provided for @viewTicket.
+  ///
+  /// In ru, this message translates to:
+  /// **'Открыть билет'**
+  String get viewTicket;
+
+  /// No description provided for @viewTickets.
+  ///
+  /// In ru, this message translates to:
+  /// **'Открыть билеты'**
+  String get viewTickets;
+
+  /// No description provided for @admissionTicket.
+  ///
+  /// In ru, this message translates to:
+  /// **'Входной билет'**
+  String get admissionTicket;
+
+  /// No description provided for @admitsOne.
+  ///
+  /// In ru, this message translates to:
+  /// **'Проход для 1 человека'**
+  String get admitsOne;
+
+  /// No description provided for @attendeeLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Участник'**
+  String get attendeeLabel;
+
+  /// No description provided for @seatLabelShort.
+  ///
+  /// In ru, this message translates to:
+  /// **'Место'**
+  String get seatLabelShort;
+
+  /// No description provided for @ticketIdLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'ID билета'**
+  String get ticketIdLabel;
+
+  /// No description provided for @issuedLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Выдан'**
+  String get issuedLabel;
+
+  /// No description provided for @qrKeepNote.
+  ///
+  /// In ru, this message translates to:
+  /// **'Не мните и не загораживайте QR. Билет пропускает одного человека один раз — бумажная и электронная копии — один и тот же билет.'**
+  String get qrKeepNote;
+
+  /// No description provided for @print.
+  ///
+  /// In ru, this message translates to:
+  /// **'Печать'**
+  String get print;
+
+  /// No description provided for @downloadPdf.
+  ///
+  /// In ru, this message translates to:
+  /// **'Скачать PDF'**
+  String get downloadPdf;
+
+  /// No description provided for @cancelOrderTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Отменить заказ?'**
+  String get cancelOrderTitle;
+
+  /// No description provided for @cancelOrderBody.
+  ///
+  /// In ru, this message translates to:
+  /// **'Все билеты заказа станут недействительными, на входе их не пропустят. Возврат — по правилам организатора.'**
+  String get cancelOrderBody;
+
+  /// No description provided for @cancelOrder.
+  ///
+  /// In ru, this message translates to:
+  /// **'Отменить заказ'**
+  String get cancelOrder;
+
+  /// No description provided for @orderCancelledToast.
+  ///
+  /// In ru, this message translates to:
+  /// **'Заказ отменён.'**
+  String get orderCancelledToast;
+
+  /// No description provided for @ticketReady.
+  ///
+  /// In ru, this message translates to:
+  /// **'Билет готов'**
+  String get ticketReady;
+
+  /// No description provided for @ticketsReady.
+  ///
+  /// In ru, this message translates to:
+  /// **'{count, plural, one{{count} билет ваш} few{{count} билета ваши} many{{count} билетов ваши} other{{count} билета ваши}}'**
+  String ticketsReady(int count);
+
+  /// No description provided for @confirmationSent.
+  ///
+  /// In ru, this message translates to:
+  /// **'Подтверждение отправлено на {email}'**
+  String confirmationSent(String email);
+
+  /// No description provided for @yourTickets.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ваши билеты'**
+  String get yourTickets;
+
+  /// No description provided for @ticketsAfterPayment.
+  ///
+  /// In ru, this message translates to:
+  /// **'Билеты выдаются после подтверждения оплаты.'**
+  String get ticketsAfterPayment;
+
+  /// No description provided for @typeLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Тип'**
+  String get typeLabel;
+
+  /// No description provided for @showQr.
+  ///
+  /// In ru, this message translates to:
+  /// **'Показать QR'**
+  String get showQr;
+
+  /// No description provided for @showQrNote.
+  ///
+  /// In ru, this message translates to:
+  /// **'Покажите QR с телефона или на бумаге. Каждый билет пропускает одного человека один раз.'**
+  String get showQrNote;
+
+  /// No description provided for @totalLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Итого'**
+  String get totalLabel;
+
+  /// No description provided for @methodLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Способ'**
+  String get methodLabel;
+
+  /// No description provided for @sandboxPayment.
+  ///
+  /// In ru, this message translates to:
+  /// **'Тестовая оплата'**
+  String get sandboxPayment;
+
+  /// No description provided for @helpWithOrder.
+  ///
+  /// In ru, this message translates to:
+  /// **'Помощь с заказом'**
+  String get helpWithOrder;
 }
 
 class _AppLocalizationsDelegate

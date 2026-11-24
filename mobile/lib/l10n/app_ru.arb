@@ -257,7 +257,7 @@
   "lowLightTorchOn": "Темно — фонарик включён",
   "scanPaused": "Нет подключения: сканирование недоступно",
   "enterCodeTitle": "Код билета",
-  "enterCodeHint": "Код под QR-кодом или из письма",
+  "enterCodeHint": "Введите код",
   "checkCode": "Проверить",
   "cameraOffTitle": "Доступ к камере выключен",
   "cameraOffBody": "Камера нужна, чтобы читать QR-коды билетов. Включите её в Настройках → BiletFlow → Камера.",
@@ -964,5 +964,364 @@
   "saveAndContinue": "Сохранить и продолжить",
   "saveChanges": "Сохранить изменения",
   "draftSaved": "Черновик сохранён. Добавьте типы билетов.",
-  "changesSaved": "Изменения сохранены."
+  "changesSaved": "Изменения сохранены.",
+  "adminBanner": "Админ платформы · только для персонала",
+  "roleUnknown": "Неизвестно",
+  "roleBuyer": "Покупатель",
+  "roleGate": "Контролёр",
+  "roleAdminShort": "Админ",
+  "allRoles": "Все роли",
+  "workQueues": "Очереди",
+  "unpaidOrders": "Неоплаченные заказы",
+  "paidSalesEvents": "События с продажами",
+  "suspendedUsers": "Заблокированные",
+  "refundsQueue": "Возвраты",
+  "platformTotals": "На платформе: пользователей {users}, событий {events}, заказов {orders}",
+  "@platformTotals": {
+    "placeholders": {
+      "users": {
+        "type": "int"
+      },
+      "events": {
+        "type": "int"
+      },
+      "orders": {
+        "type": "int"
+      }
+    }
+  },
+  "unpaidOrdersHint": "Неоплаченные заказы · ошибки оплаты и брошенные корзины",
+  "noTicketsIssued": "Билеты не выданы",
+  "paidSalesRecords": "Активные платные продажи",
+  "allOrdersPayments": "Все заказы и платежи",
+  "notInBuild": "Пока недоступно",
+  "notInBuildBody": "Жалобы на события, проверка активаций, эскалации поддержки, выгрузка отчётов и настройка комиссии требуют эндпоинтов, которых в бэкенде пока нет.",
+  "nothingHere": "Пусто.",
+  "adminEventsSearch": "Событие, организатор или город",
+  "noDate": "Без даты",
+  "paidSalesTag": "Платные продажи",
+  "suspendEventTitle": "Приостановить событие?",
+  "suspendEventBody": "Новые покупки сразу остановятся. Выданные билеты действуют, пока их не аннулируют.",
+  "actSuspend": "Приостановить",
+  "eventSuspendedToast": "Событие приостановлено, продажи остановлены.",
+  "moderation": "Модерация",
+  "suspendedTag": "Приостановлено",
+  "paidSalesActive": "Платные продажи активны",
+  "moderationSummary": "{organizer} · продано {sold} · собрано {collected}",
+  "@moderationSummary": {
+    "placeholders": {
+      "organizer": {
+        "type": "String"
+      },
+      "sold": {
+        "type": "String"
+      },
+      "collected": {
+        "type": "String"
+      }
+    }
+  },
+  "organizerFallback": "Организатор",
+  "whenLabel": "Когда",
+  "organizerRecord": "Организатор",
+  "accountLabel": "Аккаунт",
+  "emailVerified": "Email подтверждён",
+  "yes": "Да",
+  "no": "Нет",
+  "ordersOnEvent": "Заказов на событии",
+  "suspendingWill": "Приостановка",
+  "suspendWill1": "Сразу остановит новые покупки на событие.",
+  "suspendWill2": "Оставит выданные билеты действительными, пока вы их не аннулируете.",
+  "suspendWill3": "Задержит выплату организатору.",
+  "suspendWill4": "Запишет действие в журнал события.",
+  "suspendReason": "Причина — для организатора",
+  "suspendReasonNote": "Текущий API причину пока не сохраняет — оставьте её себе.",
+  "suspendEventButton": "Приостановить событие и продажи",
+  "nameOrEmail": "Имя или email",
+  "userActive": "Активен",
+  "userBlocked": "Заблокирован",
+  "actBlock": "Заблокировать",
+  "actUnblock": "Разблокировать",
+  "blockTitle": "Заблокировать {name}?",
+  "@blockTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "unblockTitle": "Разблокировать {name}?",
+  "@unblockTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "blockBody": "Пользователь не сможет войти, пока его не разблокируют.",
+  "unblockBody": "Пользователь снова сможет входить и пользоваться BiletFlow.",
+  "userBlockedToast": "Пользователь заблокирован.",
+  "userUnblockedToast": "Пользователь разблокирован.",
+  "staffTag": "Персонал",
+  "noCardData": "Данные карт не хранятся и не показываются. Все платежи — тестовые.",
+  "noUsersMatch": "Никого не нашли",
+  "generalSection": "Общее",
+  "demoFootnote": "Все платежи в этой версии — демонстрационные, деньги не списываются.",
+  "supportInbox": "Поддержка",
+  "newCase": "Новое обращение",
+  "openN": "Открытые {count}",
+  "@openN": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "resolvedN": "Решённые {count}",
+  "@resolvedN": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noOpenCases": "Открытых обращений нет",
+  "noResolvedCases": "Решённых пока нет",
+  "supportEmptyOrganizer": "Здесь появятся вопросы участников ваших событий и ваши обращения к платформе.",
+  "supportEmptyAttendee": "Создайте обращение из события, заказа или кнопкой +. Ответы придут сюда и на почту.",
+  "eventLabel": "Событие",
+  "noCaseContext": "Обращения уходят организатору события. Сначала зарегистрируйтесь или купите билет, затем напишите из события или заказа.",
+  "subjectLabel": "Тема",
+  "subjectHint": "Не пришёл второй билет",
+  "messageLabel": "Сообщение",
+  "orderAttached": "Заказ прикреплён автоматически — поддержка увидит контекст.",
+  "eventAttached": "Событие прикреплено автоматически — поддержка увидит контекст.",
+  "caseOpened": "Обращение {number} создано.",
+  "@caseOpened": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "caseFallback": "Обращение",
+  "openedBy": "Автор",
+  "assignedLabel": "Ответственный",
+  "openedLabel": "Создано",
+  "noMessages": "Сообщений пока нет.",
+  "repliesNote": "Ответы приходят на почту и в аккаунт — быть онлайн не обязательно.",
+  "markResolved": "Отметить решённым",
+  "replyHint": "Написать ответ…",
+  "scanCampaignQr": "Сканировать QR кампании",
+  "upcomingN": "{count, plural, one{{count} событие впереди} few{{count} события впереди} many{{count} событий впереди} other{{count} события впереди}}",
+  "@upcomingN": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "catalogSearch": "События, площадки, организаторы",
+  "filtersN": "Фильтры · {count}",
+  "@filtersN": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "filters": "Фильтры",
+  "noUpcoming": "Пока нет событий",
+  "noUpcomingHint": "Опубликованные события появятся здесь, как только организаторы откроют регистрацию.",
+  "nothingMatches": "Ничего не подошло",
+  "nothingMatchesHint": "Попробуйте другой город, дату или цену.",
+  "clearFilters": "Сбросить фильтры",
+  "soldOut": "Распродано",
+  "fromPrice": "от {price}",
+  "@fromPrice": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "seatedTag": "С местами",
+  "registrationTag": "Регистрация",
+  "cityFilter": "Город",
+  "anyOption": "Любой",
+  "whenFilter": "Когда",
+  "anyTime": "Любое время",
+  "thisWeekend": "В выходные",
+  "next30": "30 дней",
+  "priceFilter": "Цена",
+  "anyPrice": "Любая цена",
+  "freeOnly": "Только бесплатные",
+  "under5000": "До 5 000 ₸",
+  "showEvents": "Показать события",
+  "addToCalendar": "Добавить в календарь",
+  "downloadIcs": "Скачать .ics",
+  "calendarNote": "Включает адрес площадки и время. Если организатор изменит время, обновлённый файл заменит запись.",
+  "promoApplied": "Промокод {code}: {discount}",
+  "@promoApplied": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      },
+      "discount": {
+        "type": "String"
+      }
+    }
+  },
+  "promoVerified": "Проверен сервером. Итоговую сумму увидите перед оплатой.",
+  "dateLabel": "Дата",
+  "regClosesLabel": "Регистрация до",
+  "registrationClosed": "Регистрация на событие закрыта.",
+  "noTicketsOnSale": "Билеты пока не продаются.",
+  "promoCodeLabel": "Промокод",
+  "actApply": "Применить",
+  "contactSupportEvent": "Написать в поддержку",
+  "maxPerOrderN": "не больше {count} в заказе",
+  "@maxPerOrderN": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "leftN": "осталось {count}",
+  "@leftN": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "chooseSeats": "Выбрать места",
+  "continueCheckout": "Перейти к оформлению",
+  "seatsHeldNote": "Места держатся 10 минут при оформлении.",
+  "notCampaignQr": "Это не QR кампании BiletFlow.",
+  "cameraOffCampaign": "Доступ к камере выключен. Включите его в настройках, чтобы сканировать коды.",
+  "campaignScanHint": "Наведите на QR с афиши или флаера. Событие откроется со скидкой после проверки кода сервером.",
+  "checkoutTitle": "Оформление",
+  "stepsSeats": "Места › Данные и оплата › Билеты",
+  "stepsNoSeats": "Данные и оплата › Билеты",
+  "holdExpired": "Бронь мест истекла — вернитесь и выберите снова",
+  "holdExpiresIn": "Места держатся ещё {time}",
+  "@holdExpiresIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "yourDetails": "Ваши данные",
+  "emailTickets": "Email — сюда придут билеты",
+  "paymentSection": "Оплата",
+  "payCard": "Карта · тест",
+  "payKaspi": "Kaspi перевод · тест",
+  "orderSummary": "Ваш заказ",
+  "totalKzt": "Итого",
+  "serverRecalcs": "Сервер пересчитает скидку — итог может немного отличаться.",
+  "getFreeTickets": "Получить бесплатные билеты",
+  "payAmount": "Оплатить {amount}",
+  "@payAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "freeConfirmedNote": "Бесплатные заказы подтверждаются сразу, билеты выдаются мгновенно.",
+  "paidConfirmedNote": "Билеты выдаются только после подтверждения оплаты тестовой системой.",
+  "chooseYourSeats": "Выбор мест",
+  "noSeatMapBuyer": "Схемы зала пока нет",
+  "noSeatMapBuyerHint": "Организатор ещё не опубликовал схему мест для этого события.",
+  "seatAvailable": "Свободно",
+  "seatSelected": "Выбрано",
+  "seatHeld": "Бронь",
+  "seatSold": "Продано",
+  "seatUnavailable": "Недоступно",
+  "pickedOf": "Выбрано {picked} из {needed}",
+  "@pickedOf": {
+    "placeholders": {
+      "picked": {
+        "type": "int"
+      },
+      "needed": {
+        "type": "int"
+      }
+    }
+  },
+  "seatsHeldContinue": "После продолжения места держатся за вами 10 минут.",
+  "myTickets": "Мои билеты",
+  "tabUpcomingN": "Предстоящие {count}",
+  "@tabUpcomingN": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "tabPastN": "Прошедшие {count}",
+  "@tabPastN": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "tabRefundedN": "Возвраты {count}",
+  "@tabRefundedN": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noUpcomingTickets": "Предстоящих билетов нет",
+  "noUpcomingTicketsHint": "Купленные билеты и регистрации появятся здесь с QR-кодами.",
+  "pastTicketsHint": "Билеты попадают сюда после события или возврата.",
+  "browseEvents": "Смотреть события",
+  "dateTba": "Дата уточняется",
+  "viewTicket": "Открыть билет",
+  "viewTickets": "Открыть билеты",
+  "admissionTicket": "Входной билет",
+  "admitsOne": "Проход для 1 человека",
+  "attendeeLabel": "Участник",
+  "seatLabelShort": "Место",
+  "ticketIdLabel": "ID билета",
+  "issuedLabel": "Выдан",
+  "qrKeepNote": "Не мните и не загораживайте QR. Билет пропускает одного человека один раз — бумажная и электронная копии — один и тот же билет.",
+  "print": "Печать",
+  "downloadPdf": "Скачать PDF",
+  "cancelOrderTitle": "Отменить заказ?",
+  "cancelOrderBody": "Все билеты заказа станут недействительными, на входе их не пропустят. Возврат — по правилам организатора.",
+  "cancelOrder": "Отменить заказ",
+  "orderCancelledToast": "Заказ отменён.",
+  "ticketReady": "Билет готов",
+  "ticketsReady": "{count, plural, one{{count} билет ваш} few{{count} билета ваши} many{{count} билетов ваши} other{{count} билета ваши}}",
+  "@ticketsReady": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "confirmationSent": "Подтверждение отправлено на {email}",
+  "@confirmationSent": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "yourTickets": "Ваши билеты",
+  "ticketsAfterPayment": "Билеты выдаются после подтверждения оплаты.",
+  "typeLabel": "Тип",
+  "showQr": "Показать QR",
+  "showQrNote": "Покажите QR с телефона или на бумаге. Каждый билет пропускает одного человека один раз.",
+  "totalLabel": "Итого",
+  "methodLabel": "Способ",
+  "sandboxPayment": "Тестовая оплата",
+  "helpWithOrder": "Помощь с заказом"
 }

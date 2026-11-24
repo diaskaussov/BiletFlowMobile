@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 
 import '../../../app/routes.dart';
 import '../../../core/error/failure.dart';
 import '../../../core/presentation/loadable.dart';
+import '../../../core/presentation/l10n.dart';
+import '../../../core/presentation/status_text.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/buttons.dart';
+import '../../../core/widgets/data_blocks.dart';
 import '../../../core/widgets/loadable_view.dart';
 import '../../../core/widgets/screen_header.dart';
 import '../../../core/widgets/state_views.dart';
@@ -58,7 +62,7 @@ class SeatMapViewModel extends Loadable<List<SeatInfo>> {
   }
 }
 
-/// W4 · Seat map (§4.3.1, UC8). Цвет никогда не единственный признак:
+/// W4 · Схема мест (§4.3.1, UC8). Цвет никогда не единственный признак:
 /// у каждого состояния есть символ.
 class SeatMapPage extends StatelessWidget {
   const SeatMapPage({super.key});
@@ -77,36 +81,39 @@ class SeatMapPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
     final vm = context.watch<SeatMapViewModel>();
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
-            ScreenHeader(title: 'Choose your seats', subtitle: vm.cart.event.title, onBack: () => context.pop()),
+            ScreenHeader(subtitle: vm.cart.event.title, title: l.chooseYourSeats, onBack: () => context.pop()),
             Expanded(
               child: LoadableView<List<SeatInfo>>(
                 state: vm,
                 isEmpty: (s) => s.isEmpty,
-                empty: const Padding(
-                  padding: EdgeInsets.all(AppSpacing.sideLight),
-                  child: MessageView(
-                    icon: Icons.event_seat_outlined,
-                    title: 'No seat map yet',
-                    message: 'The organizer has not published a seating layout for this event.',
-                  ),
+                empty: Padding(
+                  padding: const EdgeInsets.all(AppSpacing.side),
+                  child: MessageView(icon: LucideIcons.armchair, title: l.noSeatMapBuyer, message: l.noSeatMapBuyerHint),
                 ),
                 builder: (context, seats) => ListView(
-                  padding: const EdgeInsets.fromLTRB(AppSpacing.sideLight, 16, AppSpacing.sideLight, 16),
+                  padding: const EdgeInsets.fromLTRB(AppSpacing.side, 8, AppSpacing.side, 16),
                   children: [
                     const _Legend(),
-                    const SizedBox(height: 16),
-                    Container(
-                      height: 28,
-                      color: context.colors.neutralSoft,
-                      alignment: Alignment.center,
-                      child: Text('STAGE', style: AppText.sectionLabel.copyWith(color: context.colors.textMuted)),
+                    const SizedBox(height: 20),
+                    Center(
+                      child: Container(
+                        width: 240,
+                        height: 26,
+                        alignment: Alignment.center,
+                        decoration: const BoxDecoration(
+                          color: AppPalette.camera,
+                          borderRadius: BorderRadius.vertical(top: Radius.circular(4), bottom: Radius.circular(30)),
+                        ),
+                        child: Text(l.stage, style: AppText.badge.copyWith(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 11)),
+                      ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 20),
                     for (final section in _sections(seats)) _SectionMap(name: section.$1, seats: section.$2),
                   ],
                 ),
@@ -136,6 +143,8 @@ class _SectionMap extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
+    final c = context.colors;
     final rows = <String, List<SeatInfo>>{};
     for (final s in seats) {
       rows.putIfAbsent(s.row, () => []).add(s);
@@ -146,9 +155,17 @@ class _SectionMap extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SectionLabel('Sec $name${price == null ? '' : ' · ${Fmt.money(price)}'}'
-              '${seats.first.ticketTypeName == null ? '' : ' · ${seats.first.ticketTypeName}'}'),
-          const SizedBox(height: 8),
+          Row(children: [
+            Text(l.sectionDefault(name), style: AppText.cardTitle.copyWith(color: c.text)),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                [?seats.first.ticketTypeName, if (price != null) Fmt.money(price)].join(' · '),
+                style: AppText.meta.copyWith(color: c.textMuted),
+              ),
+            ),
+          ]),
+          const SizedBox(height: 10),
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Column(
@@ -156,10 +173,10 @@ class _SectionMap extends StatelessWidget {
               children: [
                 for (final MapEntry(key: row, value: list) in rows.entries)
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 4),
+                    padding: const EdgeInsets.only(bottom: 6),
                     child: Row(
                       children: [
-                        SizedBox(width: 24, child: Text(row, style: AppText.meta.copyWith(color: context.colors.textMuted))),
+                        SizedBox(width: 26, child: Text(row, style: AppText.caption.copyWith(color: c.textMuted))),
                         for (final s in list..sort((a, b) => (int.tryParse(a.number) ?? 0).compareTo(int.tryParse(b.number) ?? 0)))
                           _SeatBox(seat: s),
                       ],
@@ -174,6 +191,16 @@ class _SectionMap extends StatelessWidget {
   }
 }
 
+/// Вид места: заливка, цвет текста, символ (цвет — не единственный признак).
+(Color, Color, Color?, String) _seatLook(AppPalette c, SeatStatus status, {bool selected = false, bool mine = false}) => selected
+    ? (c.primary, c.onPrimary, null, '✓')
+    : switch (status) {
+        SeatStatus.available => (c.surface, c.text, c.primary.withValues(alpha: 0.5), ''),
+        SeatStatus.held => (c.warningSoft, c.warningText, null, mine ? '✓' : '·'),
+        SeatStatus.sold => (c.neutralSoft, c.textMuted, null, '✕'),
+        SeatStatus.unavailable => (c.bg, c.textMuted, c.border, '−'),
+      };
+
 class _SeatBox extends StatelessWidget {
   const _SeatBox({required this.seat});
 
@@ -181,29 +208,36 @@ class _SeatBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
+    final c = context.colors;
     final vm = context.watch<SeatMapViewModel>();
     final selected = vm.selected.contains(seat.id);
-    final (Color bg, Color fg, String mark) = selected
-        ? (context.colors.primary, context.colors.surface, '✓')
+    final (bg, fg, border, mark) = _seatLook(c, seat.status, selected: selected, mine: seat.heldByMe);
+    final state = selected
+        ? l.seatSelected
         : switch (seat.status) {
-            SeatStatus.available => (context.colors.surface, context.colors.text, ''),
-            SeatStatus.held => (context.colors.border, context.colors.textMuted, seat.heldByMe ? '✓' : 'H'),
-            SeatStatus.sold => (context.colors.textMuted, context.colors.surface, '✕'),
-            SeatStatus.unavailable => (context.colors.neutralSoft, context.colors.textMuted, '−'),
+            SeatStatus.available => l.seatAvailable,
+            SeatStatus.held => l.seatHeld,
+            SeatStatus.sold => l.seatSold,
+            SeatStatus.unavailable => l.seatUnavailable,
           };
     return Semantics(
       button: true,
       selected: selected,
-      label: '${seat.label}, ${selected ? 'selected' : seat.status.name}',
+      label: '${seat.text(l)}, $state',
       child: GestureDetector(
         onTap: () => vm.toggle(seat),
         child: Container(
-          width: 30,
-          height: 30,
-          margin: const EdgeInsets.only(right: 4),
-          decoration: BoxDecoration(color: bg, border: Border.all(color: context.colors.border)),
+          width: 32,
+          height: 32,
+          margin: const EdgeInsets.only(right: 5),
+          decoration: BoxDecoration(
+            color: bg,
+            borderRadius: BorderRadius.circular(8),
+            border: border == null ? null : Border.all(color: border),
+          ),
           alignment: Alignment.center,
-          child: Text(mark.isEmpty ? seat.number : mark, style: AppText.tag.copyWith(color: fg, fontSize: 10)),
+          child: Text(mark.isEmpty ? seat.number : mark, style: AppText.badge.copyWith(color: fg, fontSize: 11)),
         ),
       ),
     );
@@ -215,29 +249,35 @@ class _Legend extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget item(Color c, String mark, String label) => Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 18,
-              height: 18,
-              decoration: BoxDecoration(color: c, border: Border.all(color: context.colors.border)),
-              alignment: Alignment.center,
-              child: Text(mark, style: AppText.tag.copyWith(fontSize: 9, color: c == context.colors.surface ? context.colors.text : context.colors.surface)),
-            ),
-            const SizedBox(width: 6),
-            Text(label, style: AppText.meta.copyWith(color: context.colors.textMuted)),
-          ],
-        );
+    final l = context.l10n;
+    final c = context.colors;
+    Widget item(SeatStatus s, String label, {bool selected = false}) {
+      final (bg, fg, border, mark) = _seatLook(c, s, selected: selected);
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 20,
+            height: 20,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(6), border: border == null ? null : Border.all(color: border)),
+            child: Text(mark, style: AppText.badge.copyWith(fontSize: 10, color: fg)),
+          ),
+          const SizedBox(width: 6),
+          Text(label, style: AppText.caption.copyWith(color: c.textMuted)),
+        ],
+      );
+    }
+
     return Wrap(
       spacing: 14,
       runSpacing: 8,
       children: [
-        item(context.colors.surface, '', 'Available'),
-        item(context.colors.primary, '✓', 'Selected'),
-        item(context.colors.border, 'H', 'Held'),
-        item(context.colors.textMuted, '✕', 'Sold'),
-        item(context.colors.neutralSoft, '−', 'Unavailable'),
+        item(SeatStatus.available, l.seatAvailable),
+        item(SeatStatus.available, l.seatSelected, selected: true),
+        item(SeatStatus.held, l.seatHeld),
+        item(SeatStatus.sold, l.seatSold),
+        item(SeatStatus.unavailable, l.seatUnavailable),
       ],
     );
   }
@@ -250,39 +290,40 @@ class _SelectionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
+    final c = context.colors;
     final vm = context.watch<SeatMapViewModel>();
     final needed = vm.cart.ticketCount;
     final picked = vm.selected.length;
     return Container(
-      decoration: BoxDecoration(
-        color: context.colors.bg,
-        border: Border(top: BorderSide(color: context.colors.border)),
-      ),
-      padding: const EdgeInsets.fromLTRB(AppSpacing.sideLight, 12, AppSpacing.sideLight, AppSpacing.bottomClearance),
+      decoration: BoxDecoration(color: c.surface, border: Border(top: BorderSide(color: c.border))),
+      padding: const EdgeInsets.fromLTRB(AppSpacing.side, 12, AppSpacing.side, 12),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          for (final s in vm.selectedSeats)
-            Text('${s.label} · ${Fmt.money(s.price ?? 0)}', style: AppText.bodySecondary.copyWith(color: context.colors.text)),
-          const SizedBox(height: 6),
+          if (vm.selectedSeats.isNotEmpty)
+            Wrap(spacing: 6, runSpacing: 6, children: [
+              for (final s in vm.selectedSeats) TagLabel('${s.section}-${s.row}-${s.number}', tone: Tone.primary, dot: false),
+            ]),
+          const SizedBox(height: 8),
           Row(
             children: [
-              Text('$picked of $needed seats', style: AppText.bodySecondary.copyWith(color: context.colors.textMuted)),
+              Text(l.pickedOf(picked, needed), style: AppText.bodySecondary.copyWith(color: c.textMuted)),
               const Spacer(),
-              Text(Fmt.money(vm.total), style: AppText.statNumeral.copyWith(fontSize: 22, color: context.colors.text)),
+              Text(Fmt.money(vm.total), style: AppText.statNumeral.copyWith(fontSize: 22, color: c.text)),
             ],
           ),
           const SizedBox(height: 10),
           PrimaryButton(
-            label: 'Continue to checkout',
+            label: l.continueCheckout,
+            trailingIcon: LucideIcons.arrowRight,
             isLoading: vm.isBusy,
             onPressed: vm.complete ? onContinue : null,
           ),
           Padding(
             padding: const EdgeInsets.only(top: 6),
-            child: Text('Seats are held for you for 10 minutes once you continue.',
-                style: AppText.finePrint.copyWith(color: context.colors.textMuted)),
+            child: Text(l.seatsHeldContinue, style: AppText.finePrint.copyWith(color: c.textMuted)),
           ),
         ],
       ),

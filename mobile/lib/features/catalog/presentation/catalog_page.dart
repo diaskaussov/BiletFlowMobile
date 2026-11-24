@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 
 import '../../../app/role_tab_bar.dart';
 import '../../../app/routes.dart';
+import '../../../core/presentation/l10n.dart';
 import '../../../core/presentation/loadable.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_spacing.dart';
@@ -38,7 +40,7 @@ class CatalogViewModel extends Loadable<List<EventListing>> {
   }
 }
 
-/// W1 · Event discovery
+/// W1 · Афиша событий.
 class CatalogPage extends StatefulWidget {
   const CatalogPage({super.key});
 
@@ -59,8 +61,6 @@ class _CatalogPageState extends State<CatalogPage> {
     final next = await showModalBottomSheet<EventFilter>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: context.colors.bg,
-      barrierColor: context.colors.scrim,
       builder: (_) => _FilterSheet(initial: vm.filter, cities: vm.cities, categories: vm.categories),
     );
     if (next != null) vm.setFilter(next.copyWith(query: vm.filter.query));
@@ -68,46 +68,56 @@ class _CatalogPageState extends State<CatalogPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
+    final c = context.colors;
     final vm = context.watch<CatalogViewModel>();
     final count = vm.filter.activeCount;
 
     return RoleScaffold(
       tabs: RoleTabs.attendee,
       current: Routes.catalog,
-      title: 'Events',
-      subtitle: vm.data == null ? null : '${vm.visible.length} upcoming',
-      action: IconButton(
-        tooltip: 'Scan a campaign QR',
+      title: l.navEvents,
+      subtitle: vm.data == null ? null : l.upcomingN(vm.visible.length),
+      action: CircleIconButton(
+        icon: LucideIcons.scanQrCode,
+        tooltip: l.scanCampaignQr,
         onPressed: () => context.push('${Routes.catalog}/scan-promo'),
-        icon: Icon(Icons.qr_code_scanner, color: context.colors.text),
       ),
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(AppSpacing.sideList, 14, AppSpacing.sideList, 0),
+            padding: const EdgeInsets.fromLTRB(AppSpacing.side, 4, AppSpacing.side, 8),
             child: Row(
               children: [
                 Expanded(
                   child: LabeledTextField(
                     controller: _search,
-                    leadingIcon: Icons.search,
-                    hintText: 'Search events, venues, organizers',
+                    compact: true,
+                    leadingIcon: LucideIcons.search,
+                    hintText: l.catalogSearch,
                     textInputAction: TextInputAction.search,
                     onChanged: (q) => vm.setFilter(vm.filter.copyWith(query: q)),
                   ),
                 ),
                 const SizedBox(width: 8),
-                SizedBox(
-                  height: 46,
-                  child: OutlinedButton.icon(
-                    onPressed: vm.data == null ? null : () => _openFilters(vm),
-                    style: OutlinedButton.styleFrom(
-                      shape: const RoundedRectangleBorder(),
-                      side: BorderSide(color: count > 0 ? context.colors.primary : context.colors.border),
-                      foregroundColor: count > 0 ? context.colors.primary : context.colors.text,
+                Badge(
+                  isLabelVisible: count > 0,
+                  label: Text('$count'),
+                  backgroundColor: c.primary,
+                  child: Material(
+                    color: count > 0 ? c.primaryTint : c.surface,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14), side: BorderSide(color: c.border)),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(14),
+                      onTap: vm.data == null ? null : () => _openFilters(vm),
+                      child: Tooltip(
+                        message: count > 0 ? l.filtersN(count) : l.filters,
+                        child: SizedBox.square(
+                          dimension: 48,
+                          child: Icon(LucideIcons.slidersHorizontal, size: 18, color: count > 0 ? c.primary : c.text),
+                        ),
+                      ),
                     ),
-                    icon: const Icon(Icons.tune, size: 18),
-                    label: Text(count > 0 ? 'FILTERS · $count' : 'FILTERS', style: AppText.buttonGhost),
                   ),
                 ),
               ],
@@ -120,15 +130,13 @@ class _CatalogPageState extends State<CatalogPage> {
                 final list = vm.visible;
                 if (list.isEmpty) {
                   return ListView(
-                    padding: const EdgeInsets.all(AppSpacing.sideList),
+                    padding: const EdgeInsets.all(AppSpacing.side),
                     children: [
                       MessageView(
-                        icon: Icons.event_busy_outlined,
-                        title: vm.filter.isEmpty ? 'No upcoming events' : 'Nothing matches',
-                        message: vm.filter.isEmpty
-                            ? 'Published public events appear here as soon as organizers open registration.'
-                            : 'Try another city, date or price.',
-                        actionLabel: vm.filter.isEmpty ? null : 'Clear filters',
+                        icon: LucideIcons.calendarX,
+                        title: vm.filter.isEmpty ? l.noUpcoming : l.nothingMatches,
+                        message: vm.filter.isEmpty ? l.noUpcomingHint : l.nothingMatchesHint,
+                        actionLabel: vm.filter.isEmpty ? null : l.clearFilters,
                         onAction: () {
                           _search.clear();
                           vm.setFilter(const EventFilter());
@@ -137,11 +145,14 @@ class _CatalogPageState extends State<CatalogPage> {
                     ],
                   );
                 }
-                return ListView.separated(
-                  padding: const EdgeInsets.fromLTRB(AppSpacing.sideList, 16, AppSpacing.sideList, 24),
-                  itemCount: list.length,
-                  separatorBuilder: (_, _) => const SizedBox(height: 18),
-                  itemBuilder: (context, i) => _EventCard(listing: list[i]),
+                return RefreshIndicator(
+                  onRefresh: vm.load,
+                  child: ListView.separated(
+                    padding: const EdgeInsets.fromLTRB(AppSpacing.side, 8, AppSpacing.side, 24),
+                    itemCount: list.length,
+                    separatorBuilder: (_, _) => const SizedBox(height: 16),
+                    itemBuilder: (context, i) => _EventCard(listing: list[i]),
+                  ),
                 );
               },
             ),
@@ -159,53 +170,57 @@ class _EventCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
+    final c = context.colors;
     final e = listing.event;
     final price = listing.minPrice;
     final priceText = !listing.hasTickets
-        ? 'SOLD OUT'
+        ? l.soldOut
         : price == null
             ? ''
             : price == 0
-                ? 'FREE'
-                : 'FROM ${Fmt.money(price)}';
-    return InkWell(
+                ? l.free
+                : l.fromPrice(Fmt.money(price));
+    return AppCard(
+      padding: EdgeInsets.zero,
       onTap: () => context.push(Routes.publicEvent(e.id)),
-      child: Container(
-        decoration: BoxDecoration(border: Border.all(color: context.colors.border), color: context.colors.surface),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            EventImage(url: e.imageUrl, label: e.category, height: 110),
-            Padding(
-              padding: const EdgeInsets.all(14),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (e.startsAt != null)
-                    Text(Fmt.dayStamp(e.startsAt!), style: AppText.fieldLabel.copyWith(color: context.colors.primary)),
-                  const SizedBox(height: 4),
-                  Text(e.title, style: AppText.listTitle.copyWith(color: context.colors.text)),
-                  Text(
-                    [e.venueLine, ?e.category].where((s) => s.isNotEmpty).join(' · '),
-                    style: AppText.meta.copyWith(color: context.colors.textMuted),
-                  ),
-                  const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      Text(priceText, style: AppText.sectionLabel.copyWith(color: context.colors.text)),
-                      const Spacer(),
-                      if (e.assignedSeating) const TagLabel('Seated'),
-                      if (price == 0 && listing.hasTickets) ...[
-                        const SizedBox(width: 6),
-                        const TagLabel('Registration'),
-                      ],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.card)),
+            child: EventImage(url: e.imageUrl, label: e.category ?? e.title, height: 140, radius: 0),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (e.startsAt != null)
+                  Text(Fmt.dateTime(e.startsAt!), style: AppText.caption.copyWith(color: c.primary, fontWeight: FontWeight.w600)),
+                const SizedBox(height: 4),
+                Text(e.title, style: AppText.listTitle.copyWith(color: c.text, fontWeight: FontWeight.w700)),
+                const SizedBox(height: 2),
+                Text(
+                  [e.venueLine, ?e.category].where((s) => s.isNotEmpty).join(' · '),
+                  style: AppText.meta.copyWith(color: c.textMuted),
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Text(priceText, style: AppText.bodyStrong.copyWith(color: listing.hasTickets ? c.text : c.danger, fontWeight: FontWeight.w700)),
+                    const Spacer(),
+                    if (e.assignedSeating) TagLabel(l.seatedTag, tone: Tone.info, dot: false),
+                    if (price == 0 && listing.hasTickets) ...[
+                      const SizedBox(width: 6),
+                      TagLabel(l.registrationTag, tone: Tone.success, dot: false),
                     ],
-                  ),
-                ],
-              ),
+                  ],
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -227,64 +242,67 @@ class _FilterSheetState extends State<_FilterSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
+    final c = context.colors;
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(AppSpacing.sheetInset, 20, AppSpacing.sheetInset, 12),
+        padding: const EdgeInsets.fromLTRB(AppSpacing.side, 0, AppSpacing.side, 16),
         child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SectionLabel('Filters', color: context.colors.primary),
+              Text(l.filters, style: AppText.headerTitle.copyWith(color: c.text, fontSize: 20)),
               const SizedBox(height: 16),
-              const SectionLabel('City'),
+              SectionLabel(l.cityFilter),
               const SizedBox(height: 8),
               ChoiceChips<String?>(
                 options: [null, ...widget.cities],
                 selected: f.city,
-                label: (c) => c ?? 'Any',
-                onSelected: (c) => setState(() => f = f.copyWith(city: () => c)),
+                label: (x) => x ?? l.anyOption,
+                onSelected: (x) => setState(() => f = f.copyWith(city: () => x)),
               ),
               const SizedBox(height: 18),
-              const SectionLabel('When'),
+              SectionLabel(l.whenFilter),
               const SizedBox(height: 8),
               ChoiceChips<WhenFilter>(
                 options: WhenFilter.values,
                 selected: f.when,
                 label: (w) => switch (w) {
-                  WhenFilter.any => 'Any time',
-                  WhenFilter.today => 'Today',
-                  WhenFilter.weekend => 'This weekend',
-                  WhenFilter.next30 => 'Next 30 days',
+                  WhenFilter.any => l.anyTime,
+                  WhenFilter.today => l.today,
+                  WhenFilter.weekend => l.thisWeekend,
+                  WhenFilter.next30 => l.next30,
                 },
                 onSelected: (w) => setState(() => f = f.copyWith(when: w)),
               ),
               const SizedBox(height: 18),
-              const SectionLabel('Category'),
+              SectionLabel(l.categoryLabel),
               const SizedBox(height: 8),
               ChoiceChips<String?>(
                 options: [null, ...widget.categories],
                 selected: f.category,
-                label: (c) => c ?? 'Any',
-                onSelected: (c) => setState(() => f = f.copyWith(category: () => c)),
+                label: (x) => x ?? l.anyOption,
+                onSelected: (x) => setState(() => f = f.copyWith(category: () => x)),
               ),
               const SizedBox(height: 18),
-              const SectionLabel('Price'),
+              SectionLabel(l.priceFilter),
               const SizedBox(height: 8),
               ChoiceChips<PriceFilter>(
                 options: PriceFilter.values,
                 selected: f.price,
                 label: (p) => switch (p) {
-                  PriceFilter.any => 'Any price',
-                  PriceFilter.free => 'Free only',
-                  PriceFilter.under5000 => 'Under 5 000 ₸',
+                  PriceFilter.any => l.anyPrice,
+                  PriceFilter.free => l.freeOnly,
+                  PriceFilter.under5000 => l.under5000,
                 },
                 onSelected: (p) => setState(() => f = f.copyWith(price: p)),
               ),
               const SizedBox(height: 24),
-              PrimaryButton(label: 'Show events', onPressed: () => Navigator.of(context).pop(f)),
+              PrimaryButton(label: l.showEvents, onPressed: () => Navigator.of(context).pop(f)),
               GhostButton(
-                label: 'Reset',
+                label: l.actionReset,
+                color: c.textMuted,
                 onPressed: () => Navigator.of(context).pop(EventFilter(query: widget.initial.query)),
               ),
             ],

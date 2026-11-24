@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 
 import '../../../app/role_tab_bar.dart';
 import '../../../app/routes.dart';
 import '../../../core/error/failure.dart';
+import '../../../core/presentation/l10n.dart';
 import '../../../core/presentation/loadable.dart';
+import '../../../core/presentation/status_text.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -22,107 +25,160 @@ import '../../../shared/domain/entities/people.dart';
 import '../../auth/domain/entities/user_session.dart';
 import '../domain/admin_domain.dart';
 
-/// Полоса «внутренний инструмент» — админку нельзя спутать с экраном
-/// организатора (P: «on the ink field»).
+/// Полоса «внутренний инструмент» — админку не спутать с экраном организатора.
 class AdminBanner extends StatelessWidget {
   const AdminBanner({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      color: context.colors.text,
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sideList, vertical: 8),
-      child: Text('PLATFORM ADMIN · INTERNAL STAFF ONLY', style: AppText.statusStrip.copyWith(color: context.colors.surface)),
+    final c = context.colors;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(AppSpacing.side, 0, AppSpacing.side, 8),
+      child: Row(children: [
+        Icon(LucideIcons.shieldCheck, size: 14, color: c.textMuted),
+        const SizedBox(width: 6),
+        Text(context.l10n.adminBanner, style: AppText.caption.copyWith(color: c.textMuted)),
+      ]),
     );
   }
 }
 
-String roleLabel(UserRole r) => switch (r) {
-      UserRole.attendee => 'Attendee',
-      UserRole.organizer => 'Organizer',
-      UserRole.eventAdmin => 'Event admin',
-      UserRole.platformAdmin => 'Platform admin',
-      UserRole.unknown => 'Unknown',
+String roleLabel(AppLocalizations l, UserRole r) => switch (r) {
+      UserRole.attendee => l.roleAttendee,
+      UserRole.organizer => l.roleOrganizer,
+      UserRole.eventAdmin => l.roleEventAdmin,
+      UserRole.platformAdmin => l.rolePlatformAdmin,
+      UserRole.unknown => l.roleUnknown,
     };
 
-// ─── P1 queues ─────────────────────────────────────────────────────────────
+Tone roleTone(UserRole r) => switch (r) {
+      UserRole.organizer => Tone.primary,
+      UserRole.eventAdmin => Tone.info,
+      UserRole.platformAdmin => Tone.warning,
+      _ => Tone.neutral,
+    };
+
+/// Кнопка профиля в шапке вкладок админа (отдельной вкладки нет).
+class _AccountAction extends StatelessWidget {
+  const _AccountAction();
+
+  @override
+  Widget build(BuildContext context) =>
+      CircleIconButton(icon: LucideIcons.user, tooltip: context.l10n.account, onPressed: () => context.push(Routes.adminAccount));
+}
+
+Widget _none(BuildContext context) => Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Text(context.l10n.nothingHere, style: AppText.meta.copyWith(color: context.colors.textMuted)),
+    );
+
+class _OrderRow extends StatelessWidget {
+  const _OrderRow({required this.order, this.badge});
+
+  final OrderInfo order;
+  final Widget? badge;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    final c = context.colors;
+    final o = order;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: AppCard(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(children: [
+              Expanded(
+                child: Text(
+                  [l.orderNo('${o.id}'), if (o.createdAt != null) Fmt.shortDateTime(o.createdAt!)].join(' · '),
+                  style: AppText.meta.copyWith(color: c.textMuted, fontWeight: FontWeight.w600),
+                ),
+              ),
+              badge ?? TagLabel(o.status.text(l), tone: o.status.tone),
+            ]),
+            const SizedBox(height: 8),
+            Row(children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(o.attendeeName ?? o.attendeeEmail ?? '—', style: AppText.cardTitle.copyWith(color: c.text)),
+                    if (o.eventTitle != null) Text(o.eventTitle!, style: AppText.meta.copyWith(color: c.textMuted)),
+                  ],
+                ),
+              ),
+              Text(Fmt.money(o.total), style: AppText.listTitle.copyWith(color: c.text, fontWeight: FontWeight.w700)),
+            ]),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── очереди (§4.12) ───────────────────────────────────────────────────────
 
 class AdminQueuesViewModel extends Loadable<AdminQueues> {
   AdminQueuesViewModel(GetAdminQueues get) : super(get.call);
 }
 
-/// P1 · Admin queues (§4.12)
 class AdminQueuesPage extends StatelessWidget {
   const AdminQueuesPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
+    final c = context.colors;
     final vm = context.watch<AdminQueuesViewModel>();
     return RoleScaffold(
       tabs: RoleTabs.admin,
       current: Routes.adminQueues,
-      title: 'Work queues',
-      subtitle: Fmt.dayStamp(DateTime.now()),
+      title: l.workQueues,
+      action: const _AccountAction(),
       body: Column(
         children: [
           const AdminBanner(),
           Expanded(
             child: LoadableView<AdminQueues>(
               state: vm,
-              builder: (context, q) => ListView(
-                padding: const EdgeInsets.fromLTRB(AppSpacing.sideList, 18, AppSpacing.sideList, 24),
-                children: [
-                  StatQuad(cells: [
-                    (Fmt.count(q.pendingPayments.length), 'Unpaid orders'),
-                    (Fmt.count(q.paidSalesEvents.length), 'Paid-sales events'),
-                    (Fmt.count(q.suspendedUsers.length), 'Suspended users'),
-                    (Fmt.count(q.recentRefunds.length), 'Refunds'),
-                  ]),
-                  const SizedBox(height: 8),
-                  Text(
-                    '${q.totals.users} users · ${q.totals.events} events · ${q.totals.orders} orders on the platform',
-                    style: AppText.meta.copyWith(color: context.colors.textMuted),
-                  ),
-                  const SizedBox(height: AppSpacing.section),
-                  const SectionLabel('Unpaid orders · payment failures and abandoned checkouts'),
-                  if (q.pendingPayments.isEmpty) _none(context),
-                  for (final o in q.pendingPayments.take(10))
-                    ListRow(
-                      title: '${o.number} · ${Fmt.money(o.total)}',
-                      subtitle: [?o.eventTitle, ?o.attendeeName, if (o.createdAt != null) Fmt.ago(o.createdAt!)].join(' · '),
-                      trailing: const TagLabel('No tickets issued'),
-                    ),
-                  const SizedBox(height: AppSpacing.section),
-                  const SectionLabel('Paid sales active · activation records'),
-                  if (q.paidSalesEvents.isEmpty) _none(context),
-                  for (final e in q.paidSalesEvents)
-                    ListRow(
-                      title: e.title,
-                      subtitle: [?e.organizerName, e.status.label].join(' · '),
-                      trailing: Icon(Icons.chevron_right, size: 18, color: context.colors.textMuted),
-                      onTap: () => context.push(Routes.adminEvent(e.id)),
-                    ),
-                  const SizedBox(height: AppSpacing.section),
-                  const SectionLabel('Refunds'),
-                  if (q.recentRefunds.isEmpty) _none(context),
-                  for (final o in q.recentRefunds.take(10))
-                    ListRow(
-                      title: '${o.number} · ${Fmt.money(o.total)}',
-                      subtitle: [?o.eventTitle, ?o.attendeeName].join(' · '),
-                      trailing: TagLabel(o.status.label),
-                    ),
-                  const SizedBox(height: AppSpacing.block),
-                  SecondaryButton(label: 'All orders & payments', onPressed: () => context.push(Routes.adminOrders)),
-                  const SizedBox(height: AppSpacing.section),
-                  const SectionLabel('Not available in this build'),
-                  const SizedBox(height: 6),
-                  Text(
-                    'Reported events, activation reviews, escalated support cases, report exports and activation '
-                    'fee settings need backend endpoints that do not exist yet.',
-                    style: AppText.bodySecondary.copyWith(color: context.colors.textMuted),
-                  ),
-                ],
+              builder: (context, q) => RefreshIndicator(
+                onRefresh: vm.load,
+                child: ListView(
+                  padding: const EdgeInsets.fromLTRB(AppSpacing.side, 4, AppSpacing.side, 24),
+                  children: [
+                    StatQuad(cells: [
+                      (Fmt.count(q.pendingPayments.length), l.unpaidOrders),
+                      (Fmt.count(q.paidSalesEvents.length), l.paidSalesEvents),
+                      (Fmt.count(q.suspendedUsers.length), l.suspendedUsers),
+                      (Fmt.count(q.recentRefunds.length), l.refundsQueue),
+                    ]),
+                    const SizedBox(height: 8),
+                    Text(l.platformTotals(q.totals.users, q.totals.events, q.totals.orders), style: AppText.meta.copyWith(color: c.textMuted)),
+                    const SizedBox(height: AppSpacing.section),
+                    SectionLabel(l.unpaidOrdersHint),
+                    const SizedBox(height: 10),
+                    if (q.pendingPayments.isEmpty) _none(context),
+                    for (final o in q.pendingPayments.take(10))
+                      _OrderRow(order: o, badge: TagLabel(l.noTicketsIssued, tone: Tone.warning)),
+                    const SizedBox(height: AppSpacing.block),
+                    SectionLabel(l.paidSalesRecords),
+                    const SizedBox(height: 10),
+                    if (q.paidSalesEvents.isEmpty) _none(context),
+                    for (final e in q.paidSalesEvents) _AdminEventCard(event: e),
+                    const SizedBox(height: AppSpacing.block),
+                    SectionLabel(l.refundsQueue),
+                    const SizedBox(height: 10),
+                    if (q.recentRefunds.isEmpty) _none(context),
+                    for (final o in q.recentRefunds.take(10)) _OrderRow(order: o),
+                    const SizedBox(height: AppSpacing.block),
+                    SecondaryButton(label: l.allOrdersPayments, icon: LucideIcons.receipt, onPressed: () => context.go(Routes.adminOrders)),
+                    const SizedBox(height: AppSpacing.section),
+                    InfoBanner(text: '${l.notInBuild}. ${l.notInBuildBody}', tone: Tone.neutral, icon: LucideIcons.info),
+                  ],
+                ),
               ),
             ),
           ),
@@ -130,14 +186,53 @@ class AdminQueuesPage extends StatelessWidget {
       ),
     );
   }
-
-  static Widget _none(BuildContext context) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        child: Text('Nothing here.', style: AppText.meta.copyWith(color: context.colors.textMuted)),
-      );
 }
 
-// ─── events ────────────────────────────────────────────────────────────────
+class _AdminEventCard extends StatelessWidget {
+  const _AdminEventCard({required this.event});
+
+  final EventInfo event;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    final c = context.colors;
+    final e = event;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: AppCard(
+        padding: const EdgeInsets.all(12),
+        onTap: () => context.push(Routes.adminEvent(e.id)),
+        child: Row(children: [
+          EventImage(url: e.imageUrl, label: e.title, height: 56, width: 56, radius: 12),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(e.title, style: AppText.cardTitle.copyWith(color: c.text)),
+                Text(
+                  [e.startsAt == null ? l.noDate : Fmt.dateTime(e.startsAt!), ?e.organizerName].join(' · '),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppText.meta.copyWith(color: c.textMuted),
+                ),
+                const SizedBox(height: 6),
+                Wrap(spacing: 6, runSpacing: 4, children: [
+                  TagLabel(e.status.text(l), tone: e.status.tone),
+                  if (e.paidSalesActivated) TagLabel(l.paidSalesTag, tone: Tone.primary, dot: false),
+                ]),
+              ],
+            ),
+          ),
+          Icon(LucideIcons.chevronRight, size: 18, color: c.textMuted),
+        ]),
+      ),
+    );
+  }
+}
+
+// ─── события ───────────────────────────────────────────────────────────────
 
 class AdminEventsViewModel extends Loadable<List<EventInfo>> {
   AdminEventsViewModel(AdminLists lists) : super(lists.events);
@@ -184,38 +279,44 @@ class _AdminEventsPageState extends State<AdminEventsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
     final vm = context.watch<AdminEventsViewModel>();
     final statuses = <EventStatus?>[null, ...EventStatus.values];
     return RoleScaffold(
       tabs: RoleTabs.admin,
       current: Routes.adminEvents,
-      title: 'Events',
+      title: l.navEvents,
+      action: const _AccountAction(),
       body: Column(
         children: [
           const AdminBanner(),
           Padding(
-            padding: const EdgeInsets.fromLTRB(AppSpacing.sideList, 12, AppSpacing.sideList, 0),
-            child: LabeledTextField(controller: _q, leadingIcon: Icons.search, hintText: 'Event, organizer or city', onChanged: vm.setQuery),
+            padding: const EdgeInsets.fromLTRB(AppSpacing.side, 0, AppSpacing.side, 12),
+            child: LabeledTextField(controller: _q, compact: true, leadingIcon: LucideIcons.search, hintText: l.adminEventsSearch, onChanged: vm.setQuery),
           ),
-          UnderlineTabs(
-            labels: [for (final s in statuses) s?.label ?? 'All'],
-            current: statuses.indexOf(vm.status),
-            onSelect: (i) => vm.setStatus(statuses[i]),
+          SizedBox(
+            height: 38,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.side),
+              itemCount: statuses.length,
+              separatorBuilder: (_, _) => const SizedBox(width: 8),
+              itemBuilder: (context, i) => FilterChipPill(
+                label: statuses[i]?.text(l) ?? l.attAll,
+                active: vm.status == statuses[i],
+                onTap: () => vm.setStatus(statuses[i]),
+              ),
+            ),
           ),
+          const SizedBox(height: 12),
           Expanded(
             child: LoadableView<List<EventInfo>>(
               state: vm,
               builder: (context, _) => ListView(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sideList),
+                padding: const EdgeInsets.fromLTRB(AppSpacing.side, 0, AppSpacing.side, 24),
                 children: [
-                  for (final e in vm.visible)
-                    ListRow(
-                      overline: e.startsAt == null ? 'NO DATE' : Fmt.dayStamp(e.startsAt!),
-                      title: e.title,
-                      subtitle: [?e.organizerName, e.venueLine, if (e.paidSalesActivated) 'Paid sales'].where((s) => s.isNotEmpty).join(' · '),
-                      trailing: TagLabel(e.status.label),
-                      onTap: () => context.push(Routes.adminEvent(e.id)),
-                    ),
+                  if (vm.visible.isEmpty) _none(context),
+                  for (final e in vm.visible) _AdminEventCard(event: e),
                 ],
               ),
             ),
@@ -226,7 +327,7 @@ class _AdminEventsPageState extends State<AdminEventsPage> {
   }
 }
 
-// ─── P2 moderation ─────────────────────────────────────────────────────────
+// ─── модерация события ─────────────────────────────────────────────────────
 
 class ModerationViewModel extends Loadable<ModerationCase> {
   ModerationViewModel({required int eventId, required GetModerationCase get, required this._actions})
@@ -245,7 +346,7 @@ class ModerationViewModel extends Loadable<ModerationCase> {
   }
 }
 
-/// P2 · Moderate an event — suspend sales (§4.12, §4.5)
+/// Модерация события — приостановка продаж (§4.12, §4.5).
 class ModerationPage extends StatefulWidget {
   const ModerationPage({super.key});
 
@@ -263,31 +364,33 @@ class _ModerationPageState extends State<ModerationPage> {
   }
 
   Future<void> _suspend(ModerationViewModel vm) async {
+    final l = context.l10n;
     final ok = await showDialog<bool>(
       context: context,
-      builder: (c) => AlertDialog(
-        title: Text('Suspend this event?', style: AppText.headerTitle.copyWith(color: context.colors.text)),
-        content: Text('New checkouts stop immediately. Issued tickets stay valid until voided.',
-            style: AppText.body.copyWith(color: context.colors.textMuted)),
+      builder: (d) => AlertDialog(
+        title: Text(l.suspendEventTitle),
+        content: Text(l.suspendEventBody),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('KEEP')),
-          TextButton(onPressed: () => Navigator.pop(c, true), child: const Text('SUSPEND')),
+          TextButton(onPressed: () => Navigator.pop(d, false), child: Text(l.actionKeep)),
+          TextButton(onPressed: () => Navigator.pop(d, true), child: Text(l.actSuspend, style: TextStyle(color: d.colors.danger))),
         ],
       ),
     );
     if (ok != true) return;
     final f = await vm.suspend(_reason.text);
-    if (mounted) reportResult(context, f, success: 'Event suspended and sales stopped.');
+    if (mounted) reportResult(context, f, success: l.eventSuspendedToast);
   }
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
+    final c = context.colors;
     final vm = context.watch<ModerationViewModel>();
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
-            ScreenHeader(title: vm.data?.event.title ?? 'Event', subtitle: 'Moderation', onBack: () => context.pop()),
+            ScreenHeader(subtitle: l.moderation, title: vm.data?.event.title ?? l.eventFallback, onBack: () => context.pop()),
             const AdminBanner(),
             Expanded(
               child: LoadableView<ModerationCase>(
@@ -296,57 +399,68 @@ class _ModerationPageState extends State<ModerationPage> {
                   final e = m.event;
                   final o = m.organizer;
                   return ListView(
-                    padding: const EdgeInsets.fromLTRB(AppSpacing.sideLight, 18, AppSpacing.sideLight, 24),
+                    padding: const EdgeInsets.fromLTRB(AppSpacing.side, 8, AppSpacing.side, 24),
                     children: [
-                      Wrap(spacing: 6, children: [
-                        TagLabel(vm.suspended ? 'Suspended' : e.status.label, filled: !vm.suspended),
-                        if (e.paidSalesActivated) const TagLabel('Paid sales active'),
-                      ]),
-                      const SizedBox(height: 10),
-                      Text(
-                        '${e.organizerName ?? 'Organizer'} · ${Fmt.count(m.ticketsSold)} tickets sold · '
-                        '${Fmt.money(m.collected, freeWord: false)} collected',
-                        style: AppText.bodySecondary.copyWith(color: context.colors.textMuted),
+                      AppCard(
+                        padding: const EdgeInsets.all(12),
+                        child: Row(children: [
+                          EventImage(url: e.imageUrl, label: e.title, height: 56, width: 56, radius: 12),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  l.moderationSummary(e.organizerName ?? l.organizerFallback, Fmt.count(m.ticketsSold), Fmt.money(m.collected, freeWord: false)),
+                                  style: AppText.meta.copyWith(color: c.textMuted),
+                                ),
+                                const SizedBox(height: 6),
+                                Wrap(spacing: 6, runSpacing: 4, children: [
+                                  vm.suspended ? TagLabel(l.suspendedTag, tone: Tone.danger) : TagLabel(e.status.text(l), tone: e.status.tone),
+                                  if (e.paidSalesActivated) TagLabel(l.paidSalesActive, tone: Tone.primary, dot: false),
+                                ]),
+                              ],
+                            ),
+                          ),
+                        ]),
                       ),
-                      const SizedBox(height: 14),
-                      DetailGrid(rows: [
-                        if (e.startsAt != null) ('When', Fmt.range(e.startsAt!, e.endsAt)),
-                        if (e.fullAddress.isNotEmpty) ('Venue', e.fullAddress),
-                        ('Visibility', e.visibility.label),
-                      ]),
+                      const SizedBox(height: 16),
+                      AppCard(
+                        child: DetailGrid(rows: [
+                          if (e.startsAt != null) (l.whenLabel, Fmt.range(e.startsAt!, e.endsAt)),
+                          if (e.fullAddress.isNotEmpty) (l.venueLabel, e.fullAddress),
+                          (l.visibilityLabel, e.visibility.text(l)),
+                        ]),
+                      ),
                       const SizedBox(height: AppSpacing.section),
-                      const SectionLabel('Organizer record'),
-                      const SizedBox(height: 8),
-                      DetailGrid(rows: [
-                        ('Account', o == null ? (e.organizerName ?? '—') : '${o.fullName} · ${o.email}'),
-                        if (o != null) ('Email verified', o.emailVerified ? 'Yes' : 'No'),
-                        if (o != null) ('Suspended', o.suspended ? 'Yes' : 'No'),
-                        ('Orders on this event', Fmt.count(m.orders.length)),
-                        ('Refunded', Fmt.count(m.orders.where((x) => x.status == OrderStatus.refunded).length)),
-                      ]),
+                      SectionLabel(l.organizerRecord),
+                      const SizedBox(height: 10),
+                      AppCard(
+                        child: DetailGrid(rows: [
+                          (l.accountLabel, o == null ? (e.organizerName ?? '—') : '${o.fullName} · ${o.email}'),
+                          if (o != null) (l.emailVerified, o.emailVerified ? l.yes : l.no),
+                          if (o != null) (l.userBlocked, o.suspended ? l.yes : l.no),
+                          (l.ordersOnEvent, Fmt.count(m.orders.length)),
+                          (l.orderRefunded, Fmt.count(m.orders.where((x) => x.status == OrderStatus.refunded).length)),
+                        ]),
+                      ),
                       if (!vm.suspended) ...[
                         const SizedBox(height: AppSpacing.section),
-                        SectionLabel('Suspending will', color: context.colors.primary),
+                        SectionLabel(l.suspendingWill),
                         const SizedBox(height: 8),
-                        for (final line in const [
-                          'Stop new checkouts for this event immediately.',
-                          'Leave issued tickets valid until you void them.',
-                          'Hold any payout to the organizer.',
-                          'Write an entry into the event\'s audit trail.',
-                        ])
+                        for (final line in [l.suspendWill1, l.suspendWill2, l.suspendWill3, l.suspendWill4])
                           Padding(
-                            padding: const EdgeInsets.only(bottom: 4),
-                            child: Text('— $line', style: AppText.bodySecondary.copyWith(color: context.colors.text)),
+                            padding: const EdgeInsets.only(bottom: 6),
+                            child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                              Padding(padding: const EdgeInsets.only(top: 3), child: Icon(LucideIcons.dot, size: 14, color: c.textMuted)),
+                              const SizedBox(width: 6),
+                              Expanded(child: Text(line, style: AppText.bodySecondary.copyWith(color: c.text))),
+                            ]),
                           ),
                         const SizedBox(height: 12),
-                        LabeledTextField(
-                          label: 'Reason recorded and sent to the organizer',
-                          controller: _reason,
-                          maxLines: 3,
-                        ),
+                        LabeledTextField(label: l.suspendReason, controller: _reason, maxLines: 3),
                         const SizedBox(height: 6),
-                        Text('The current API does not store the reason yet; keep it for your records.',
-                            style: AppText.finePrint.copyWith(color: context.colors.textMuted)),
+                        Text(l.suspendReasonNote, style: AppText.finePrint.copyWith(color: c.textMuted)),
                       ],
                     ],
                   );
@@ -355,8 +469,14 @@ class _ModerationPageState extends State<ModerationPage> {
             ),
             if (vm.data != null && !vm.suspended && vm.data!.event.status != EventStatus.cancelled)
               Padding(
-                padding: const EdgeInsets.fromLTRB(AppSpacing.sideLight, 8, AppSpacing.sideLight, AppSpacing.bottomClearance),
-                child: PrimaryButton(label: 'Suspend event & sales', isLoading: vm.isBusy, onPressed: () => _suspend(vm)),
+                padding: const EdgeInsets.fromLTRB(AppSpacing.side, 8, AppSpacing.side, 16),
+                child: PrimaryButton(
+                  label: l.suspendEventButton,
+                  icon: LucideIcons.ban,
+                  tone: Tone.danger,
+                  isLoading: vm.isBusy,
+                  onPressed: () => _suspend(vm),
+                ),
               ),
           ],
         ),
@@ -365,7 +485,7 @@ class _ModerationPageState extends State<ModerationPage> {
   }
 }
 
-// ─── users ─────────────────────────────────────────────────────────────────
+// ─── M-B13 пользователи ────────────────────────────────────────────────────
 
 class AdminUsersViewModel extends Loadable<List<UserAccount>> {
   AdminUsersViewModel({required AdminLists lists, required this._actions, required this.currentAdminId})
@@ -400,6 +520,7 @@ class AdminUsersViewModel extends Loadable<List<UserAccount>> {
       );
 }
 
+/// M-B13 · Пользователи: поиск, роли, блокировка.
 class AdminUsersPage extends StatefulWidget {
   const AdminUsersPage({super.key});
 
@@ -417,65 +538,138 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
   }
 
   Future<void> _toggle(AdminUsersViewModel vm, UserAccount u) async {
+    final l = context.l10n;
     final ok = await showDialog<bool>(
       context: context,
-      builder: (c) => AlertDialog(
-        title: Text(u.suspended ? 'Restore ${u.fullName}?' : 'Suspend ${u.fullName}?',
-            style: AppText.headerTitle.copyWith(color: context.colors.text)),
-        content: Text(
-          u.suspended ? 'They can sign in and use BiletFlow again.' : 'They will not be able to sign in until restored.',
-          style: AppText.body.copyWith(color: context.colors.textMuted),
-        ),
+      builder: (d) => AlertDialog(
+        title: Text(u.suspended ? l.unblockTitle(u.fullName) : l.blockTitle(u.fullName)),
+        content: Text(u.suspended ? l.unblockBody : l.blockBody),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('CANCEL')),
-          TextButton(onPressed: () => Navigator.pop(c, true), child: Text(u.suspended ? 'RESTORE' : 'SUSPEND')),
+          TextButton(onPressed: () => Navigator.pop(d, false), child: Text(l.actionCancel)),
+          TextButton(
+            onPressed: () => Navigator.pop(d, true),
+            child: Text(u.suspended ? l.actUnblock : l.actBlock, style: TextStyle(color: u.suspended ? null : d.colors.danger)),
+          ),
         ],
       ),
     );
     if (ok != true) return;
     final f = await vm.toggle(u);
-    if (mounted) reportResult(context, f, success: u.suspended ? 'User restored.' : 'User suspended.');
+    if (mounted) reportResult(context, f, success: u.suspended ? l.userUnblockedToast : l.userBlockedToast);
   }
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
+    final c = context.colors;
     final vm = context.watch<AdminUsersViewModel>();
     final roles = <UserRole?>[null, UserRole.attendee, UserRole.organizer, UserRole.eventAdmin, UserRole.platformAdmin];
+    String chip(UserRole? r) => switch (r) {
+          null => l.allRoles,
+          UserRole.attendee => l.roleBuyer,
+          UserRole.eventAdmin => l.roleGate,
+          UserRole.platformAdmin => l.roleAdminShort,
+          final r => roleLabel(l, r),
+        };
     return RoleScaffold(
       tabs: RoleTabs.admin,
       current: Routes.adminUsers,
-      title: 'Users',
+      title: l.navUsers,
+      action: const _AccountAction(),
       body: Column(
         children: [
           const AdminBanner(),
           Padding(
-            padding: const EdgeInsets.fromLTRB(AppSpacing.sideList, 12, AppSpacing.sideList, 0),
-            child: LabeledTextField(controller: _q, leadingIcon: Icons.search, hintText: 'Name or email', onChanged: vm.setQuery),
+            padding: const EdgeInsets.fromLTRB(AppSpacing.side, 0, AppSpacing.side, 12),
+            child: LabeledTextField(controller: _q, compact: true, leadingIcon: LucideIcons.search, hintText: l.nameOrEmail, onChanged: vm.setQuery),
           ),
-          UnderlineTabs(
-            labels: [for (final r in roles) r == null ? 'All' : roleLabel(r)],
-            current: roles.indexOf(vm.role),
-            onSelect: (i) => vm.setRole(roles[i]),
+          SizedBox(
+            height: 38,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.side),
+              itemCount: roles.length,
+              separatorBuilder: (_, _) => const SizedBox(width: 8),
+              itemBuilder: (context, i) => FilterChipPill(label: chip(roles[i]), active: vm.role == roles[i], onTap: () => vm.setRole(roles[i])),
+            ),
           ),
+          const SizedBox(height: 12),
           Expanded(
             child: LoadableView<List<UserAccount>>(
               state: vm,
-              builder: (context, _) => ListView(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sideList),
-                children: [
-                  for (final u in vm.visible)
-                    ListRow(
-                      title: u.fullName,
-                      subtitle: '${u.email} · #${u.id} · ${roleLabel(u.role)}${u.emailVerified ? '' : ' · email not verified'}',
-                      trailing: u.role == UserRole.platformAdmin
-                          ? const TagLabel('Staff')
-                          : TextButton(
-                              onPressed: vm.isBusy ? null : () => _toggle(vm, u),
-                              child: Text(u.suspended ? 'RESTORE' : 'SUSPEND',
-                                  style: AppText.buttonGhost.copyWith(color: context.colors.primary)),
+              builder: (context, _) => RefreshIndicator(
+                onRefresh: vm.load,
+                child: ListView(
+                  padding: const EdgeInsets.fromLTRB(AppSpacing.side, 0, AppSpacing.side, 24),
+                  children: [
+                    if (vm.visible.isEmpty)
+                      Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Text(l.noUsersMatch, textAlign: TextAlign.center, style: AppText.bodySecondary.copyWith(color: c.textMuted)),
+                      ),
+                    for (final u in vm.visible) ...[
+                      AppCard(
+                        child: Column(
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                InitialAvatar(u.fullName, size: 40),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(u.fullName, style: AppText.listTitle.copyWith(color: c.text, fontWeight: FontWeight.w700)),
+                                      Row(children: [
+                                        Flexible(child: Text(u.email, overflow: TextOverflow.ellipsis, style: AppText.meta.copyWith(color: c.textMuted))),
+                                        const SizedBox(width: 4),
+                                        Tooltip(
+                                          message: u.emailVerified ? l.emailVerified : '',
+                                          child: Icon(
+                                            u.emailVerified ? LucideIcons.circleCheck : LucideIcons.circleDashed,
+                                            size: 14,
+                                            color: u.emailVerified ? c.success : c.textMuted,
+                                          ),
+                                        ),
+                                      ]),
+                                    ],
+                                  ),
+                                ),
+                                TagLabel(u.suspended ? l.userBlocked : l.userActive, tone: u.suspended ? Tone.danger : Tone.success),
+                              ],
                             ),
-                    ),
-                ],
+                            const SizedBox(height: 12),
+                            Row(children: [
+                              TagLabel(roleLabel(l, u.role), tone: roleTone(u.role), dot: false),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  [l.userNo('${u.id}'), if (u.createdAt != null) Fmt.date(u.createdAt!)].join(' · '),
+                                  style: AppText.caption.copyWith(color: c.textMuted, fontWeight: FontWeight.w400),
+                                ),
+                              ),
+                              if (u.role == UserRole.platformAdmin)
+                                TagLabel(l.staffTag, dot: false)
+                              else
+                                TextButton.icon(
+                                  onPressed: vm.isBusy ? null : () => _toggle(vm, u),
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: u.suspended ? c.text : c.danger,
+                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10), side: BorderSide(color: c.border)),
+                                  ),
+                                  icon: Icon(u.suspended ? LucideIcons.lockOpen : LucideIcons.lock, size: 14),
+                                  label: Text(u.suspended ? l.actUnblock : l.actBlock, style: AppText.caption.copyWith(fontWeight: FontWeight.w600)),
+                                ),
+                            ]),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                    ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -485,7 +679,7 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
   }
 }
 
-// ─── orders ────────────────────────────────────────────────────────────────
+// ─── заказы ────────────────────────────────────────────────────────────────
 
 class AdminOrdersViewModel extends Loadable<List<OrderInfo>> {
   AdminOrdersViewModel(AdminLists lists) : super(lists.orders);
@@ -505,41 +699,51 @@ class AdminOrdersPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
+    final c = context.colors;
     final vm = context.watch<AdminOrdersViewModel>();
     final statuses = <OrderStatus?>[null, ...OrderStatus.values];
-    return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            ScreenHeader(title: 'Orders & payments', subtitle: 'Demonstration amounts', onBack: () => context.pop()),
-            const AdminBanner(),
-            UnderlineTabs(
-              labels: [for (final s in statuses) s?.label ?? 'All'],
-              current: statuses.indexOf(vm.status),
-              onSelect: (i) => vm.setStatus(statuses[i]),
+    return RoleScaffold(
+      tabs: RoleTabs.admin,
+      current: Routes.adminOrders,
+      title: l.navOrders,
+      action: const _AccountAction(),
+      body: Column(
+        children: [
+          const AdminBanner(),
+          SizedBox(
+            height: 38,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.side),
+              itemCount: statuses.length,
+              separatorBuilder: (_, _) => const SizedBox(width: 8),
+              itemBuilder: (context, i) => FilterChipPill(
+                label: statuses[i]?.text(l) ?? l.attAll,
+                active: vm.status == statuses[i],
+                onTap: () => vm.setStatus(statuses[i]),
+              ),
             ),
-            Expanded(
-              child: LoadableView<List<OrderInfo>>(
-                state: vm,
-                builder: (context, _) => ListView(
-                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sideList),
+          ),
+          const SizedBox(height: 12),
+          Expanded(
+            child: LoadableView<List<OrderInfo>>(
+              state: vm,
+              builder: (context, _) => RefreshIndicator(
+                onRefresh: vm.load,
+                child: ListView(
+                  padding: const EdgeInsets.fromLTRB(AppSpacing.side, 0, AppSpacing.side, 24),
                   children: [
-                    for (final o in vm.visible)
-                      ListRow(
-                        overline: o.createdAt == null ? null : Fmt.shortDateTime(o.createdAt!).toUpperCase(),
-                        title: '${o.number} · ${Fmt.money(o.total)}',
-                        subtitle: [?o.eventTitle, ?o.attendeeName, ?o.attendeeEmail].join(' · '),
-                        trailing: TagLabel(o.status.label, filled: o.status == OrderStatus.completed),
-                      ),
-                    const SizedBox(height: 12),
-                    Text('No card data is stored or shown. All payments are sandbox.',
-                        style: AppText.finePrint.copyWith(color: context.colors.textMuted)),
+                    if (vm.visible.isEmpty) _none(context),
+                    for (final o in vm.visible) _OrderRow(order: o),
+                    const SizedBox(height: 8),
+                    Text(l.noCardData, style: AppText.finePrint.copyWith(color: c.textMuted)),
                   ],
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

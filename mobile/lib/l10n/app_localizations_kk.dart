@@ -552,7 +552,7 @@ class AppLocalizationsKk extends AppLocalizations {
   String get enterCodeTitle => 'Билет коды';
 
   @override
-  String get enterCodeHint => 'QR-код астындағы немесе хаттағы код';
+  String get enterCodeHint => 'Кодты енгізіңіз';
 
   @override
   String get checkCode => 'Тексеру';
@@ -1823,4 +1823,656 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get changesSaved => 'Өзгерістер сақталды.';
+
+  @override
+  String get adminBanner => 'Платформа әкімшісі · тек қызметкерлерге';
+
+  @override
+  String get roleUnknown => 'Белгісіз';
+
+  @override
+  String get roleBuyer => 'Сатып алушы';
+
+  @override
+  String get roleGate => 'Бақылаушы';
+
+  @override
+  String get roleAdminShort => 'Әкімші';
+
+  @override
+  String get allRoles => 'Барлық рөлдер';
+
+  @override
+  String get workQueues => 'Кезектер';
+
+  @override
+  String get unpaidOrders => 'Төленбеген тапсырыстар';
+
+  @override
+  String get paidSalesEvents => 'Сатылымы бар іс-шаралар';
+
+  @override
+  String get suspendedUsers => 'Бұғатталғандар';
+
+  @override
+  String get refundsQueue => 'Қайтарулар';
+
+  @override
+  String platformTotals(int users, int events, int orders) {
+    return 'Платформада: $users қолданушы, $events іс-шара, $orders тапсырыс';
+  }
+
+  @override
+  String get unpaidOrdersHint =>
+      'Төленбеген тапсырыстар · төлем қателері мен тасталған себеттер';
+
+  @override
+  String get noTicketsIssued => 'Билет берілмеген';
+
+  @override
+  String get paidSalesRecords => 'Белсенді ақылы сату';
+
+  @override
+  String get allOrdersPayments => 'Барлық тапсырыстар мен төлемдер';
+
+  @override
+  String get notInBuild => 'Әзірге қолжетімсіз';
+
+  @override
+  String get notInBuildBody =>
+      'Іс-шара шағымдары, белсендіруді тексеру, қолдау эскалациясы, есеп жүктеу және комиссия баптауы бэкендте әлі жоқ эндпоинттерді қажет етеді.';
+
+  @override
+  String get nothingHere => 'Бос.';
+
+  @override
+  String get adminEventsSearch => 'Іс-шара, ұйымдастырушы не қала';
+
+  @override
+  String get noDate => 'Күнсіз';
+
+  @override
+  String get paidSalesTag => 'Ақылы сату';
+
+  @override
+  String get suspendEventTitle => 'Іс-шараны тоқтата тұру керек пе?';
+
+  @override
+  String get suspendEventBody =>
+      'Жаңа сатып алулар бірден тоқтайды. Берілген билеттер жойылғанша жарамды.';
+
+  @override
+  String get actSuspend => 'Тоқтата тұру';
+
+  @override
+  String get eventSuspendedToast => 'Іс-шара тоқтатылды, сату тоқтады.';
+
+  @override
+  String get moderation => 'Модерация';
+
+  @override
+  String get suspendedTag => 'Тоқтатылған';
+
+  @override
+  String get paidSalesActive => 'Ақылы сату белсенді';
+
+  @override
+  String moderationSummary(String organizer, String sold, String collected) {
+    return '$organizer · сатылды $sold · жиналды $collected';
+  }
+
+  @override
+  String get organizerFallback => 'Ұйымдастырушы';
+
+  @override
+  String get whenLabel => 'Қашан';
+
+  @override
+  String get organizerRecord => 'Ұйымдастырушы';
+
+  @override
+  String get accountLabel => 'Аккаунт';
+
+  @override
+  String get emailVerified => 'Email расталған';
+
+  @override
+  String get yes => 'Иә';
+
+  @override
+  String get no => 'Жоқ';
+
+  @override
+  String get ordersOnEvent => 'Іс-шарадағы тапсырыстар';
+
+  @override
+  String get suspendingWill => 'Тоқтата тұру';
+
+  @override
+  String get suspendWill1 => 'Іс-шараға жаңа сатып алуларды бірден тоқтатады.';
+
+  @override
+  String get suspendWill2 => 'Берілген билеттерді жойғанша жарамды қалдырады.';
+
+  @override
+  String get suspendWill3 => 'Ұйымдастырушыға төлемді тоқтатады.';
+
+  @override
+  String get suspendWill4 => 'Әрекетті іс-шара журналына жазады.';
+
+  @override
+  String get suspendReason => 'Себебі — ұйымдастырушы үшін';
+
+  @override
+  String get suspendReasonNote =>
+      'Қазіргі API себебін сақтамайды — өзіңізде қалдырыңыз.';
+
+  @override
+  String get suspendEventButton => 'Іс-шара мен сатуды тоқтату';
+
+  @override
+  String get nameOrEmail => 'Аты немесе email';
+
+  @override
+  String get userActive => 'Белсенді';
+
+  @override
+  String get userBlocked => 'Бұғатталған';
+
+  @override
+  String get actBlock => 'Бұғаттау';
+
+  @override
+  String get actUnblock => 'Бұғаттан шығару';
+
+  @override
+  String blockTitle(String name) {
+    return '$name бұғаттау керек пе?';
+  }
+
+  @override
+  String unblockTitle(String name) {
+    return '$name бұғаттан шығару керек пе?';
+  }
+
+  @override
+  String get blockBody => 'Қолданушы бұғаттан шыққанша кіре алмайды.';
+
+  @override
+  String get unblockBody => 'Қолданушы қайтадан BiletFlow-ға кіре алады.';
+
+  @override
+  String get userBlockedToast => 'Қолданушы бұғатталды.';
+
+  @override
+  String get userUnblockedToast => 'Қолданушы бұғаттан шығарылды.';
+
+  @override
+  String get staffTag => 'Қызметкер';
+
+  @override
+  String get noCardData =>
+      'Карта деректері сақталмайды және көрсетілмейді. Барлық төлемдер — сынақ.';
+
+  @override
+  String get noUsersMatch => 'Ешкім табылмады';
+
+  @override
+  String get generalSection => 'Жалпы';
+
+  @override
+  String get demoFootnote =>
+      'Бұл нұсқадағы барлық төлемдер — демо, ақша алынбайды.';
+
+  @override
+  String get supportInbox => 'Қолдау';
+
+  @override
+  String get newCase => 'Жаңа өтініш';
+
+  @override
+  String openN(int count) {
+    return 'Ашық $count';
+  }
+
+  @override
+  String resolvedN(int count) {
+    return 'Шешілген $count';
+  }
+
+  @override
+  String get noOpenCases => 'Ашық өтініш жоқ';
+
+  @override
+  String get noResolvedCases => 'Шешілгені әлі жоқ';
+
+  @override
+  String get supportEmptyOrganizer =>
+      'Мұнда іс-шараларыңыздың қатысушыларының сұрақтары мен платформаға өтініштеріңіз шығады.';
+
+  @override
+  String get supportEmptyAttendee =>
+      'Өтінішті іс-шарадан, тапсырыстан не + батырмасымен жасаңыз. Жауаптар осында және поштаға келеді.';
+
+  @override
+  String get eventLabel => 'Іс-шара';
+
+  @override
+  String get noCaseContext =>
+      'Өтініштер іс-шара ұйымдастырушысына жіберіледі. Алдымен тіркеліңіз не билет сатып алыңыз.';
+
+  @override
+  String get subjectLabel => 'Тақырып';
+
+  @override
+  String get subjectHint => 'Екінші билет келмеді';
+
+  @override
+  String get messageLabel => 'Хабарлама';
+
+  @override
+  String get orderAttached =>
+      'Тапсырыс автоматты түрде тіркелді — қолдау контекстті көреді.';
+
+  @override
+  String get eventAttached =>
+      'Іс-шара автоматты түрде тіркелді — қолдау контекстті көреді.';
+
+  @override
+  String caseOpened(String number) {
+    return '$number өтініші жасалды.';
+  }
+
+  @override
+  String get caseFallback => 'Өтініш';
+
+  @override
+  String get openedBy => 'Авторы';
+
+  @override
+  String get assignedLabel => 'Жауапты';
+
+  @override
+  String get openedLabel => 'Жасалды';
+
+  @override
+  String get noMessages => 'Әзірге хабарлама жоқ.';
+
+  @override
+  String get repliesNote =>
+      'Жауаптар поштаға және аккаунтқа келеді — онлайн болу міндетті емес.';
+
+  @override
+  String get markResolved => 'Шешілді деп белгілеу';
+
+  @override
+  String get replyHint => 'Жауап жазу…';
+
+  @override
+  String get scanCampaignQr => 'Науқан QR-ын сканерлеу';
+
+  @override
+  String upcomingN(int count) {
+    return 'Алда $count іс-шара';
+  }
+
+  @override
+  String get catalogSearch => 'Іс-шаралар, алаңдар, ұйымдастырушылар';
+
+  @override
+  String filtersN(int count) {
+    return 'Сүзгілер · $count';
+  }
+
+  @override
+  String get filters => 'Сүзгілер';
+
+  @override
+  String get noUpcoming => 'Әзірге іс-шара жоқ';
+
+  @override
+  String get noUpcomingHint =>
+      'Жарияланған іс-шаралар ұйымдастырушылар тіркеуді ашқанда осында шығады.';
+
+  @override
+  String get nothingMatches => 'Ештеңе сәйкес келмеді';
+
+  @override
+  String get nothingMatchesHint => 'Басқа қала, күн не бағаны таңдап көріңіз.';
+
+  @override
+  String get clearFilters => 'Сүзгілерді тазалау';
+
+  @override
+  String get soldOut => 'Сатылып кетті';
+
+  @override
+  String fromPrice(String price) {
+    return '$price бастап';
+  }
+
+  @override
+  String get seatedTag => 'Орынды';
+
+  @override
+  String get registrationTag => 'Тіркеу';
+
+  @override
+  String get cityFilter => 'Қала';
+
+  @override
+  String get anyOption => 'Кез келген';
+
+  @override
+  String get whenFilter => 'Қашан';
+
+  @override
+  String get anyTime => 'Кез келген уақыт';
+
+  @override
+  String get thisWeekend => 'Демалыста';
+
+  @override
+  String get next30 => '30 күн';
+
+  @override
+  String get priceFilter => 'Бағасы';
+
+  @override
+  String get anyPrice => 'Кез келген баға';
+
+  @override
+  String get freeOnly => 'Тек тегін';
+
+  @override
+  String get under5000 => '5 000 ₸ дейін';
+
+  @override
+  String get showEvents => 'Іс-шараларды көрсету';
+
+  @override
+  String get addToCalendar => 'Күнтізбеге қосу';
+
+  @override
+  String get downloadIcs => '.ics жүктеу';
+
+  @override
+  String get calendarNote =>
+      'Алаң мекенжайы мен уақыты бар. Ұйымдастырушы уақытты өзгертсе, жаңа файл жазбаны ауыстырады.';
+
+  @override
+  String promoApplied(String code, String discount) {
+    return '$code промокоды: $discount';
+  }
+
+  @override
+  String get promoVerified =>
+      'Сервер тексерді. Төлем алдында қорытынды соманы көресіз.';
+
+  @override
+  String get dateLabel => 'Күні';
+
+  @override
+  String get regClosesLabel => 'Тіркеу мерзімі';
+
+  @override
+  String get registrationClosed => 'Іс-шараға тіркеу жабық.';
+
+  @override
+  String get noTicketsOnSale => 'Билеттер әлі сатылмайды.';
+
+  @override
+  String get promoCodeLabel => 'Промокод';
+
+  @override
+  String get actApply => 'Қолдану';
+
+  @override
+  String get contactSupportEvent => 'Қолдауға жазу';
+
+  @override
+  String maxPerOrderN(int count) {
+    return 'тапсырыста $count дейін';
+  }
+
+  @override
+  String leftN(String count) {
+    return '$count қалды';
+  }
+
+  @override
+  String get chooseSeats => 'Орын таңдау';
+
+  @override
+  String get continueCheckout => 'Рәсімдеуге өту';
+
+  @override
+  String get seatsHeldNote => 'Орындар рәсімдеу кезінде 10 минут сақталады.';
+
+  @override
+  String get notCampaignQr => 'Бұл BiletFlow науқанының QR-ы емес.';
+
+  @override
+  String get cameraOffCampaign =>
+      'Камераға рұқсат өшірулі. Кодтарды сканерлеу үшін баптауларда қосыңыз.';
+
+  @override
+  String get campaignScanHint =>
+      'Афиша не флаердағы QR-ға бағыттаңыз. Сервер кодты тексерген соң іс-шара жеңілдікпен ашылады.';
+
+  @override
+  String get checkoutTitle => 'Рәсімдеу';
+
+  @override
+  String get stepsSeats => 'Орындар › Деректер мен төлем › Билеттер';
+
+  @override
+  String get stepsNoSeats => 'Деректер мен төлем › Билеттер';
+
+  @override
+  String get holdExpired => 'Орын броны бітті — қайтып, қайта таңдаңыз';
+
+  @override
+  String holdExpiresIn(String time) {
+    return 'Орындар тағы $time сақталады';
+  }
+
+  @override
+  String get yourDetails => 'Деректеріңіз';
+
+  @override
+  String get emailTickets => 'Email — билеттер осында келеді';
+
+  @override
+  String get paymentSection => 'Төлем';
+
+  @override
+  String get payCard => 'Карта · сынақ';
+
+  @override
+  String get payKaspi => 'Kaspi аударым · сынақ';
+
+  @override
+  String get orderSummary => 'Тапсырысыңыз';
+
+  @override
+  String get totalKzt => 'Барлығы';
+
+  @override
+  String get serverRecalcs =>
+      'Сервер жеңілдікті қайта есептейді — қорытынды сәл өзгеруі мүмкін.';
+
+  @override
+  String get getFreeTickets => 'Тегін билеттерді алу';
+
+  @override
+  String payAmount(String amount) {
+    return '$amount төлеу';
+  }
+
+  @override
+  String get freeConfirmedNote =>
+      'Тегін тапсырыстар бірден расталады, билеттер бірден беріледі.';
+
+  @override
+  String get paidConfirmedNote =>
+      'Билеттер сынақ жүйесі төлемді растағаннан кейін ғана беріледі.';
+
+  @override
+  String get chooseYourSeats => 'Орын таңдау';
+
+  @override
+  String get noSeatMapBuyer => 'Зал схемасы әлі жоқ';
+
+  @override
+  String get noSeatMapBuyerHint =>
+      'Ұйымдастырушы бұл іс-шараның орын схемасын әлі жарияламаған.';
+
+  @override
+  String get seatAvailable => 'Бос';
+
+  @override
+  String get seatSelected => 'Таңдалған';
+
+  @override
+  String get seatHeld => 'Брондалған';
+
+  @override
+  String get seatSold => 'Сатылған';
+
+  @override
+  String get seatUnavailable => 'Қолжетімсіз';
+
+  @override
+  String pickedOf(int picked, int needed) {
+    return '$needed ішінен $picked таңдалды';
+  }
+
+  @override
+  String get seatsHeldContinue =>
+      'Жалғастырғаннан кейін орындар 10 минут сақталады.';
+
+  @override
+  String get myTickets => 'Менің билеттерім';
+
+  @override
+  String tabUpcomingN(int count) {
+    return 'Алдағы $count';
+  }
+
+  @override
+  String tabPastN(int count) {
+    return 'Өткен $count';
+  }
+
+  @override
+  String tabRefundedN(int count) {
+    return 'Қайтарылған $count';
+  }
+
+  @override
+  String get noUpcomingTickets => 'Алдағы билеттер жоқ';
+
+  @override
+  String get noUpcomingTicketsHint =>
+      'Сатып алынған билеттер мен тіркеулер QR-кодтарымен осында шығады.';
+
+  @override
+  String get pastTicketsHint =>
+      'Билеттер іс-шарадан кейін не қайтарудан соң осында түседі.';
+
+  @override
+  String get browseEvents => 'Іс-шараларды қарау';
+
+  @override
+  String get dateTba => 'Күні нақтыланады';
+
+  @override
+  String get viewTicket => 'Билетті ашу';
+
+  @override
+  String get viewTickets => 'Билеттерді ашу';
+
+  @override
+  String get admissionTicket => 'Кіру билеті';
+
+  @override
+  String get admitsOne => '1 адамға кіру';
+
+  @override
+  String get attendeeLabel => 'Қатысушы';
+
+  @override
+  String get seatLabelShort => 'Орын';
+
+  @override
+  String get ticketIdLabel => 'Билет ID';
+
+  @override
+  String get issuedLabel => 'Берілді';
+
+  @override
+  String get qrKeepNote =>
+      'QR-ды бүктемеңіз. Билет бір адамды бір рет өткізеді — қағаз және электрондық көшірме бір билет.';
+
+  @override
+  String get print => 'Басып шығару';
+
+  @override
+  String get downloadPdf => 'PDF жүктеу';
+
+  @override
+  String get cancelOrderTitle => 'Тапсырысты болдырмау керек пе?';
+
+  @override
+  String get cancelOrderBody =>
+      'Тапсырыстағы барлық билеттер жарамсыз болады. Қайтару ұйымдастырушы ережесі бойынша.';
+
+  @override
+  String get cancelOrder => 'Тапсырысты болдырмау';
+
+  @override
+  String get orderCancelledToast => 'Тапсырыс болдырылмады.';
+
+  @override
+  String get ticketReady => 'Билет дайын';
+
+  @override
+  String ticketsReady(int count) {
+    return '$count билет сіздікі';
+  }
+
+  @override
+  String confirmationSent(String email) {
+    return 'Растау $email поштасына жіберілді';
+  }
+
+  @override
+  String get yourTickets => 'Сіздің билеттеріңіз';
+
+  @override
+  String get ticketsAfterPayment =>
+      'Билеттер төлем расталғаннан кейін беріледі.';
+
+  @override
+  String get typeLabel => 'Түрі';
+
+  @override
+  String get showQr => 'QR көрсету';
+
+  @override
+  String get showQrNote =>
+      'QR-ды телефоннан не қағаздан көрсетіңіз. Әр билет бір адамды бір рет өткізеді.';
+
+  @override
+  String get totalLabel => 'Барлығы';
+
+  @override
+  String get methodLabel => 'Тәсілі';
+
+  @override
+  String get sandboxPayment => 'Сынақ төлемі';
+
+  @override
+  String get helpWithOrder => 'Тапсырыс бойынша көмек';
 }

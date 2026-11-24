@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../theme/app_palette.dart';
 import '../theme/app_spacing.dart';
@@ -135,7 +136,7 @@ class LargeHeader extends StatelessWidget {
                         ),
                         if (onContextTap != null) ...[
                           const SizedBox(width: 4),
-                          Icon(Icons.keyboard_arrow_down_rounded, size: 16, color: c.textMuted),
+                          Icon(LucideIcons.chevronDown, size: 16, color: c.textMuted),
                         ],
                       ],
                     ),

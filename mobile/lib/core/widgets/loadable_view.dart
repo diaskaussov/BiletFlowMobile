@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../error/failure.dart';
 import '../presentation/loadable.dart';
 import '../theme/app_spacing.dart';
 import 'state_views.dart';
 import '../presentation/failure_text.dart';
+import '../presentation/l10n.dart';
+import '../theme/app_palette.dart';
 
 /// Отрисовка [Loadable]: индикатор, ошибка с повтором или контент.
 /// Pull-to-refresh перезагружает данные.
@@ -31,12 +34,13 @@ class LoadableView<T> extends StatelessWidget {
       if (state.isLoading || state.failure == null) return const LoadingView();
       final f = state.failure!;
       return Padding(
-        padding: const EdgeInsets.fromLTRB(AppSpacing.sideList, 48, AppSpacing.sideList, 16),
+        padding: const EdgeInsets.fromLTRB(AppSpacing.side, 48, AppSpacing.side, 16),
         child: MessageView(
-          icon: f is NetworkFailure ? Icons.wifi_off : Icons.error_outline,
-          title: f is NetworkFailure ? 'No connection' : 'Could not load',
+          icon: f is NetworkFailure ? LucideIcons.wifiOff : LucideIcons.circleAlert,
+          tone: Tone.danger,
+          title: f is NetworkFailure ? context.l10n.noConnectionTitle : context.l10n.loadFailedTitle,
           message: f.text(context),
-          actionLabel: 'Try again',
+          actionLabel: context.l10n.tryAgain,
           onAction: state.load,
         ),
       );

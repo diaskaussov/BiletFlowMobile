@@ -1,17 +1,21 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/error/result.dart';
 import '../../../core/platform/document_actions.dart';
+import '../../../core/presentation/l10n.dart';
 import '../../../core/presentation/loadable.dart';
+import '../../../core/presentation/status_text.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/buttons.dart';
+import '../../../core/widgets/commerce_widgets.dart';
 import '../../../core/widgets/data_blocks.dart';
 import '../../../core/widgets/loadable_view.dart';
 import '../../../core/widgets/screen_header.dart';
@@ -42,7 +46,7 @@ class TicketViewModel extends Loadable<TicketInfo> {
   Future<Result<Uint8List>> pdf() => _files.pdf(ticketId);
 }
 
-/// W7 · Ticket — крупный QR для входа, печать и PDF (§4.7, UC7).
+/// W7 · Билет — крупный QR для входа, печать и PDF (§4.7, UC7).
 class TicketPage extends StatelessWidget {
   const TicketPage({super.key});
 
@@ -59,95 +63,99 @@ class TicketPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
+    final c = context.colors;
     final vm = context.watch<TicketViewModel>();
     const actions = DocumentActions();
     return Scaffold(
-      backgroundColor: context.colors.bg,
       body: SafeArea(
         child: Column(
           children: [
-            ScreenHeader(title: 'Admission ticket', subtitle: vm.data?.displayId, onBack: () => context.pop()),
+            ScreenHeader(subtitle: vm.data?.displayId, title: l.admissionTicket, onBack: () => context.pop()),
             Expanded(
               child: LoadableView<TicketInfo>(
                 state: vm,
                 builder: (context, t) {
                   final usable = t.status == TicketStatus.valid;
                   return ListView(
-                    padding: const EdgeInsets.fromLTRB(AppSpacing.sideLight, 20, AppSpacing.sideLight, 24),
+                    padding: const EdgeInsets.fromLTRB(AppSpacing.side, 8, AppSpacing.side, 24),
                     children: [
-                      BlueprintFrame(
-                        background: context.colors.surface,
-                        padding: const EdgeInsets.all(18),
+                      Container(
+                        decoration: BoxDecoration(color: c.surface, borderRadius: BorderRadius.circular(AppRadius.panel), border: Border.all(color: c.border)),
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('BILETFLOW ADMISSION TICKET', style: AppText.fieldLabel.copyWith(color: context.colors.primary)),
-                            const SizedBox(height: 8),
-                            Text(t.eventTitle ?? 'Event', style: AppText.screenTitle.copyWith(color: context.colors.text)),
-                            if (t.eventStartsAt != null)
-                              Text(Fmt.dateTime(t.eventStartsAt!), style: AppText.meta.copyWith(color: context.colors.textMuted)),
-                            if (t.eventVenue != null && t.eventVenue!.isNotEmpty)
-                              Text(t.eventVenue!, style: AppText.meta.copyWith(color: context.colors.textMuted)),
-                            const SizedBox(height: 18),
-                            Center(
-                              child: Opacity(
-                                opacity: usable ? 1 : 0.25,
-                                child: Container(
-                                  width: 240,
-                                  height: 240,
-                                  color: context.colors.surface,
-                                  alignment: Alignment.center,
-                                  child: vm.qr == null
-                                      ? const LoadingView()
-                                      : Image.memory(vm.qr!, width: 240, height: 240, filterQuality: FilterQuality.none),
-                                ),
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.fromLTRB(20, 18, 20, 18),
+                              decoration: BoxDecoration(
+                                gradient: coverGradient(t.eventTitle ?? ''),
+                                borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.panel)),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(t.eventTitle ?? l.eventFallback, style: AppText.headerTitle.copyWith(color: Colors.white, fontSize: 20)),
+                                  if (t.eventStartsAt != null)
+                                    Text(Fmt.dateTime(t.eventStartsAt!), style: AppText.meta.copyWith(color: Colors.white.withValues(alpha: 0.9))),
+                                  if ((t.eventVenue ?? '').isNotEmpty)
+                                    Text(t.eventVenue!, style: AppText.meta.copyWith(color: Colors.white.withValues(alpha: 0.9))),
+                                ],
                               ),
                             ),
-                            if (!usable)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 8),
-                                child: Center(
-                                  child: TagLabel(t.status.label),
-                                ),
+                            Padding(
+                              padding: const EdgeInsets.all(20),
+                              child: Column(
+                                children: [
+                                  Opacity(
+                                    opacity: usable ? 1 : 0.25,
+                                    child: Container(
+                                      width: 240,
+                                      height: 240,
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
+                                      alignment: Alignment.center,
+                                      child: vm.qr == null
+                                          ? const LoadingView()
+                                          : Image.memory(vm.qr!, filterQuality: FilterQuality.none),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  TagLabel(usable ? l.admitsOne : t.status.text(l), tone: usable ? Tone.success : t.status.tone),
+                                  const SizedBox(height: 16),
+                                  DetailGrid(rows: [
+                                    if (t.attendeeName != null) (l.attendeeLabel, t.attendeeName!),
+                                    if (t.ticketTypeName != null) (l.ticketTypeLabel, t.ticketTypeName!),
+                                    if (t.seat != null) (l.seatLabelShort, t.seat!),
+                                    (l.ticketIdLabel, t.displayId),
+                                    if (t.orderId != null) (l.orderTitle, l.orderNo('${t.orderId}')),
+                                    if (t.createdAt != null) (l.issuedLabel, Fmt.shortDateTime(t.createdAt!)),
+                                  ]),
+                                ],
                               ),
-                            const SizedBox(height: 18),
-                            Row(children: [
-                              Text('ADMITS', style: AppText.fieldLabel.copyWith(color: context.colors.textMuted)),
-                              const SizedBox(width: 8),
-                              Text('1', style: AppText.statNumeral.copyWith(color: context.colors.text)),
-                            ]),
-                            const SizedBox(height: 10),
-                            DetailGrid(rows: [
-                              if (t.attendeeName != null) ('Attendee', t.attendeeName!),
-                              if (t.ticketTypeName != null) ('Ticket type', t.ticketTypeName!),
-                              if (t.seat != null) ('Section / Row / Seat', t.seat!),
-                              ('Ticket ID', t.displayId),
-                              if (t.orderId != null) ('Order', 'ORD-${t.orderId.toString().padLeft(4, '0')}'),
-                              if (t.createdAt != null) ('Issued', Fmt.shortDateTime(t.createdAt!)),
-                            ]),
+                            ),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 14),
-                      Text(
-                        'Keep the QR clean and unfolded. This ticket admits one person once; the digital and '
-                        'printed copies share one identifier.',
-                        style: AppText.finePrint.copyWith(color: context.colors.textMuted),
-                      ),
+                      const SizedBox(height: 12),
+                      Text(l.qrKeepNote, textAlign: TextAlign.center, style: AppText.finePrint.copyWith(color: c.textMuted)),
                       const SizedBox(height: AppSpacing.block),
-                      PrimaryButton(
-                        label: 'Print',
-                        onPressed: () => _withPdf(context, vm, (b) => actions.printPdf(b, name: t.displayId)),
-                      ),
-                      const SizedBox(height: AppSpacing.actionGap),
-                      SecondaryButton(
-                        label: 'Download PDF',
-                        onPressed: () => _withPdf(
-                          context,
-                          vm,
-                          (b) => actions.share(b, name: '${t.displayId}.pdf', mimeType: 'application/pdf'),
+                      Row(children: [
+                        Expanded(
+                          child: SecondaryButton(
+                            label: l.print,
+                            icon: LucideIcons.printer,
+                            onPressed: () => _withPdf(context, vm, (b) => actions.printPdf(b, name: t.displayId)),
+                          ),
                         ),
-                      ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: SecondaryButton(
+                            label: 'PDF',
+                            icon: LucideIcons.download,
+                            onPressed: () => _withPdf(context, vm, (b) => actions.share(b, name: '${t.displayId}.pdf', mimeType: 'application/pdf')),
+                          ),
+                        ),
+                      ]),
                     ],
                   );
                 },
