@@ -18,6 +18,7 @@ import '../../../core/widgets/screen_header.dart';
 import '../../../core/widgets/state_views.dart';
 import '../../../shared/domain/entities/commerce.dart';
 import '../domain/tickets_domain.dart';
+import '../../../core/presentation/failure_text.dart';
 
 class TicketViewModel extends Loadable<TicketInfo> {
   TicketViewModel({required this.ticketId, required GetTicket get, required this._files})
@@ -52,7 +53,7 @@ class TicketPage extends StatelessWidget {
       case Ok(:final value):
         await use(value);
       case Err(:final failure):
-        showMessage(context, failure.message);
+        showMessage(context, failure.text(context));
     }
   }
 

@@ -41,18 +41,22 @@ class CheckInAttendee {
     required String staffName,
   }) async {
     if (ticketIds.isEmpty) {
-      return const Err(ValidationFailure('Choose at least one ticket.'));
+      return const Err(ValidationFailure('Choose at least one ticket.', code: 'pickTicket'));
     }
     for (final id in ticketIds) {
       final ticket = attendee.tickets.where((t) => t.id == id).firstOrNull;
-      if (ticket == null) return const Err(ValidationFailure('Ticket is not in this order.'));
+      if (ticket == null) return const Err(ValidationFailure('Ticket is not in this order.', code: 'ticketNotInOrder'));
+      final args = {'label': ticket.label};
       final problem = switch (ticket.status) {
         AttendeeTicketStatus.valid => null,
-        AttendeeTicketStatus.checkedIn => 'Ticket ${ticket.label} is already checked in.',
-        AttendeeTicketStatus.refunded => 'Ticket ${ticket.label} was refunded and cannot admit anyone.',
-        AttendeeTicketStatus.cancelled => 'Ticket ${ticket.label} was cancelled and cannot admit anyone.',
+        AttendeeTicketStatus.checkedIn =>
+          ValidationFailure('Ticket ${ticket.label} is already checked in.', code: 'ticketAlreadyIn', args: args),
+        AttendeeTicketStatus.refunded => ValidationFailure(
+            'Ticket ${ticket.label} was refunded and cannot admit anyone.', code: 'ticketRefundedNoEntry', args: args),
+        AttendeeTicketStatus.cancelled => ValidationFailure(
+            'Ticket ${ticket.label} was cancelled and cannot admit anyone.', code: 'ticketCancelledNoEntry', args: args),
       };
-      if (problem != null) return Err(ValidationFailure(problem));
+      if (problem != null) return Err(problem);
     }
     return _repo.checkIn(
       eventId: eventId,
@@ -76,7 +80,7 @@ class UndoAttendeeCheckIn {
     required String staffName,
   }) async {
     if (reason.trim().isEmpty) {
-      return const Err(ValidationFailure('Give a reason for the reversal.'));
+      return const Err(ValidationFailure('Give a reason for the reversal.', code: 'reversalReason'));
     }
     return _repo.undoCheckIn(
       eventId: eventId,

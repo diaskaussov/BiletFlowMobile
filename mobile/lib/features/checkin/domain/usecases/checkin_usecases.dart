@@ -19,12 +19,12 @@ class UndoCheckIn {
   Future<Result<void>> call({required String? ticketId, required String reason}) async {
     if (ticketId == null || ticketId.isEmpty) {
       return const Err(ValidationFailure(
-        'The server did not return a ticket ID for this scan, so the '
-        'check-in cannot be reversed from here.',
+        'The server did not return a ticket ID for this scan, so the check-in cannot be reversed from here.',
+        code: 'noTicketId',
       ));
     }
     if (reason.trim().isEmpty) {
-      return const Err(ValidationFailure('Give a reason for the reversal.'));
+      return const Err(ValidationFailure('Give a reason for the reversal.', code: 'reversalReason'));
     }
     final result = await _checkin.undo(ticketId, reason: reason.trim());
     if (result is Ok) _log.markReversed(ticketId, _clock());

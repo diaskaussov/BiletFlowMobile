@@ -128,7 +128,7 @@ class GetTicket {
     final r = await _repo.myTickets();
     if (r case Err(:final failure)) return Err(failure);
     final found = r.valueOrNull!.where((t) => t.id == ticketId).firstOrNull;
-    return found == null ? const Err(ServerFailure('Ticket not found.', statusCode: 404)) : Ok(found);
+    return found == null ? const Err(ServerFailure('Ticket not found.', statusCode: 404, code: 'ticketNotFound')) : Ok(found);
   }
 }
 
@@ -151,10 +151,10 @@ class CancelOrder {
   Future<Result<OrderInfo>> call(OrderDetails details) async {
     final o = details.order;
     if (o.status == OrderStatus.cancelled || o.status == OrderStatus.refunded) {
-      return const Err(ValidationFailure('This order is already cancelled.'));
+      return const Err(ValidationFailure('This order is already cancelled.', code: 'orderAlreadyCancelled'));
     }
     if (details.tickets.any((t) => t.status == TicketStatus.checkedIn)) {
-      return const Err(ValidationFailure('A ticket in this order was already used at the door.'));
+      return const Err(ValidationFailure('A ticket in this order was already used at the door.', code: 'ticketUsedInOrder'));
     }
     return _repo.cancelOrder(o.id);
   }

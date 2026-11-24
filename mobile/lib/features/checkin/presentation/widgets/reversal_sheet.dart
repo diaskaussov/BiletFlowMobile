@@ -9,6 +9,7 @@ import '../../../../core/widgets/buttons.dart';
 import '../../../../core/widgets/data_blocks.dart';
 import '../../../../core/widgets/labeled_text_field.dart';
 import '../../../../core/widgets/screen_header.dart';
+import '../../../../core/presentation/failure_text.dart';
 
 /// C4 · Reverse a check-in. Единственное разрушительное действие
 /// администратора — за подтверждением, которое называет кого и когда.
@@ -85,7 +86,7 @@ class _ReversalSheetState extends State<_ReversalSheet> {
     } else {
       setState(() {
         _busy = false;
-        _error = failure.message;
+        _error = failure.text(context);
       });
     }
   }

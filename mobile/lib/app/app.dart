@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../core/config/server_address.dart';
 import '../core/di/injection.dart';
+import '../core/presentation/l10n.dart';
 import '../core/theme/app_theme.dart';
 import '../features/auth/presentation/controllers/session_controller.dart';
 import '../features/checkin/domain/usecases/checkin_usecases.dart';
 import '../features/connection/presentation/connection_controller.dart';
 import '../features/events/presentation/controllers/active_event_controller.dart';
+import '../features/settings/presentation/appearance_controller.dart';
 import '../features/settings/presentation/settings_controller.dart';
 import 'router.dart';
 
@@ -56,14 +59,25 @@ class _BiletFlowAppState extends State<BiletFlowApp> {
         ChangeNotifierProvider.value(value: sl<SettingsController>()),
         ChangeNotifierProvider.value(value: sl<ConnectionController>()),
         ChangeNotifierProvider.value(value: sl<ServerAddress>()),
+        ChangeNotifierProvider.value(value: sl<AppearanceController>()),
       ],
-      child: MaterialApp.router(
-        title: 'BiletFlow Scanner',
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.light,
-        darkTheme: AppTheme.dark,
-        themeMode: ThemeMode.system,
-        routerConfig: _router,
+      child: Consumer<AppearanceController>(
+        builder: (context, appearance, _) => MaterialApp.router(
+          onGenerateTitle: (context) => context.l10n.appName,
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.light,
+          darkTheme: AppTheme.dark,
+          themeMode: appearance.themeMode,
+          locale: appearance.locale,
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          routerConfig: _router,
+        ),
       ),
     );
   }

@@ -4,6 +4,7 @@ import '../../../../core/error/result.dart';
 import '../../domain/usecases/sign_in.dart';
 import '../controllers/session_controller.dart';
 import '../../../../core/presentation/safe_notifier.dart';
+import '../../../../core/error/failure.dart';
 
 class SignInViewModel extends ChangeNotifier with SafeNotifier {
   SignInViewModel({required this._signIn, required this._session});
@@ -15,11 +16,11 @@ class SignInViewModel extends ChangeNotifier with SafeNotifier {
   String _password = '';
   bool _isLoading = false;
   bool _isPasswordHidden = true;
-  String? _error;
+  Failure? _error;
 
   bool get isLoading => _isLoading;
   bool get isPasswordHidden => _isPasswordHidden;
-  String? get error => _error;
+  Failure? get error => _error;
   bool get canSubmit =>
       _email.trim().isNotEmpty && _password.isNotEmpty && !_isLoading;
 
@@ -59,7 +60,7 @@ class SignInViewModel extends ChangeNotifier with SafeNotifier {
       case Ok(:final value):
         _session.signedIn(value);
       case Err(:final failure):
-        _error = failure.message;
+        _error = failure;
     }
     notifyListeners();
   }

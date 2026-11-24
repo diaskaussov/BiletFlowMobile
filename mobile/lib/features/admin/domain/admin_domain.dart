@@ -116,7 +116,7 @@ class GetModerationCase {
       if (r case Err(:final failure)) return Err(failure);
     }
     final event = (results[0].valueOrNull! as List<EventInfo>).where((e) => e.id == eventId).firstOrNull;
-    if (event == null) return const Err(ServerFailure('Event not found.', statusCode: 404));
+    if (event == null) return const Err(ServerFailure('Event not found.', statusCode: 404, code: 'eventNotFound'));
     final orders = (results[1].valueOrNull! as List<OrderInfo>).where((o) => o.eventId == eventId).toList();
     final organizer = (results[2].valueOrNull! as List<UserAccount>).where((u) => u.id == event.organizerId).firstOrNull;
     return Ok(ModerationCase(event: event, orders: orders, organizer: organizer));
@@ -131,19 +131,19 @@ class ModerationActions {
   final AdminRepository _repo;
 
   Future<Result<void>> suspendUser(UserAccount u, {required int currentAdminId}) async {
-    if (u.id == currentAdminId) return const Err(ValidationFailure('You cannot suspend your own account.'));
-    if (u.role == UserRole.platformAdmin) return const Err(ValidationFailure('Platform admins cannot be suspended here.'));
-    if (u.suspended) return const Err(ValidationFailure('This user is already suspended.'));
+    if (u.id == currentAdminId) return const Err(ValidationFailure('You cannot suspend your own account.', code: 'selfSuspend'));
+    if (u.role == UserRole.platformAdmin) return const Err(ValidationFailure('Platform admins cannot be suspended here.', code: 'adminSuspend'));
+    if (u.suspended) return const Err(ValidationFailure('This user is already suspended.', code: 'userAlreadySuspended'));
     return _repo.suspendUser(u.id);
   }
 
   Future<Result<void>> unsuspendUser(UserAccount u) async {
-    if (!u.suspended) return const Err(ValidationFailure('This user is not suspended.'));
+    if (!u.suspended) return const Err(ValidationFailure('This user is not suspended.', code: 'userNotSuspended'));
     return _repo.unsuspendUser(u.id);
   }
 
   Future<Result<void>> suspendEvent(EventInfo e, String reason) async {
-    if (reason.trim().length < 3) return const Err(ValidationFailure('Record the reason for suspending.'));
+    if (reason.trim().length < 3) return const Err(ValidationFailure('Record the reason for suspending.', code: 'suspendReason'));
     return _repo.suspendEvent(e.id);
   }
 }

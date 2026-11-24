@@ -154,21 +154,21 @@ void main() {
     test('event draft validation', () {
       final base = EventDraft(title: 'T', venueName: 'V', city: 'C', startsAt: now, capacity: 10);
       expect(base.validate(), isNull);
-      expect(base.copyWith(title: ' ').validate(), contains('title'));
-      expect(base.copyWith(endsAt: now.subtract(const Duration(hours: 1))).validate(), contains('end after'));
-      expect(base.copyWith(capacity: () => 0).validate(), contains('capacity'));
-      expect(base.copyWith(registrationOpensAt: now, registrationClosesAt: now.subtract(const Duration(days: 1))).validate(), contains('close after'));
+      expect(base.copyWith(title: ' ').validate()?.message, contains('title'));
+      expect(base.copyWith(endsAt: now.subtract(const Duration(hours: 1))).validate()?.message, contains('end after'));
+      expect(base.copyWith(capacity: () => 0).validate()?.message, contains('capacity'));
+      expect(base.copyWith(registrationOpensAt: now, registrationClosesAt: now.subtract(const Duration(days: 1))).validate()?.message, contains('close after'));
     });
 
     test('ticket type validation', () {
       expect(const TicketTypeDraft(name: 'GA', quantity: 10).validate(), isNull);
-      expect(const TicketTypeDraft(name: 'GA', quantity: 10).validate(alreadySold: 20), contains('already sold'));
+      expect(const TicketTypeDraft(name: 'GA', quantity: 10).validate(alreadySold: 20)?.message, contains('already sold'));
       expect(const TicketTypeDraft(name: '', quantity: 1).validate(), isNotNull);
-      expect(const TicketTypeDraft(name: 'X', quantity: 1, price: -1).validate(), contains('negative'));
+      expect(const TicketTypeDraft(name: 'X', quantity: 1, price: -1).validate()?.message, contains('negative'));
     });
 
     test('campaign validation', () {
-      expect(const CampaignDraft(name: 'S', discountType: DiscountType.percentage, discountValue: 120).validate(), contains('100%'));
+      expect(const CampaignDraft(name: 'S', discountType: DiscountType.percentage, discountValue: 120).validate()?.message, contains('100%'));
       expect(const CampaignDraft(name: 'S', discountType: DiscountType.fixed, discountValue: 500).validate(), isNull);
       expect(const CampaignDraft(name: 'S', discountType: DiscountType.fixed, discountValue: 0).validate(), isNotNull);
     });

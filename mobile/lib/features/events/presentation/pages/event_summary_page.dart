@@ -15,6 +15,7 @@ import '../../../checkin/domain/entities/scan_log.dart';
 import '../../../checkin/presentation/verdict_copy.dart';
 import '../../../settings/presentation/settings_controller.dart';
 import '../view_models/event_summary_view_model.dart';
+import '../../../../core/presentation/failure_text.dart';
 
 /// A4 · Event summary (§4.8 counts)
 class EventSummaryPage extends StatelessWidget {
@@ -47,7 +48,7 @@ class EventSummaryPage extends StatelessWidget {
                       const SizedBox(height: 120, child: LoadingView())
                     else if (stats == null)
                       Text(
-                        vm.failure?.message ?? 'Counts are unavailable.',
+                        vm.failure?.text(context) ?? 'Counts are unavailable.',
                         style: AppText.body.copyWith(color: context.colors.textMuted),
                       )
                     else ...[

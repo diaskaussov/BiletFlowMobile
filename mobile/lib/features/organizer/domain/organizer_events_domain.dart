@@ -92,22 +92,22 @@ class EventDraft {
       );
 
   /// Ошибка формы или null — правила §4.2.
-  String? validate() {
-    if (title.trim().isEmpty) return 'Give the event a title.';
-    if (venueName.trim().isEmpty) return 'Add the venue — events are physical (§4.2).';
-    if (city.trim().isEmpty) return 'Add the city.';
+  Problem? validate() {
+    if (title.trim().isEmpty) return const Problem('eventTitle', 'Give the event a title.');
+    if (venueName.trim().isEmpty) return const Problem('eventVenue', 'Add the venue — events are physical (§4.2).');
+    if (city.trim().isEmpty) return const Problem('eventCity', 'Add the city.');
     final s = startsAt;
-    if (s == null) return 'Choose when the event starts.';
-    if (endsAt != null && !endsAt!.isAfter(s)) return 'The event must end after it starts.';
+    if (s == null) return const Problem('eventStart', 'Choose when the event starts.');
+    if (endsAt != null && !endsAt!.isAfter(s)) return const Problem('eventEndOrder', 'The event must end after it starts.');
     if (registrationOpensAt != null &&
         registrationClosesAt != null &&
         !registrationClosesAt!.isAfter(registrationOpensAt!)) {
-      return 'Registration must close after it opens.';
+      return const Problem('regCloseOrder', 'Registration must close after it opens.');
     }
     if (registrationClosesAt != null && registrationClosesAt!.isAfter(endsAt ?? s)) {
-      return 'Registration must close before the event ends.';
+      return const Problem('regCloseBeforeEnd', 'Registration must close before the event ends.');
     }
-    if (capacity == null || capacity! < 1) return 'Set a capacity of at least 1.';
+    if (capacity == null || capacity! < 1) return const Problem('capacityMin', 'Set a capacity of at least 1.');
     return null;
   }
 }
@@ -144,14 +144,16 @@ class TicketTypeDraft {
 
   bool get isFree => price == 0;
 
-  String? validate({int alreadySold = 0}) {
-    if (name.trim().isEmpty) return 'Name the ticket type.';
-    if (price < 0) return 'Price cannot be negative.';
-    if (quantity < 1) return 'Quantity must be at least 1.';
-    if (quantity < alreadySold) return 'Quantity cannot go below the $alreadySold already sold.';
-    if (maxPerOrder != null && maxPerOrder! < 1) return 'Limit per order must be at least 1.';
+  Problem? validate({int alreadySold = 0}) {
+    if (name.trim().isEmpty) return const Problem('typeName', 'Name the ticket type.');
+    if (price < 0) return const Problem('priceNegative', 'Price cannot be negative.');
+    if (quantity < 1) return const Problem('quantityMin', 'Quantity must be at least 1.');
+    if (quantity < alreadySold) {
+      return Problem('quantityBelowSold', 'Quantity cannot go below the $alreadySold already sold.', {'count': alreadySold});
+    }
+    if (maxPerOrder != null && maxPerOrder! < 1) return const Problem('perOrderMin', 'Limit per order must be at least 1.');
     if (salesStart != null && salesEnd != null && !salesEnd!.isAfter(salesStart!)) {
-      return 'Sales must end after they start.';
+      return const Problem('salesEndOrder', 'Sales must end after they start.');
     }
     return null;
   }
@@ -265,7 +267,7 @@ class SaveEvent {
 
   Future<Result<EventInfo>> call(EventDraft draft, {int? eventId}) async {
     final problem = draft.validate();
-    if (problem != null) return Err(ValidationFailure(problem));
+    if (problem != null) return Err(problem.toFailure());
     return eventId == null ? _repo.create(draft) : _repo.update(eventId, draft);
   }
 }
@@ -284,14 +286,14 @@ class ChangeEventState {
         final types = await _repo.ticketTypes(e.id);
         if (types case Err(:final failure)) return Err(failure);
         if (types.valueOrNull!.where((t) => !t.hidden).isEmpty) {
-          return const Err(ValidationFailure('Add at least one ticket type before publishing.'));
+          return const Err(ValidationFailure('Add at least one ticket type before publishing.', code: 'publishNeedsType'));
         }
         return _repo.publish(e.id);
       case EventAction.unpublish:
         return _repo.unpublish(e.id);
       case EventAction.cancel:
         if (e.status == EventStatus.cancelled) {
-          return const Err(ValidationFailure('This event is already cancelled.'));
+          return const Err(ValidationFailure('This event is already cancelled.', code: 'eventAlreadyCancelled'));
         }
         return _repo.cancel(e.id);
       case EventAction.duplicate:
@@ -309,7 +311,7 @@ class ManageTicketTypes {
 
   Future<Result<TicketTypeInfo>> save(int eventId, TicketTypeDraft draft, {TicketTypeInfo? existing}) async {
     final problem = draft.validate(alreadySold: existing?.sold ?? 0);
-    if (problem != null) return Err(ValidationFailure(problem));
+    if (problem != null) return Err(problem.toFailure());
     return existing == null ? _repo.createTicketType(eventId, draft) : _repo.updateTicketType(existing.id, draft);
   }
 
@@ -324,15 +326,15 @@ class ManageSeatMap {
   Future<Result<List<SeatInfo>>> load(int eventId) => _repo.seats(eventId);
 
   Future<Result<List<SeatInfo>>> save(int eventId, List<SectionDraft> sections) async {
-    if (sections.isEmpty) return const Err(ValidationFailure('Add at least one section.'));
+    if (sections.isEmpty) return const Err(ValidationFailure('Add at least one section.', code: 'sectionsEmpty'));
     final names = <String>{};
     for (final s in sections) {
-      if (s.name.trim().isEmpty) return const Err(ValidationFailure('Every section needs a name.'));
+      if (s.name.trim().isEmpty) return const Err(ValidationFailure('Every section needs a name.', code: 'sectionName'));
       if (!names.add(s.name.trim().toUpperCase())) {
-        return Err(ValidationFailure('Section "${s.name}" is listed twice.'));
+        return Err(ValidationFailure('Section "${s.name}" is listed twice.', code: 'sectionTwice', args: {'name': s.name}));
       }
       if (s.rows < 1 || s.seatsPerRow < 1) {
-        return const Err(ValidationFailure('Rows and seats per row must be at least 1.'));
+        return const Err(ValidationFailure('Rows and seats per row must be at least 1.', code: 'rowsMin'));
       }
     }
     return _repo.setSeatMap(eventId, sections);
@@ -350,13 +352,13 @@ class PaidSalesActivation {
   Future<Result<ActivationChecklist>> checklist(int eventId) => _repo.checklist(eventId);
 
   Future<Result<void>> activate(int eventId, {required bool termsAccepted}) async {
-    if (!termsAccepted) return const Err(ValidationFailure('Accept the paid-event terms first.'));
+    if (!termsAccepted) return const Err(ValidationFailure('Accept the paid-event terms first.', code: 'termsRequired'));
     final c = await _repo.checklist(eventId);
     if (c case Err(:final failure)) return Err(failure);
     final list = c.valueOrNull!;
-    if (list.alreadyActivated) return const Err(ValidationFailure('Paid sales are already active.'));
-    if (!list.hasPaidTicketType) return const Err(ValidationFailure('Add a paid ticket type first.'));
-    if (!list.payoutVerified) return const Err(ValidationFailure('Connect a payout account first.'));
+    if (list.alreadyActivated) return const Err(ValidationFailure('Paid sales are already active.', code: 'salesAlreadyActive'));
+    if (!list.hasPaidTicketType) return const Err(ValidationFailure('Add a paid ticket type first.', code: 'needPaidType'));
+    if (!list.payoutVerified) return const Err(ValidationFailure('Connect a payout account first.', code: 'needPayout'));
     return _repo.activate(eventId);
   }
 }
@@ -371,9 +373,9 @@ class ManageOrganizerProfile {
   Future<Result<OrganizerProfile>> load() => _repo.profile();
 
   Future<Result<OrganizerProfile>> save(OrganizerProfile p) async {
-    if (p.organizationName.trim().isEmpty) return const Err(ValidationFailure('Enter the organization name.'));
+    if (p.organizationName.trim().isEmpty) return const Err(ValidationFailure('Enter the organization name.', code: 'orgName'));
     if (p.contactEmail.isNotEmpty && !_email.hasMatch(p.contactEmail.trim())) {
-      return const Err(ValidationFailure('Contact email is not valid.'));
+      return const Err(ValidationFailure('Contact email is not valid.', code: 'contactEmail'));
     }
     return _repo.saveProfile(p);
   }

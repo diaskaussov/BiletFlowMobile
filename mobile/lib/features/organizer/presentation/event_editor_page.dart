@@ -17,6 +17,8 @@ import '../../../core/widgets/screen_header.dart';
 import '../../../core/widgets/state_views.dart';
 import '../../../shared/domain/entities/event_info.dart';
 import '../domain/organizer_events_domain.dart';
+import '../../../core/presentation/failure_text.dart';
+import '../../../core/error/failure.dart';
 
 class EventEditorViewModel extends Loadable<EventDraft> {
   EventEditorViewModel({this.eventId, required GetManagedEvent get, required this._save})
@@ -31,7 +33,7 @@ class EventEditorViewModel extends Loadable<EventDraft> {
 
   final int? eventId;
   final SaveEvent _save;
-  String? error;
+  Failure? error;
 
   void update(EventDraft Function(EventDraft) change) {
     final d = data;
@@ -41,7 +43,7 @@ class EventEditorViewModel extends Loadable<EventDraft> {
   Future<EventInfo?> save() async {
     EventInfo? saved;
     final f = await run(() => _save(data!, eventId: eventId), onOk: (EventInfo e) => saved = e);
-    error = f?.message;
+    error = f;
     notifyListeners();
     return saved;
   }
@@ -191,7 +193,7 @@ class _EventEditorPageState extends State<EventEditorPage> {
                 child: Column(
                   children: [
                     if (vm.error != null) ...[
-                      Text(vm.error!, style: AppText.bodySecondary.copyWith(color: context.colors.text)),
+                      Text(vm.error!.text(context), style: AppText.bodySecondary.copyWith(color: context.colors.text)),
                       const SizedBox(height: 8),
                     ],
                     PrimaryButton(

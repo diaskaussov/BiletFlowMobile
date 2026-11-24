@@ -21,6 +21,8 @@ import '../../../shared/domain/entities/commerce.dart';
 import '../../checkout/domain/cart.dart';
 import '../domain/catalog_domain.dart';
 import 'calendar_sheet.dart';
+import '../../../core/presentation/failure_text.dart';
+import '../../../core/error/failure.dart';
 
 class EventPageViewModel extends Loadable<EventPageData> {
   EventPageViewModel({
@@ -37,7 +39,7 @@ class EventPageViewModel extends Loadable<EventPageData> {
   final String? initialPromo;
 
   Cart? _cart;
-  String? promoError;
+  Failure? promoError;
   bool promoChecking = false;
 
   Cart? get cart {
@@ -69,7 +71,7 @@ class EventPageViewModel extends Loadable<EventPageData> {
       case Ok(:final value):
         _cart = cart?.copyWith(promo: () => value);
       case Err(:final failure):
-        promoError = failure.message;
+        promoError = failure;
     }
     notifyListeners();
   }
@@ -220,7 +222,7 @@ class _EventPageState extends State<EventPage> {
                 ),
                 if (vm.promoError != null) ...[
                   const SizedBox(height: 6),
-                  Text(vm.promoError!, style: AppText.meta.copyWith(color: context.colors.text)),
+                  Text(vm.promoError!.text(context), style: AppText.meta.copyWith(color: context.colors.text)),
                 ],
               ],
               const SizedBox(height: AppSpacing.section),

@@ -23,7 +23,11 @@ import '../../features/events/data/repositories/events_repository_impl.dart';
 import '../../features/events/domain/repositories/events_repository.dart';
 import '../../features/events/domain/usecases/event_usecases.dart';
 import '../../features/events/presentation/controllers/active_event_controller.dart';
+import '../../features/settings/data/appearance_repository_impl.dart';
 import '../../features/settings/data/settings_repository_impl.dart';
+import '../../features/settings/domain/repositories/appearance_repository.dart';
+import '../../features/settings/domain/usecases/appearance_usecases.dart';
+import '../../features/settings/presentation/appearance_controller.dart';
 import '../../features/settings/domain/repositories/settings_repository.dart';
 import '../../features/settings/domain/usecases/settings_usecases.dart';
 import '../../features/settings/presentation/settings_controller.dart';
@@ -69,6 +73,7 @@ Future<void> configureDependencies() async {
     ..registerLazySingleton<CheckinRepository>(() => CheckinRepositoryImpl(sl()))
     ..registerLazySingleton<ScanLogRepository>(() => ScanLogRepositoryImpl(sl()))
     ..registerLazySingleton<SettingsRepository>(() => SettingsRepositoryImpl(sl()))
+    ..registerLazySingleton<AppearanceRepository>(() => AppearanceRepositoryImpl(sl()))
     ..registerLazySingleton<AttendeesRepository>(() => AttendeesRepositoryImpl(sl()));
 
   // — use cases —
@@ -89,6 +94,8 @@ Future<void> configureDependencies() async {
     ..registerLazySingleton(() => ClearScanLog(sl()))
     ..registerLazySingleton(() => LoadSettings(sl()))
     ..registerLazySingleton(() => SaveSettings(sl()))
+    ..registerLazySingleton(() => LoadAppearance(sl()))
+    ..registerLazySingleton(() => SaveAppearance(sl()))
     ..registerLazySingleton(() => SearchAttendees(sl()))
     ..registerLazySingleton(() => GetAttendee(sl()))
     ..registerLazySingleton(() => CheckInAttendee(sl()))
@@ -99,6 +106,7 @@ Future<void> configureDependencies() async {
     ..registerLazySingleton(() => SessionController(restore: sl(), signOut: sl()))
     ..registerLazySingleton(ActiveEventController.new)
     ..registerLazySingleton(() => SettingsController(load: sl(), save: sl()))
+    ..registerLazySingleton(() => AppearanceController(load: sl(), save: sl()))
     ..registerLazySingleton(() => ConnectionController(
           network: sl(),
           lastResponseAt: sl<ApiClient>().lastResponseAt,
@@ -113,6 +121,7 @@ Future<void> configureDependencies() async {
   configureAdminDependencies(sl);
 
   await sl<ServerAddress>().load();
+  await sl<AppearanceController>().load();
 
   // Сервер отверг токен — выходим, роутер вернёт на A1.
   sl<ApiClient>().onUnauthorized = () => sl<SessionController>().signOut();

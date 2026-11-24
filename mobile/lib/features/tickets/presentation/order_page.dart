@@ -23,6 +23,7 @@ import '../../../shared/domain/entities/event_info.dart';
 import '../../catalog/domain/catalog_domain.dart';
 import '../../catalog/presentation/calendar_sheet.dart';
 import '../domain/tickets_domain.dart';
+import '../../../core/presentation/failure_text.dart';
 
 class OrderViewModel extends Loadable<OrderDetails> {
   OrderViewModel({
@@ -66,7 +67,7 @@ class OrderPage extends StatelessWidget {
       case Ok(:final value):
         await const DocumentActions().share(value, name: '${t.displayId}.pdf', mimeType: 'application/pdf');
       case Err(:final failure):
-        showMessage(context, failure.message);
+        showMessage(context, failure.text(context));
     }
   }
 
@@ -98,7 +99,7 @@ class OrderPage extends StatelessWidget {
       case Ok(:final value):
         await showCalendarSheet(context, event: value, icsFile: vm.calendar);
       case Err(:final failure):
-        showMessage(context, failure.message);
+        showMessage(context, failure.text(context));
     }
   }
 

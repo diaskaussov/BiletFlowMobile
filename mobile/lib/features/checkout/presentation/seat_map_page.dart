@@ -16,6 +16,7 @@ import '../../../core/widgets/state_views.dart';
 import '../../../shared/domain/entities/commerce.dart';
 import '../domain/cart.dart';
 import '../domain/checkout_domain.dart';
+import '../../../core/presentation/failure_text.dart';
 
 class SeatMapViewModel extends Loadable<List<SeatInfo>> {
   SeatMapViewModel({required this.cart, required LoadSeatMap load, required this._hold})
@@ -66,7 +67,7 @@ class SeatMapPage extends StatelessWidget {
     final (held, failure) = await vm.holdSelection();
     if (!context.mounted) return;
     if (failure != null) {
-      showMessage(context, failure.message);
+      showMessage(context, failure.text(context));
       await vm.load();
       vm.selected.clear();
       return;

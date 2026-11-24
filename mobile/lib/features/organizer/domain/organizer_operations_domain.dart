@@ -46,15 +46,15 @@ class CampaignDraft {
   final DateTime? validFrom;
   final DateTime? validTo;
 
-  String? validate() {
-    if (name.trim().isEmpty) return 'Name the campaign.';
-    if (discountValue <= 0) return 'The discount must be above zero.';
+  Problem? validate() {
+    if (name.trim().isEmpty) return const Problem('campaignName', 'Name the campaign.');
+    if (discountValue <= 0) return const Problem('discountPositive', 'The discount must be above zero.');
     if (discountType == DiscountType.percentage && discountValue > 100) {
-      return 'A percentage discount cannot exceed 100%.';
+      return const Problem('percentMax', 'A percentage discount cannot exceed 100%.');
     }
-    if (maxRedemptions != null && maxRedemptions! < 1) return 'Allow at least one redemption.';
+    if (maxRedemptions != null && maxRedemptions! < 1) return const Problem('redemptionsMin', 'Allow at least one redemption.');
     if (validFrom != null && validTo != null && !validTo!.isAfter(validFrom!)) {
-      return 'The campaign must end after it starts.';
+      return const Problem('campaignEndOrder', 'The campaign must end after it starts.');
     }
     return null;
   }
@@ -178,9 +178,9 @@ class RefundOrder {
   final OrganizerOperationsRepository _repo;
 
   Future<Result<void>> call(OrderInfo order, String reason) async {
-    if (order.status == OrderStatus.refunded) return const Err(ValidationFailure('This order is already refunded.'));
-    if (order.status == OrderStatus.cancelled) return const Err(ValidationFailure('This order was cancelled.'));
-    if (reason.trim().length < 3) return const Err(ValidationFailure('Record a reason for the refund.'));
+    if (order.status == OrderStatus.refunded) return const Err(ValidationFailure('This order is already refunded.', code: 'orderAlreadyRefunded'));
+    if (order.status == OrderStatus.cancelled) return const Err(ValidationFailure('This order was cancelled.', code: 'orderWasCancelled'));
+    if (reason.trim().length < 3) return const Err(ValidationFailure('Record a reason for the refund.', code: 'refundReason'));
     return _repo.refund(order.id, reason.trim());
   }
 }
@@ -243,12 +243,12 @@ class ManageCampaigns {
 
   Future<Result<CreatedCampaign>> create(int eventId, CampaignDraft d) async {
     final problem = d.validate();
-    if (problem != null) return Err(ValidationFailure(problem));
+    if (problem != null) return Err(problem.toFailure());
     return _repo.createCampaign(eventId, d);
   }
 
   Future<Result<void>> deactivate(CampaignInfo c) async {
-    if (!c.active) return const Err(ValidationFailure('This campaign is already disabled.'));
+    if (!c.active) return const Err(ValidationFailure('This campaign is already disabled.', code: 'campaignDisabled'));
     return _repo.deactivateCampaign(c.id);
   }
 }
@@ -264,9 +264,9 @@ class ManageStaff {
 
   Future<Result<StaffAssignment>> assign(int eventId, String rawUserId, List<StaffAssignment> current) async {
     final id = int.tryParse(rawUserId.trim());
-    if (id == null || id < 1) return const Err(ValidationFailure('Enter the user\'s numeric ID.'));
+    if (id == null || id < 1) return const Err(ValidationFailure('Enter the user\'s numeric ID.', code: 'userIdInvalid'));
     if (current.any((s) => s.user.id == id)) {
-      return const Err(ValidationFailure('This person is already on the team.'));
+      return const Err(ValidationFailure('This person is already on the team.', code: 'alreadyOnTeam'));
     }
     return _repo.assignStaff(eventId, id);
   }

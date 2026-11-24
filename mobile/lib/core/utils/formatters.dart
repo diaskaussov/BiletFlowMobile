@@ -1,9 +1,21 @@
+import 'dart:ui';
+
 import 'package:intl/intl.dart';
 
-/// Форматы из §08 спеки: тонкий пробел между тысячами, 24-часовое время,
-/// секунды только на экранах результата.
+import '../../l10n/app_localizations.dart';
+
+/// Форматы TicketTon: «22 дек 2026, 19:00», «3 420 000 ₸», 24-часовое время.
+/// Язык берётся из `Intl.defaultLocale`, его выставляет AppearanceController.
 abstract final class Fmt {
-  static const thinSpace = ' ';
+  static const thinSpace = '\u2009';
+
+  static AppLocalizations get _l {
+    final code = (Intl.defaultLocale ?? 'ru').split(RegExp('[_-]')).first;
+    return lookupAppLocalizations(Locale(AppLocalizations.supportedLocales.any((l) => l.languageCode == code) ? code : 'ru'));
+  }
+
+  /// Убирает точки сокращений («дек.» → «дек»), как в макетах.
+  static String _clean(String s) => s.replaceAll('.', '');
 
   static String count(int value) {
     final digits = value.abs().toString();
@@ -15,65 +27,64 @@ abstract final class Fmt {
     return buf.toString();
   }
 
-  static String percent(int part, int total) =>
-      total <= 0 ? '0%' : '${(part * 100 / total).round()}%';
+  static String percent(int part, int total) => total <= 0 ? '0%' : '${(part * 100 / total).round()}%';
 
   static String time(DateTime t) => DateFormat('HH:mm').format(t);
 
   static String timeWithSeconds(DateTime t) => DateFormat('HH:mm:ss').format(t);
 
-  /// «SAT 12 SEP · 14:00»
-  static String dayStamp(DateTime t) =>
-      DateFormat('EEE d MMM · HH:mm').format(t).toUpperCase();
+  /// «22 дек 2026, 19:00»
+  static String dateTime(DateTime t) => _clean(DateFormat('d MMM y, HH:mm').format(t));
 
-  /// «Fri 25 Sep, 20:30»
-  static String dateTime(DateTime t) => DateFormat('EEE d MMM, HH:mm').format(t);
+  /// «пт, 25 дек · 20:30» — над названием события в списках.
+  static String dayStamp(DateTime t) => _clean(DateFormat('EEE, d MMM · HH:mm').format(t));
 
-  /// «29 Aug 14:02»
-  static String shortDateTime(DateTime t) => DateFormat('d MMM HH:mm').format(t);
+  /// «22 ноя, 14:12» — время заказа, сообщения.
+  static String shortDateTime(DateTime t) => _clean(DateFormat('d MMM, HH:mm').format(t));
 
-  /// «Today, 19:00» / «Sat 12 Sep, 14:00»
+  /// «22 дек 2026»
+  static String date(DateTime t) => _clean(DateFormat('d MMM y').format(t));
+
+  /// «Сегодня, 19:00» или полная дата.
   static String relativeDay(DateTime t, {DateTime? now}) {
     final n = now ?? DateTime.now();
     final sameDay = t.year == n.year && t.month == n.month && t.day == n.day;
-    return sameDay ? 'Today, ${time(t)}' : dateTime(t);
+    return sameDay ? '${_l.today}, ${time(t)}' : dateTime(t);
   }
 
-  /// «4 min ago», «32 minutes ago» в стиле макетов.
+  /// «4 мин назад».
   static String ago(DateTime t, {DateTime? now}) {
     final d = (now ?? DateTime.now()).difference(t);
-    if (d.inSeconds < 60) return '${d.inSeconds.clamp(0, 59)} s ago';
-    if (d.inMinutes < 60) return '${d.inMinutes} min ago';
-    if (d.inHours < 24) return '${d.inHours} h ago';
-    return '${d.inDays} d ago';
+    final l = _l;
+    if (d.inMinutes < 1) return l.agoJustNow;
+    if (d.inMinutes < 60) return l.agoMinutes(d.inMinutes);
+    if (d.inHours < 24) return l.agoHours(d.inHours);
+    return l.agoDays(d.inDays);
   }
 
-  /// «4 500 ₸», «Free» — суммы в KZT (§7 SRS).
+  /// «4 500 ₸», «Бесплатно».
   static String money(num value, {bool freeWord = true}) {
-    if (value == 0 && freeWord) return 'Free';
-    final whole = value.round();
-    return '${count(whole)} ₸';
+    if (value == 0 && freeWord) return _l.free;
+    return '${count(value.round())} ₸';
   }
 
-  /// «4.1M ₸» для крупных итогов на плитках.
+  /// «4,1 млн ₸» для крупных итогов на плитках.
   static String moneyShort(num value) {
-    final v = value.abs();
-    if (v >= 1000000) return '${(value / 1000000).toStringAsFixed(1)}M ₸';
+    if (value.abs() >= 1000000) {
+      return '${NumberFormat('0.0').format(value / 1000000)} ${_l.millionShort} ₸';
+    }
     return money(value, freeWord: false);
   }
 
-  /// «Sat 12 Sep 2026 · 19:00 — 23:00»
+  /// «22 дек 2026, 19:00 — 23:00»
   static String range(DateTime start, DateTime? end) {
-    final day = DateFormat('EEE d MMM y · HH:mm').format(start);
+    final day = dateTime(start);
     if (end == null) return day;
     final sameDay = end.year == start.year && end.month == start.month && end.day == start.day;
-    return sameDay ? '$day — ${time(end)}' : '$day — ${DateFormat('d MMM HH:mm').format(end)}';
+    return sameDay ? '$day — ${time(end)}' : '$day — ${dateTime(end)}';
   }
 
-  /// «19 Dec 2026»
-  static String date(DateTime t) => DateFormat('d MMM y').format(t);
-
-  /// Длительность таймера удержания «09:41».
+  /// Таймер удержания «09:41».
   static String countdown(Duration d) {
     final s = d.isNegative ? 0 : d.inSeconds;
     return '${(s ~/ 60).toString().padLeft(2, '0')}:${(s % 60).toString().padLeft(2, '0')}';

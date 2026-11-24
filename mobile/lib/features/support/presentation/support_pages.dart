@@ -23,6 +23,7 @@ import '../../auth/domain/entities/user_session.dart';
 import '../../auth/presentation/controllers/session_controller.dart';
 import '../domain/support_domain.dart';
 import '../../../core/presentation/safe_notifier.dart';
+import '../../../core/presentation/failure_text.dart';
 
 // ─── list ──────────────────────────────────────────────────────────────────
 
@@ -146,7 +147,7 @@ class NewCaseViewModel extends ChangeNotifier with SafeNotifier {
   final String? about;
   CaseCategory category;
   bool busy = false;
-  String? error;
+  Failure? error;
 
   /// Участнику без контекста нужно выбрать событие.
   bool get needsPicker => _contexts != null && eventId == null && orderId == null;
@@ -190,7 +191,7 @@ class NewCaseViewModel extends ChangeNotifier with SafeNotifier {
       case Ok(:final value):
         return value;
       case Err(:final failure):
-        error = failure.message;
+        error = failure;
         notifyListeners();
         return null;
     }
@@ -270,7 +271,7 @@ class _NewCasePageState extends State<NewCasePage> {
                     ),
                   if (vm.error != null) ...[
                     const SizedBox(height: 10),
-                    Text(vm.error!, style: AppText.bodySecondary.copyWith(color: context.colors.text)),
+                    Text(vm.error!.text(context), style: AppText.bodySecondary.copyWith(color: context.colors.text)),
                   ],
                 ],
               ),

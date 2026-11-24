@@ -226,11 +226,11 @@ class ApplyPromo {
 
   Future<Result<PromoValidation>> call({required String code, required int eventId}) async {
     final c = code.trim().toUpperCase();
-    if (c.isEmpty) return const Err(ValidationFailure('Enter a promo code.'));
+    if (c.isEmpty) return const Err(ValidationFailure('Enter a promo code.', code: 'promoEmpty'));
     final r = await _repo.validatePromo(c);
     return switch (r) {
       Ok(:final value) when value.eventId != null && value.eventId != eventId =>
-        const Err(ValidationFailure('This code is for a different event.')),
+        const Err(ValidationFailure('This code is for a different event.', code: 'promoOtherEvent')),
       Ok() => r,
       Err(failure: ServerFailure(:final message)) => Err(ValidationFailure(message)),
       Err() => r,

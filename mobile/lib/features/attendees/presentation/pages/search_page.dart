@@ -14,6 +14,7 @@ import '../../../../core/widgets/screen_header.dart';
 import '../../../../core/widgets/state_views.dart';
 import '../../domain/entities/attendee.dart';
 import '../view_models/search_view_model.dart';
+import '../../../../core/presentation/failure_text.dart';
 
 /// C1 · Find by name / C2 · No matches
 class SearchPage extends StatefulWidget {
@@ -115,7 +116,7 @@ class _SearchPageState extends State<SearchPage> {
         child: MessageView(
           icon: Icons.error_outline,
           title: 'Search failed',
-          message: f.message,
+          message: f.text(context),
           actionLabel: 'Try again',
           onAction: vm.refresh,
         ),

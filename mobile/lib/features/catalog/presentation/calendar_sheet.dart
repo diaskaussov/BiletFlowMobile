@@ -12,6 +12,7 @@ import '../../../core/widgets/screen_header.dart';
 import '../../../core/widgets/state_views.dart';
 import '../../../shared/domain/entities/event_info.dart';
 import '../domain/calendar_links.dart';
+import '../../../core/presentation/failure_text.dart';
 
 /// «ADD TO CALENDAR»: Google, Outlook или файл .ics (§4.11, UC6).
 Future<void> showCalendarSheet(
@@ -52,7 +53,7 @@ Future<void> showCalendarSheet(
                   case Ok(:final value):
                     await actions.share(value, name: 'biletflow-event-${event.id}.ics', mimeType: 'text/calendar');
                   case Err(:final failure):
-                    showMessage(sheetContext, failure.message);
+                    showMessage(sheetContext, failure.text(sheetContext));
                 }
               },
             ),

@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/error/failure.dart';
+import '../../../core/presentation/failure_text.dart';
 import '../../../core/error/result.dart';
 import '../../../core/presentation/loadable.dart';
 import '../../../core/theme/app_palette.dart';
@@ -205,7 +206,7 @@ class _TicketTypeSheetState extends State<_TicketTypeSheet> {
     );
     final problem = d.validate();
     if (problem != null) {
-      setState(() => _error = problem);
+      setState(() => _error = problem.toFailure().text(context));
       return;
     }
     Navigator.of(context).pop(d);

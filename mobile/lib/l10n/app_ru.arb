@@ -1,0 +1,163 @@
+{
+  "@@locale": "ru",
+  "errNetwork": "Нет связи с сервером.",
+  "errSessionExpired": "Сессия истекла. Войдите снова.",
+  "errForbidden": "Недостаточно прав для этого действия.",
+  "errUnexpectedResponse": "Неожиданный ответ сервера.",
+  "errEmailInvalid": "Введите корректный email.",
+  "errPasswordEmpty": "Введите пароль.",
+  "errAccountUnsupported": "Этот тип аккаунта не поддерживается приложением.",
+  "errWrongCredentials": "Неверный email или пароль",
+  "errNameRequired": "Укажите имя и фамилию.",
+  "errPasswordShort": "Пароль должен быть не короче 6 символов.",
+  "errRoleRequired": "Выберите: участник или организатор.",
+  "errPromoEmpty": "Введите промокод.",
+  "errPromoOtherEvent": "Этот код для другого события.",
+  "errReversalReason": "Укажите причину отмены входа.",
+  "errNoTicketId": "Сервер не вернул ID билета, поэтому отменить вход отсюда нельзя.",
+  "errPickTicket": "Выберите хотя бы один билет.",
+  "errTicketNotInOrder": "Этого билета нет в заказе.",
+  "errTicketAlreadyIn": "Билет {label} уже отмечен.",
+  "@errTicketAlreadyIn": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "errTicketRefundedNoEntry": "Билет {label} возвращён и недействителен.",
+  "@errTicketRefundedNoEntry": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "errTicketCancelledNoEntry": "Билет {label} отменён и недействителен.",
+  "@errTicketCancelledNoEntry": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "errSeatsForType": "Выберите мест для «{type}»: {count}.",
+  "@errSeatsForType": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "errBuyerName": "Укажите имя и фамилию участника.",
+  "errBuyerEmail": "Укажите email для отправки билетов.",
+  "errSeatsFirst": "Сначала выберите места.",
+  "errHoldExpired": "Бронь мест истекла. Выберите места заново.",
+  "errEventTitle": "Укажите название события.",
+  "errEventVenue": "Укажите площадку проведения.",
+  "errEventCity": "Укажите город.",
+  "errEventStart": "Укажите дату и время начала.",
+  "errEventEndOrder": "Окончание должно быть позже начала.",
+  "errRegCloseOrder": "Регистрация должна закрываться позже, чем открывается.",
+  "errRegCloseBeforeEnd": "Регистрация должна закрыться до окончания события.",
+  "errCapacityMin": "Вместимость должна быть не меньше 1.",
+  "errTypeName": "Укажите название типа билета.",
+  "errPriceNegative": "Цена не может быть отрицательной.",
+  "errQuantityMin": "Количество должно быть не меньше 1.",
+  "errQuantityBelowSold": "Нельзя сделать меньше уже проданных: {count}.",
+  "@errQuantityBelowSold": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "errPerOrderMin": "Лимит на заказ должен быть не меньше 1.",
+  "errSalesEndOrder": "Продажи должны заканчиваться позже, чем начинаются.",
+  "errPublishNeedsType": "Перед публикацией добавьте хотя бы один тип билета.",
+  "errEventAlreadyCancelled": "Событие уже отменено.",
+  "errSectionsEmpty": "Добавьте хотя бы одну секцию.",
+  "errSectionName": "У каждой секции должно быть название.",
+  "errSectionTwice": "Секция «{name}» указана дважды.",
+  "@errSectionTwice": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "errRowsMin": "Рядов и мест в ряду должно быть не меньше 1.",
+  "errTermsRequired": "Сначала примите условия платных событий.",
+  "errSalesAlreadyActive": "Платные продажи уже активированы.",
+  "errNeedPaidType": "Сначала добавьте платный тип билета.",
+  "errNeedPayout": "Сначала укажите реквизиты для выплат.",
+  "errOrgName": "Укажите название организации.",
+  "errContactEmail": "Некорректный контактный email.",
+  "errCampaignName": "Укажите название кампании.",
+  "errDiscountPositive": "Скидка должна быть больше нуля.",
+  "errPercentMax": "Скидка в процентах не может быть больше 100%.",
+  "errRedemptionsMin": "Разрешите хотя бы одно использование.",
+  "errCampaignEndOrder": "Кампания должна заканчиваться позже, чем начинается.",
+  "errOrderAlreadyRefunded": "Заказ уже возвращён.",
+  "errOrderWasCancelled": "Заказ был отменён.",
+  "errRefundReason": "Укажите причину возврата.",
+  "errCampaignDisabled": "Кампания уже отключена.",
+  "errUserIdInvalid": "Введите числовой ID пользователя.",
+  "errAlreadyOnTeam": "Этот человек уже в команде.",
+  "errGateEmpty": "Название входа не может быть пустым.",
+  "errGateLong": "Слишком длинное название входа.",
+  "errCaseEvent": "Выберите событие — обращение получит его организатор.",
+  "errCaseSubject": "Опишите проблему в нескольких словах.",
+  "errCaseMessage": "Напишите сообщение для поддержки.",
+  "errReplyEmpty": "Сначала напишите ответ.",
+  "errOrderAlreadyCancelled": "Заказ уже отменён.",
+  "errTicketUsedInOrder": "Один из билетов заказа уже использован на входе.",
+  "errSelfSuspend": "Нельзя заблокировать собственный аккаунт.",
+  "errAdminSuspend": "Администраторов платформы здесь заблокировать нельзя.",
+  "errUserAlreadySuspended": "Пользователь уже заблокирован.",
+  "errUserNotSuspended": "Пользователь не заблокирован.",
+  "errSuspendReason": "Укажите причину блокировки.",
+  "errEventNotFound": "Событие не найдено.",
+  "errTicketNotFound": "Билет не найден.",
+  "errAttendeeNotFound": "Гость не найден.",
+  "errCheckInRefused": "Сервер отклонил отметку входа.",
+  "errPromoInvalid": "Код недействителен.",
+  "appName": "BiletFlow",
+  "today": "Сегодня",
+  "agoJustNow": "только что",
+  "agoMinutes": "{count, plural, one{{count} минуту назад} few{{count} минуты назад} many{{count} минут назад} other{{count} минуты назад}}",
+  "@agoMinutes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "agoHours": "{count, plural, one{{count} час назад} few{{count} часа назад} many{{count} часов назад} other{{count} часа назад}}",
+  "@agoHours": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "agoDays": "{count, plural, one{{count} день назад} few{{count} дня назад} many{{count} дней назад} other{{count} дня назад}}",
+  "@agoDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "free": "Бесплатно",
+  "millionShort": "млн",
+  "appearance": "Оформление",
+  "language": "Язык",
+  "theme": "Тема",
+  "themeSystem": "Как в системе",
+  "themeLight": "Светлая",
+  "themeDark": "Тёмная"
+}

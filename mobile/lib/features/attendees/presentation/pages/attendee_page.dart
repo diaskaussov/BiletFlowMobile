@@ -14,6 +14,7 @@ import '../../../checkin/presentation/widgets/reversal_sheet.dart';
 import '../../../settings/presentation/settings_controller.dart';
 import '../../domain/entities/attendee.dart';
 import '../view_models/attendee_view_model.dart';
+import '../../../../core/presentation/failure_text.dart';
 
 /// C3 · Attendee record — ручная отметка, по одному билету за раз.
 class AttendeePage extends StatelessWidget {
@@ -24,7 +25,7 @@ class AttendeePage extends StatelessWidget {
     if (!context.mounted) return;
     showMessage(
       context,
-      failure?.message ??
+      failure?.text(context) ??
           (ids.length == 1 ? 'Checked in.' : '${ids.length} tickets checked in.'),
     );
   }
@@ -57,7 +58,7 @@ class AttendeePage extends StatelessWidget {
         child: MessageView(
           icon: Icons.person_off_outlined,
           title: 'Attendee not found',
-          message: vm.failure?.message ?? 'This record is not available.',
+          message: vm.failure?.text(context) ?? 'This record is not available.',
           actionLabel: 'Try again',
           onAction: vm.load,
         ),

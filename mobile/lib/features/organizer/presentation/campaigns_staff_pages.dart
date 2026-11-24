@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 import '../../../core/error/failure.dart';
+import '../../../core/presentation/failure_text.dart';
 import '../../../core/error/result.dart';
 import '../../../core/platform/document_actions.dart';
 import '../../../core/presentation/loadable.dart';
@@ -63,7 +64,7 @@ class CampaignsPage extends StatelessWidget {
     final (created, failure) = await vm.create(draft);
     if (!context.mounted) return;
     if (failure != null) {
-      showMessage(context, failure.message);
+      showMessage(context, failure.text(context));
     } else if (created != null) {
       _showQr(context, vm.eventId, created.code, draft.name);
     }
@@ -288,7 +289,7 @@ class _CampaignSheetState extends State<_CampaignSheet> {
                   );
                   final problem = d.validate();
                   if (problem != null) {
-                    setState(() => _error = problem);
+                    setState(() => _error = problem.toFailure().text(context));
                   } else {
                     Navigator.of(context).pop(d);
                   }

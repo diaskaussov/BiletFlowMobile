@@ -10,6 +10,7 @@ import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/widgets/buttons.dart';
 import '../../../../core/widgets/labeled_text_field.dart';
 import '../view_models/sign_in_view_model.dart';
+import '../../../../core/presentation/failure_text.dart';
 
 /// A1 · Sign in
 class SignInPage extends StatefulWidget {
@@ -179,7 +180,7 @@ class _SignInPageState extends State<SignInPage> {
                     ),
                     const SizedBox(height: 26),
                     if (error != null) ...[
-                      Text(error, style: AppText.bodySecondary.copyWith(color: context.colors.text)),
+                      Text(error.text(context), style: AppText.bodySecondary.copyWith(color: context.colors.text)),
                       const SizedBox(height: 10),
                     ],
                     PrimaryButton(

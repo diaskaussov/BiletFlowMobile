@@ -16,6 +16,7 @@ import '../../auth/presentation/controllers/session_controller.dart';
 import '../../events/presentation/controllers/active_event_controller.dart';
 import '../domain/entities/scanner_settings.dart';
 import 'settings_controller.dart';
+import '../../../core/presentation/failure_text.dart';
 
 /// A6 · Settings & sign out
 class SettingsPage extends StatelessWidget {
@@ -23,7 +24,7 @@ class SettingsPage extends StatelessWidget {
 
   Future<void> _update(BuildContext context, ScannerSettings next) async {
     final failure = await context.read<SettingsController>().update(next);
-    if (failure != null && context.mounted) showMessage(context, failure.message);
+    if (failure != null && context.mounted) showMessage(context, failure.text(context));
   }
 
   Future<void> _editGate(BuildContext context, ScannerSettings s) async {

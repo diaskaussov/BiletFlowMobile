@@ -13,6 +13,8 @@ import '../../domain/entities/user_session.dart';
 import '../../domain/usecases/sign_in.dart';
 import '../controllers/session_controller.dart';
 import '../../../../core/presentation/safe_notifier.dart';
+import '../../../../core/presentation/failure_text.dart';
+import '../../../../core/error/failure.dart';
 
 class RegisterViewModel extends ChangeNotifier with SafeNotifier {
   RegisterViewModel({required this._register, required this._session});
@@ -22,7 +24,7 @@ class RegisterViewModel extends ChangeNotifier with SafeNotifier {
 
   UserRole role = UserRole.attendee;
   bool isLoading = false;
-  String? error;
+  Failure? error;
 
   void setRole(UserRole r) {
     role = r;
@@ -52,7 +54,7 @@ class RegisterViewModel extends ChangeNotifier with SafeNotifier {
       case Ok(:final value):
         _session.signedIn(value);
       case Err(:final failure):
-        error = failure.message;
+        error = failure;
     }
     notifyListeners();
   }
@@ -161,7 +163,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   const SizedBox(height: 22),
                   if (vm.error != null) ...[
-                    Text(vm.error!, style: AppText.bodySecondary.copyWith(color: context.colors.text)),
+                    Text(vm.error!.text(context), style: AppText.bodySecondary.copyWith(color: context.colors.text)),
                     const SizedBox(height: 10),
                   ],
                   PrimaryButton(

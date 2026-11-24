@@ -18,6 +18,7 @@ import '../../../../core/widgets/state_views.dart';
 import '../../../connection/presentation/connection_controller.dart';
 import '../../../settings/presentation/settings_controller.dart';
 import '../view_models/scanner_view_model.dart';
+import '../../../../core/presentation/failure_text.dart';
 
 /// B1 · Scanner idle / B2 · Low light, torch on / B3 · Camera permission denied
 class ScannerPage extends StatefulWidget {
@@ -92,7 +93,7 @@ class _ScannerPageState extends State<ScannerPage> with WidgetsBindingObserver {
       case Err(:final failure):
         _cooldownCode = raw;
         _cooldownUntil = DateTime.now().add(_cooldown);
-        showMessage(context, failure.message);
+        showMessage(context, failure.text(context));
     }
   }
 

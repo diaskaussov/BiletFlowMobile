@@ -19,6 +19,8 @@ import '../../auth/presentation/controllers/session_controller.dart';
 import '../domain/cart.dart';
 import '../domain/checkout_domain.dart';
 import '../../../core/presentation/safe_notifier.dart';
+import '../../../core/presentation/failure_text.dart';
+import '../../../core/error/failure.dart';
 
 enum PaymentMethod { card, kaspi }
 
@@ -37,7 +39,7 @@ class CheckoutViewModel extends ChangeNotifier with SafeNotifier {
 
   PaymentMethod method = PaymentMethod.card;
   bool isPaying = false;
-  String? error;
+  Failure? error;
 
   Duration? get holdLeft => cart.heldUntil?.difference(DateTime.now());
   bool get holdExpired => holdLeft != null && holdLeft!.isNegative;
@@ -60,7 +62,7 @@ class CheckoutViewModel extends ChangeNotifier with SafeNotifier {
         notifyListeners();
         return value.id;
       case Err(:final failure):
-        error = failure.message;
+        error = failure;
         notifyListeners();
         return null;
     }
@@ -202,7 +204,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 child: Column(
                   children: [
                     if (vm.error != null) ...[
-                      Text(vm.error!, style: AppText.bodySecondary.copyWith(color: context.colors.text)),
+                      Text(vm.error!.text(context), style: AppText.bodySecondary.copyWith(color: context.colors.text)),
                       const SizedBox(height: 8),
                     ],
                     PrimaryButton(

@@ -37,7 +37,8 @@ class CatalogRepositoryImpl implements CatalogRepository {
   Future<Result<PromoValidation>> validatePromo(String code) => guard(() async {
         final j = jsonObject(await _api.get('/api/promo/validate/${Uri.encodeComponent(code)}'));
         if (j.boolean(['valid']) == false) {
-          throw ApiException(j.str(['message', 'error']) ?? 'This code is not valid.', statusCode: 400);
+          final message = j.str(['message', 'error']);
+          throw ApiException(message ?? 'This code is not valid.', statusCode: 400, code: message == null ? 'promoInvalid' : null);
         }
         return PromoValidation(
           code: j.str(['code']) ?? code,

@@ -17,6 +17,7 @@ import '../../../auth/presentation/controllers/session_controller.dart';
 import '../../../settings/presentation/settings_controller.dart';
 import '../../domain/entities/assigned_event.dart';
 import '../view_models/events_view_model.dart';
+import '../../../../core/presentation/failure_text.dart';
 
 /// A2 · No events assigned / A3 · Assigned events
 class EventsPage extends StatelessWidget {
@@ -38,7 +39,7 @@ class EventsPage extends StatelessWidget {
         child: MessageView(
           icon: failure is NetworkFailure ? Icons.wifi_off : Icons.error_outline,
           title: failure is NetworkFailure ? 'No connection' : 'Could not load events',
-          message: failure.message,
+          message: failure.text(context),
           actionLabel: 'Try again',
           onAction: vm.load,
         ),

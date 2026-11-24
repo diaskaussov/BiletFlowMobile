@@ -30,13 +30,16 @@ class AttendeesRepositoryImpl implements AttendeesRepository {
     final r = await guard(() async {
       for (final id in ticketIds) {
         final response = await _remote.checkIn(id);
-        if (!response.valid) return response.message ?? 'Check-in was refused.';
+        if (!response.valid) return response.message;
       }
-      return null;
+      return '';
     });
     return switch (r) {
       Err(:final failure) => Err(failure),
-      Ok(value: final String refusal) => Err(ValidationFailure(refusal)),
+      // Отказ сервера: его текст, иначе общее «сервер отклонил».
+      Ok(value: final String? refusal) when refusal != '' => Err(refusal == null
+          ? const ValidationFailure('Check-in was refused.', code: 'checkInRefused')
+          : ValidationFailure(refusal)),
       Ok() => getById(eventId: eventId, attendeeId: attendeeId),
     };
   }
@@ -59,7 +62,7 @@ class AttendeesRepositoryImpl implements AttendeesRepository {
   Future<Attendee> _fetch(int eventId, String attendeeId) async {
     final all = groupByOrder(await _remote.list(eventId));
     final found = all.where((a) => a.id == attendeeId).firstOrNull;
-    if (found == null) throw const ApiException('Attendee not found.', statusCode: 404);
+    if (found == null) throw const ApiException('Attendee not found.', statusCode: 404, code: 'attendeeNotFound');
     return found;
   }
 }

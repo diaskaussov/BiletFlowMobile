@@ -44,7 +44,11 @@ class HoldSeats {
     for (final (type, qty) in cart.lines) {
       final picked = selected.where((s) => s.ticketTypeId == type.id).length;
       if (picked != qty) {
-        return Err(ValidationFailure('Choose $qty ${qty == 1 ? 'seat' : 'seats'} for ${type.name}.'));
+        return Err(ValidationFailure(
+          'Choose $qty ${qty == 1 ? 'seat' : 'seats'} for ${type.name}.',
+          code: 'seatsForType',
+          args: {'count': qty, 'type': type.name},
+        ));
       }
     }
     final r = await _repo.hold(cart.event.id, [for (final s in selected) s.id]);
@@ -80,17 +84,17 @@ class PlaceOrder {
   static final _email = RegExp(r'^[\w.+-]+@[\w-]+(\.[\w-]+)+$');
 
   Future<Result<OrderInfo>> call(Cart cart, BuyerDetails buyer) async {
-    if (cart.isEmpty) return const Err(ValidationFailure('Choose at least one ticket.'));
+    if (cart.isEmpty) return const Err(ValidationFailure('Choose at least one ticket.', code: 'pickTicket'));
     if (buyer.firstName.trim().isEmpty || buyer.lastName.trim().isEmpty) {
-      return const Err(ValidationFailure('Enter the attendee\'s first and last name.'));
+      return const Err(ValidationFailure('Enter the attendee\'s first and last name.', code: 'buyerName'));
     }
     if (!_email.hasMatch(buyer.email.trim())) {
-      return const Err(ValidationFailure('Enter the email tickets should be sent to.'));
+      return const Err(ValidationFailure('Enter the email tickets should be sent to.', code: 'buyerEmail'));
     }
-    if (!cart.seatsComplete) return const Err(ValidationFailure('Choose seats first.'));
+    if (!cart.seatsComplete) return const Err(ValidationFailure('Choose seats first.', code: 'seatsFirst'));
     final held = cart.heldUntil;
     if (held != null && _clock().isAfter(held)) {
-      return const Err(ValidationFailure('Your seat hold expired. Choose seats again.'));
+      return const Err(ValidationFailure('Your seat hold expired. Choose seats again.', code: 'holdExpired'));
     }
 
     final created = await _repo.createOrder(

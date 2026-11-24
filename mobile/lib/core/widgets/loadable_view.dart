@@ -4,6 +4,7 @@ import '../error/failure.dart';
 import '../presentation/loadable.dart';
 import '../theme/app_spacing.dart';
 import 'state_views.dart';
+import '../presentation/failure_text.dart';
 
 /// Отрисовка [Loadable]: индикатор, ошибка с повтором или контент.
 /// Pull-to-refresh перезагружает данные.
@@ -34,7 +35,7 @@ class LoadableView<T> extends StatelessWidget {
         child: MessageView(
           icon: f is NetworkFailure ? Icons.wifi_off : Icons.error_outline,
           title: f is NetworkFailure ? 'No connection' : 'Could not load',
-          message: f.message,
+          message: f.text(context),
           actionLabel: 'Try again',
           onAction: state.load,
         ),
@@ -52,7 +53,7 @@ class LoadableView<T> extends StatelessWidget {
 void reportResult(BuildContext context, Failure? failure, {String? success}) {
   if (!context.mounted) return;
   if (failure != null) {
-    showMessage(context, failure.message);
+    showMessage(context, failure.text(context));
   } else if (success != null) {
     showMessage(context, success);
   }

@@ -18,10 +18,10 @@ class SignIn {
   }) async {
     final normalized = email.trim().toLowerCase();
     if (!_emailPattern.hasMatch(normalized)) {
-      return const Err(ValidationFailure('Enter a valid email address.'));
+      return const Err(ValidationFailure('Enter a valid email address.', code: 'emailInvalid'));
     }
     if (password.isEmpty) {
-      return const Err(ValidationFailure('Enter your password.'));
+      return const Err(ValidationFailure('Enter your password.', code: 'passwordEmpty'));
     }
 
     final result = await _repo.signIn(email: normalized, password: password);
@@ -30,7 +30,7 @@ class SignIn {
         return Err(_explain(failure));
       case Ok(:final value):
         if (value.role == UserRole.unknown) {
-          return const Err(ForbiddenFailure('This account type is not supported by the app.'));
+          return const Err(ForbiddenFailure('This account type is not supported by the app.', 'accountUnsupported'));
         }
         await _repo.saveSession(value);
         return Ok(value);
@@ -38,12 +38,12 @@ class SignIn {
   }
 
   static Failure _explain(Failure f) => switch (f) {
-        UnauthorizedFailure() => const UnauthorizedFailure('Incorrect email or password.'),
+        UnauthorizedFailure() => const UnauthorizedFailure('Incorrect email or password.', 'wrongCredentials'),
         ServerFailure(statusCode: 400 || 404, :final message)
             when message.toLowerCase().contains('suspend') =>
           ForbiddenFailure(message),
         ServerFailure(statusCode: 400 || 404) =>
-          const UnauthorizedFailure('Incorrect email or password.'),
+          const UnauthorizedFailure('Incorrect email or password.', 'wrongCredentials'),
         _ => f,
       };
 }
@@ -68,16 +68,16 @@ class Register {
   }) async {
     final normalized = email.trim().toLowerCase();
     if (firstName.trim().isEmpty || lastName.trim().isEmpty) {
-      return const Err(ValidationFailure('Enter your first and last name.'));
+      return const Err(ValidationFailure('Enter your first and last name.', code: 'nameRequired'));
     }
     if (!_emailPattern.hasMatch(normalized)) {
-      return const Err(ValidationFailure('Enter a valid email address.'));
+      return const Err(ValidationFailure('Enter a valid email address.', code: 'emailInvalid'));
     }
     if (password.length < minPasswordLength) {
-      return const Err(ValidationFailure('Password must be at least 6 characters.'));
+      return const Err(ValidationFailure('Password must be at least 6 characters.', code: 'passwordShort'));
     }
     if (!allowedRoles.contains(role)) {
-      return const Err(ValidationFailure('Choose attendee or organizer.'));
+      return const Err(ValidationFailure('Choose attendee or organizer.', code: 'roleRequired'));
     }
     final result = await _repo.register(
       email: normalized,

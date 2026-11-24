@@ -113,13 +113,13 @@ class OpenCase {
 
   Future<Result<SupportCaseInfo>> call(NewCase request, {bool requireContext = false}) async {
     if (requireContext && request.eventId == null && request.orderId == null) {
-      return const Err(ValidationFailure('Choose the event this is about, so its organizer gets the case.'));
+      return const Err(ValidationFailure('Choose the event this is about, so its organizer gets the case.', code: 'caseEvent'));
     }
     if (request.subject.trim().length < 3) {
-      return const Err(ValidationFailure('Describe the problem in a few words.'));
+      return const Err(ValidationFailure('Describe the problem in a few words.', code: 'caseSubject'));
     }
     if (request.message.trim().isEmpty) {
-      return const Err(ValidationFailure('Write a message for support.'));
+      return const Err(ValidationFailure('Write a message for support.', code: 'caseMessage'));
     }
     return _repo.open(NewCase(
       category: request.category,
@@ -152,7 +152,7 @@ class ReplyToCase {
   final SupportRepository _repo;
 
   Future<Result<SupportMessageInfo>> call(int caseId, String text) async {
-    if (text.trim().isEmpty) return const Err(ValidationFailure('Write a reply first.'));
+    if (text.trim().isEmpty) return const Err(ValidationFailure('Write a reply first.', code: 'replyEmpty'));
     return _repo.reply(caseId, text.trim());
   }
 }

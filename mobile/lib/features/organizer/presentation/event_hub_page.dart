@@ -18,6 +18,7 @@ import '../../../core/widgets/state_views.dart';
 import '../../../shared/domain/entities/event_info.dart';
 import '../../../shared/domain/entities/insights.dart';
 import '../domain/organizer_events_domain.dart';
+import '../../../core/presentation/failure_text.dart';
 
 class EventHub {
   const EventHub({required this.event, this.analytics});
@@ -70,7 +71,7 @@ class EventHubPage extends StatelessWidget {
     final (result, failure) = await vm.act(action);
     if (!context.mounted) return;
     if (failure != null) {
-      showMessage(context, failure.message);
+      showMessage(context, failure.text(context));
       return;
     }
     switch (action) {

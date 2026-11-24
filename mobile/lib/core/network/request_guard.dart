@@ -10,10 +10,10 @@ Future<Result<T>> guard<T>(Future<T> Function() body) async {
   } on ApiException catch (e) {
     return Err(failureFromApi(e));
   } on FormatException {
-    return const Err(ServerFailure('Unexpected server response.'));
+    return const Err(ServerFailure('Unexpected server response.', code: 'unexpectedResponse'));
   } on TypeError {
     // Поле пришло не того типа — контракт API разошёлся с моделью.
-    return const Err(ServerFailure('Unexpected server response.'));
+    return const Err(ServerFailure('Unexpected server response.', code: 'unexpectedResponse'));
   }
 }
 
@@ -22,6 +22,6 @@ Failure failureFromApi(ApiException e) {
   return switch (e.statusCode) {
     401 => UnauthorizedFailure(e.message),
     403 => const ForbiddenFailure(),
-    _ => ServerFailure(e.message, statusCode: e.statusCode),
+    _ => ServerFailure(e.message, statusCode: e.statusCode, code: e.code),
   };
 }
