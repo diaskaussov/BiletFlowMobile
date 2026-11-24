@@ -20,11 +20,21 @@ abstract interface class TicketsRepository {
   Future<Result<OrderInfo>> cancelOrder(int orderId);
 }
 
-/// Билеты одного события в «Моих билетах» (W8).
+/// Билеты одного заказа в «Моих билетах» (W8). Группировка по заказу, а не
+/// по событию: на одно событие бывает несколько заказов — например,
+/// возвращённый и новый, — и у каждого своя карточка и свой статус.
 class TicketGroup {
-  const TicketGroup({required this.eventId, required this.tickets, this.eventTitle, this.startsAt, this.venue});
+  const TicketGroup({
+    required this.eventId,
+    required this.tickets,
+    this.orderId,
+    this.eventTitle,
+    this.startsAt,
+    this.venue,
+  });
 
   final int eventId;
+  final int? orderId;
   final String? eventTitle;
   final DateTime? startsAt;
   final String? venue;
@@ -43,7 +53,7 @@ class MyTickets {
   final List<TicketGroup> refunded;
 }
 
-/// W8: билеты по событиям, разложенные на «впереди / прошли / возвращены».
+/// W8: билеты по заказам, разложенные на «впереди / прошли / возвращены».
 class GetMyTickets {
   GetMyTickets(this._repo, {DateTime Function()? clock}) : _clock = clock ?? DateTime.now;
 
@@ -58,14 +68,16 @@ class GetMyTickets {
 }
 
 MyTickets groupTickets(List<TicketInfo> tickets, DateTime now) {
-  final byEvent = <int, List<TicketInfo>>{};
+  final byOrder = <String, List<TicketInfo>>{};
   for (final t in tickets) {
-    byEvent.putIfAbsent(t.eventId ?? -1, () => []).add(t);
+    final key = t.orderId != null ? 'o${t.orderId}' : 'e${t.eventId ?? -1}';
+    byOrder.putIfAbsent(key, () => []).add(t);
   }
   final groups = [
-    for (final MapEntry(:key, :value) in byEvent.entries)
+    for (final value in byOrder.values)
       TicketGroup(
-        eventId: key,
+        eventId: value.first.eventId ?? -1,
+        orderId: value.first.orderId,
         eventTitle: value.first.eventTitle,
         startsAt: value.first.eventStartsAt,
         venue: value.first.eventVenue,

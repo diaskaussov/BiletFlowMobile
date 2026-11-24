@@ -105,7 +105,7 @@ class _GroupCard extends StatelessWidget {
         : g.tickets.any((t) => t.status == TicketStatus.checkedIn)
             ? 'Used'
             : 'Valid';
-    final orderId = g.tickets.first.orderId;
+    final orderId = g.orderId;
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(color: AppColors.paper, border: Border.all(color: AppColors.divider)),

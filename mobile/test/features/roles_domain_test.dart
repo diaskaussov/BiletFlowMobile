@@ -137,6 +137,17 @@ void main() {
     expect(g.refunded.single.eventId, 3);
   });
 
+  test('W8: a refunded and a new order for the same event are separate cards', () {
+    TicketInfo t(int id, int orderId, TicketStatus s) => TicketInfo(
+          id: id, code: 'c$id', status: s, eventId: 3, orderId: orderId,
+          eventStartsAt: now.add(const Duration(days: 10)), eventTitle: 'Mobile Demo Night',
+        );
+    final g = groupTickets([t(2, 2, TicketStatus.refunded), t(3, 2, TicketStatus.refunded), t(6, 4, TicketStatus.valid)], now);
+    expect(g.upcoming.single.orderId, 4);
+    expect(g.upcoming.single.tickets.single.id, 6);
+    expect(g.refunded.single.orderId, 2);
+  });
+
   group('organizer rules', () {
     test('event draft validation', () {
       final base = EventDraft(title: 'T', venueName: 'V', city: 'C', startsAt: now, capacity: 10);
