@@ -11,7 +11,7 @@ import '../features/checkout/domain/cart.dart';
 import '../features/checkout/presentation/checkout_page.dart';
 import '../features/checkout/presentation/seat_map_page.dart';
 import '../features/notifications/presentation/notifications_page.dart';
-import '../features/support/domain/support_domain.dart' show GetMyCases;
+import '../features/support/domain/support_domain.dart' show GetCaseContexts, GetMyCases;
 import '../features/support/presentation/support_pages.dart';
 import '../features/tickets/presentation/my_tickets_page.dart';
 import '../features/tickets/presentation/order_page.dart';
@@ -24,7 +24,8 @@ int _id(GoRouterState s, [String key = 'id']) => int.tryParse(s.pathParameters[k
 int? _q(GoRouterState s, String key) => int.tryParse(s.uri.queryParameters[key] ?? '');
 
 /// Маршруты поддержки — одинаковые для участника и организатора.
-List<RouteBase> supportRoutes({required List<CaseCategory> categories}) => [
+/// [withContexts] — участник выбирает событие для обращения из своих билетов.
+List<RouteBase> supportRoutes({required List<CaseCategory> categories, bool withContexts = false}) => [
       GoRoute(
         path: 'new',
         builder: (_, s) => ChangeNotifierProvider(
@@ -34,6 +35,7 @@ List<RouteBase> supportRoutes({required List<CaseCategory> categories}) => [
             orderId: _q(s, 'orderId'),
             about: s.uri.queryParameters['about'],
             category: categories.first,
+            contexts: withContexts ? sl<GetCaseContexts>() : null,
           ),
           child: NewCasePage(categories: categories),
         ),
@@ -130,7 +132,7 @@ GoRoute attendeeRoutes() => GoRoute(
             create: (_) => SupportListViewModel(sl<GetMyCases>().call)..load(),
             child: const SupportListPage(base: Routes.attendeeSupport),
           ),
-          routes: supportRoutes(categories: const [
+          routes: supportRoutes(withContexts: true, categories: const [
             CaseCategory.ticketDelivery,
             CaseCategory.payment,
             CaseCategory.refund,

@@ -18,6 +18,15 @@ class NewCase {
   final int? orderId;
 }
 
+/// Событие, к которому участник может привязать обращение.
+class CaseContext {
+  const CaseContext({required this.eventId, required this.eventTitle, this.orderId});
+
+  final int eventId;
+  final String eventTitle;
+  final int? orderId;
+}
+
 abstract interface class SupportRepository {
   /// Обращения, которые открыл текущий пользователь.
   Future<Result<List<SupportCaseInfo>>> myCases();
@@ -93,12 +102,19 @@ class GetCaseMessages {
 }
 
 /// UC9: обращение с категорией и контекстом события или заказа.
+///
+/// [requireContext] — для участника: обращение без события не видит ни один
+/// организатор (API отдаёт организатору только обращения по его событиям),
+/// а SRS §4.13 открывает обращение участника со страницы события или заказа.
 class OpenCase {
   const OpenCase(this._repo);
 
   final SupportRepository _repo;
 
-  Future<Result<SupportCaseInfo>> call(NewCase request) async {
+  Future<Result<SupportCaseInfo>> call(NewCase request, {bool requireContext = false}) async {
+    if (requireContext && request.eventId == null && request.orderId == null) {
+      return const Err(ValidationFailure('Choose the event this is about, so its organizer gets the case.'));
+    }
     if (request.subject.trim().length < 3) {
       return const Err(ValidationFailure('Describe the problem in a few words.'));
     }
@@ -112,6 +128,21 @@ class OpenCase {
       eventId: request.eventId,
       orderId: request.orderId,
     ));
+  }
+}
+
+/// События из билетов участника — варианты для привязки обращения.
+class GetCaseContexts {
+  const GetCaseContexts(this._load);
+
+  final Future<Result<List<CaseContext>>> Function() _load;
+
+  Future<Result<List<CaseContext>>> call() async {
+    final r = await _load();
+    return switch (r) {
+      Ok(:final value) => Ok({for (final c in value) c.eventId: c}.values.toList()),
+      Err(:final failure) => Err(failure),
+    };
   }
 }
 

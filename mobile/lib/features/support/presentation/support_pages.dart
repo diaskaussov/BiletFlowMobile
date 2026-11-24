@@ -128,16 +128,42 @@ class SupportListPage extends StatelessWidget {
 // ─── new case ──────────────────────────────────────────────────────────────
 
 class NewCaseViewModel extends ChangeNotifier with SafeNotifier {
-  NewCaseViewModel(this._open, {this.eventId, this.orderId, this.about, CaseCategory? category})
-      : category = category ?? (orderId != null ? CaseCategory.ticketDelivery : CaseCategory.eventInfo);
+  NewCaseViewModel(
+    this._open, {
+    this.eventId,
+    this.orderId,
+    this.about,
+    CaseCategory? category,
+    this._contexts,
+  })  : category = category ?? (orderId != null ? CaseCategory.ticketDelivery : CaseCategory.eventInfo) {
+    if (needsPicker) _loadContexts();
+  }
 
   final OpenCase _open;
+  final GetCaseContexts? _contexts;
   final int? eventId;
   final int? orderId;
   final String? about;
   CaseCategory category;
   bool busy = false;
   String? error;
+
+  /// Участнику без контекста нужно выбрать событие.
+  bool get needsPicker => _contexts != null && eventId == null && orderId == null;
+  List<CaseContext>? choices;
+  CaseContext? selected;
+
+  Future<void> _loadContexts() async {
+    final r = await _contexts!();
+    choices = r.valueOrNull ?? const [];
+    if (choices!.length == 1) selected = choices!.first;
+    notifyListeners();
+  }
+
+  void select(CaseContext c) {
+    selected = c;
+    notifyListeners();
+  }
 
   void setCategory(CaseCategory c) {
     category = c;
@@ -148,7 +174,16 @@ class NewCaseViewModel extends ChangeNotifier with SafeNotifier {
     busy = true;
     error = null;
     notifyListeners();
-    final r = await _open(NewCase(category: category, subject: subject, message: message, eventId: eventId, orderId: orderId));
+    final r = await _open(
+      NewCase(
+        category: category,
+        subject: subject,
+        message: message,
+        eventId: eventId ?? selected?.eventId,
+        orderId: orderId ?? selected?.orderId,
+      ),
+      requireContext: _contexts != null,
+    );
     busy = false;
     notifyListeners();
     switch (r) {
@@ -195,6 +230,26 @@ class _NewCasePageState extends State<NewCasePage> {
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(AppSpacing.sideLight, 20, AppSpacing.sideLight, 20),
                 children: [
+                  if (vm.needsPicker) ...[
+                    const SectionLabel('Event'),
+                    const SizedBox(height: 8),
+                    if (vm.choices == null)
+                      const LinearProgressIndicator(minHeight: 2)
+                    else if (vm.choices!.isEmpty)
+                      Text(
+                        'Support cases go to the organizer of an event. Register for or buy a ticket first, '
+                        'then open the case from that event or order.',
+                        style: AppText.bodySecondary.copyWith(color: AppColors.ink),
+                      )
+                    else
+                      ChoiceChips<CaseContext?>(
+                        options: vm.choices!,
+                        selected: vm.selected,
+                        label: (c) => c?.eventTitle ?? '',
+                        onSelected: (c) => vm.select(c!),
+                      ),
+                    const SizedBox(height: 18),
+                  ],
                   const SectionLabel('Category'),
                   const SizedBox(height: 8),
                   ChoiceChips<CaseCategory>(

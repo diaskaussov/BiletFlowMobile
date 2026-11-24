@@ -1,5 +1,7 @@
 import 'package:get_it/get_it.dart';
 
+import '../error/result.dart';
+
 import '../../features/auth/domain/usecases/sign_in.dart';
 import '../../features/catalog/data/catalog_repository_impl.dart';
 import '../../features/catalog/domain/catalog_domain.dart';
@@ -40,6 +42,16 @@ void configureAttendeeDependencies(GetIt sl) {
     ..registerLazySingleton(() => GetCaseMessages(sl()))
     ..registerLazySingleton(() => OpenCase(sl()))
     ..registerLazySingleton(() => ReplyToCase(sl()))
+    ..registerLazySingleton(() => GetCaseContexts(() async {
+          final r = await sl<TicketsRepository>().myTickets();
+          return switch (r) {
+            Ok(:final value) => Ok([
+                for (final t in value)
+                  if (t.eventId != null) CaseContext(eventId: t.eventId!, eventTitle: t.eventTitle ?? 'Event #${t.eventId}', orderId: t.orderId),
+              ]),
+            Err(:final failure) => Err(failure),
+          };
+        }))
     ..registerLazySingleton(() => ChangeCaseStatus(sl()))
     ..registerLazySingleton(() => GetNotifications(sl()))
     ..registerLazySingleton(() => MarkNotificationRead(sl()));

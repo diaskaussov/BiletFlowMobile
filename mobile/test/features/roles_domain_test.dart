@@ -8,7 +8,9 @@ import 'package:mobile/features/checkout/domain/cart.dart';
 import 'package:mobile/features/checkout/domain/checkout_domain.dart';
 import 'package:mobile/features/organizer/domain/organizer_events_domain.dart';
 import 'package:mobile/features/organizer/domain/organizer_operations_domain.dart';
+import 'package:mobile/features/support/domain/support_domain.dart';
 import 'package:mobile/features/tickets/domain/tickets_domain.dart';
+import 'package:mobile/shared/domain/entities/support.dart';
 import 'package:mobile/shared/data/models.dart';
 import 'package:mobile/shared/domain/entities/commerce.dart';
 import 'package:mobile/shared/domain/entities/event_info.dart';
@@ -212,6 +214,12 @@ void main() {
     });
   });
 
+  test('attendee support case needs an event so an organizer receives it', () async {
+    final open = OpenCase(_NoSupport());
+    final r = await open(const NewCase(category: CaseCategory.eventInfo, subject: 'What is wrong?', message: 'Hi'), requireContext: true);
+    expect(r.failureOrNull?.message, contains('Choose the event'));
+  });
+
   group('admin rules', () {
     test('cannot suspend yourself or another admin', () async {
       final actions = ModerationActions(_NoAdmin());
@@ -287,6 +295,11 @@ class _FakeCheckout implements CheckoutRepository {
 }
 
 class _NoOps implements OrganizerOperationsRepository {
+  @override
+  dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError('${invocation.memberName}');
+}
+
+class _NoSupport implements SupportRepository {
   @override
   dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError('${invocation.memberName}');
 }
