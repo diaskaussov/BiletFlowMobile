@@ -352,6 +352,7 @@
   "guestSearchHint": "Имя, email, код билета или номер заказа",
   "statusValid": "Действителен",
   "statusUsed": "Использован",
+  "statusExpired": "Истёк",
   "statusRefunded": "Возвращён",
   "statusCancelled": "Отменён",
   "markEntry": "Отметить вход",

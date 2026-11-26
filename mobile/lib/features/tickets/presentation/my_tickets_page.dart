@@ -112,7 +112,9 @@ class _GroupCard extends StatelessWidget {
         ? (g.tickets.first.status.text(l), g.tickets.first.status.tone)
         : g.tickets.any((t) => t.status == TicketStatus.checkedIn)
             ? (l.statusUsed, Tone.info)
-            : (l.statusValid, Tone.success);
+            : eventIsOver(g.startsAt, DateTime.now())
+                ? (l.statusExpired, Tone.neutral)
+                : (l.statusValid, Tone.success);
     final orderId = g.orderId;
     void open() => count == 1
         ? context.push(Routes.ticket(g.tickets.first.id))

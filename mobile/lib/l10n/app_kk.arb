@@ -213,6 +213,7 @@
   "guestSearchHint": "Аты, email, билет коды немесе тапсырыс нөмірі",
   "statusValid": "Жарамды",
   "statusUsed": "Пайдаланылған",
+  "statusExpired": "Мерзімі өткен",
   "statusRefunded": "Қайтарылған",
   "statusCancelled": "Жойылған",
   "markEntry": "Кіруді белгілеу",

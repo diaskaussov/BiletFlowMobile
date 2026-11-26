@@ -86,8 +86,7 @@ MyTickets groupTickets(List<TicketInfo> tickets, DateTime now) {
   ];
   final refunded = groups.where((g) => g.allVoid).toList();
   final live = groups.where((g) => !g.allVoid);
-  bool isPast(TicketGroup g) =>
-      g.startsAt != null && g.startsAt!.add(const Duration(hours: 12)).isBefore(now);
+  bool isPast(TicketGroup g) => eventIsOver(g.startsAt, now);
   final upcoming = live.where((g) => !isPast(g)).toList()
     ..sort((a, b) => (a.startsAt ?? DateTime(9999)).compareTo(b.startsAt ?? DateTime(9999)));
   final past = live.where(isPast).toList()

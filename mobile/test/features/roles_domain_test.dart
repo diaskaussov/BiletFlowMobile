@@ -139,6 +139,16 @@ void main() {
     expect(g.refunded.single.eventId, 3);
   });
 
+  test('W8: an unscanned ticket for a past event is expired', () {
+    TicketInfo t(DateTime at, TicketStatus s) => TicketInfo(id: 1, code: 'c', status: s, eventStartsAt: at);
+    final past = now.subtract(const Duration(days: 1));
+    expect(t(past, TicketStatus.valid).isExpired(now), isTrue);
+    expect(t(past, TicketStatus.checkedIn).isExpired(now), isFalse);
+    expect(t(past, TicketStatus.refunded).isExpired(now), isFalse);
+    expect(t(now.subtract(const Duration(hours: 2)), TicketStatus.valid).isExpired(now), isFalse);
+    expect(t(now.add(const Duration(days: 1)), TicketStatus.valid).isExpired(now), isFalse);
+  });
+
   test('W8: a refunded and a new order for the same event are separate cards', () {
     TicketInfo t(int id, int orderId, TicketStatus s) => TicketInfo(
           id: id, code: 'c$id', status: s, eventId: 3, orderId: orderId,

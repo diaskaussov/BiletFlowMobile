@@ -164,7 +164,10 @@ class OrderPage extends StatelessWidget {
                                   child: Text(t.attendeeName ?? o.attendeeName ?? l.attendeeLabel,
                                       style: AppText.listTitle.copyWith(color: c.text, fontWeight: FontWeight.w700)),
                                 ),
-                                TagLabel(t.status.text(l), tone: t.status.tone),
+                                Builder(builder: (_) {
+                                  final (text, tone) = t.badge(l, DateTime.now());
+                                  return TagLabel(text, tone: tone);
+                                }),
                               ]),
                               const SizedBox(height: 4),
                               Text([?t.ticketTypeName, ?t.seat, t.displayId].join(' · '), style: AppText.meta.copyWith(color: c.textMuted)),

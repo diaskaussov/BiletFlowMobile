@@ -47,6 +47,12 @@ extension OrderStatusText on OrderStatus {
       };
 }
 
+extension TicketBadge on TicketInfo {
+  /// Подпись и тон билета с учётом прошедшего события.
+  (String, Tone) badge(AppLocalizations l, DateTime now) =>
+      isExpired(now) ? (l.statusExpired, Tone.neutral) : (status.text(l), status.tone);
+}
+
 extension TicketStatusText on TicketStatus {
   String text(AppLocalizations l) => switch (this) {
         TicketStatus.valid => l.statusValid,

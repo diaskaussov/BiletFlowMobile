@@ -732,6 +732,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get statusUsed => 'Использован';
 
   @override
+  String get statusExpired => 'Истёк';
+
+  @override
   String get statusRefunded => 'Возвращён';
 
   @override

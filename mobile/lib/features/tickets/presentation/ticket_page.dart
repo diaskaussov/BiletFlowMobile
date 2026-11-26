@@ -76,7 +76,9 @@ class TicketPage extends StatelessWidget {
               child: LoadableView<TicketInfo>(
                 state: vm,
                 builder: (context, t) {
-                  final usable = t.status == TicketStatus.valid;
+                  final expired = t.isExpired(DateTime.now());
+                  final usable = t.status == TicketStatus.valid && !expired;
+                  final (badgeText, badgeTone) = t.badge(l, DateTime.now());
                   return ListView(
                     padding: const EdgeInsets.fromLTRB(AppSpacing.side, 8, AppSpacing.side, 24),
                     children: [
@@ -120,7 +122,7 @@ class TicketPage extends StatelessWidget {
                                     ),
                                   ),
                                   const SizedBox(height: 10),
-                                  TagLabel(usable ? l.admitsOne : t.status.text(l), tone: usable ? Tone.success : t.status.tone),
+                                  TagLabel(usable ? l.admitsOne : badgeText, tone: usable ? Tone.success : badgeTone),
                                   const SizedBox(height: 16),
                                   DetailGrid(rows: [
                                     if (t.attendeeName != null) (l.attendeeLabel, t.attendeeName!),

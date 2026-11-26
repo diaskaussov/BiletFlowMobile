@@ -720,6 +720,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statusUsed => 'Used';
 
   @override
+  String get statusExpired => 'Expired';
+
+  @override
   String get statusRefunded => 'Refunded';
 
   @override

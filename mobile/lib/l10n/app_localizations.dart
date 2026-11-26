@@ -1378,6 +1378,12 @@ abstract class AppLocalizations {
   /// **'Использован'**
   String get statusUsed;
 
+  /// No description provided for @statusExpired.
+  ///
+  /// In ru, this message translates to:
+  /// **'Истёк'**
+  String get statusExpired;
+
   /// No description provided for @statusRefunded.
   ///
   /// In ru, this message translates to:

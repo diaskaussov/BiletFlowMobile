@@ -213,6 +213,7 @@
   "guestSearchHint": "Name, email, ticket code or order number",
   "statusValid": "Valid",
   "statusUsed": "Used",
+  "statusExpired": "Expired",
   "statusRefunded": "Refunded",
   "statusCancelled": "Cancelled",
   "markEntry": "Check in",

@@ -134,6 +134,14 @@ enum TicketStatus {
       };
 }
 
+/// Событие считается прошедшим через 12 часов после начала: у многих
+/// событий нет времени окончания, а вечерний концерт не должен «истечь»
+/// посреди выступления.
+const eventOverAfter = Duration(hours: 12);
+
+bool eventIsOver(DateTime? startsAt, DateTime now) =>
+    startsAt != null && startsAt.add(eventOverAfter).isBefore(now);
+
 /// Выпущенный билет (W6–W8, O5).
 class TicketInfo {
   const TicketInfo({
@@ -167,6 +175,10 @@ class TicketInfo {
   final String? eventVenue;
   final DateTime? createdAt;
   final double? price;
+
+  /// Бэкенд не меняет статус после события: неотсканированный билет так и
+  /// остаётся VALID. Клиент показывает его истёкшим.
+  bool isExpired(DateTime now) => status == TicketStatus.valid && eventIsOver(eventStartsAt, now);
 
   /// «TCK-C67B8E0D» — короткий ID для глаз; в QR лежит полный код.
   String get displayId {

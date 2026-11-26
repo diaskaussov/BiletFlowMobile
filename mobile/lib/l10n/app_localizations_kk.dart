@@ -708,6 +708,9 @@ class AppLocalizationsKk extends AppLocalizations {
   String get statusUsed => 'Пайдаланылған';
 
   @override
+  String get statusExpired => 'Мерзімі өткен';
+
+  @override
   String get statusRefunded => 'Қайтарылған';
 
   @override
