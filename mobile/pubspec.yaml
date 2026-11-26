@@ -40,7 +40,7 @@ dependencies:
   go_router: ^18.0.1
   get_it: ^9.3.0
   mobile_scanner: ^7.5.0
-  permission_handler: ^13.0.2
+  permission_handler: ^12.0.3 # 13.x тянет плагин с compileSdk 37 — в SDK есть только android-37.0, Gradle его не находит
   flutter_secure_storage: ^11.2.0
   shared_preferences: ^2.5.6
   intl: ^0.20.3
@@ -65,6 +65,7 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
   mocktail: ^1.0.5
+  flutter_launcher_icons: ^0.14.4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -128,3 +129,13 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+# Иконка приложения — «App Icon 1024» из TicketTon22.pen.
+# Пересобрать: dart run flutter_launcher_icons
+flutter_launcher_icons:
+  image_path: assets/icon/app_icon.png
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  adaptive_icon_background: assets/icon/app_icon_background.png
+  adaptive_icon_foreground: assets/icon/app_icon_foreground.png
